@@ -1,0 +1,298 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Tableau de Bord - Festava Live{% endblock %}
+
+{% block body %}
+<section class="plan-section section-padding">
+    <div class="container">
+        <!-- Messages flash -->
+        <div class="mb-4">
+            {% for label in ['success', 'error', 'info', 'warning'] %}
+                {% for message in app.flashes(label) %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show rounded-3 glow-effect animate__animated animate__fadeIn" role="alert">
+                        <i class="bi bi-info-circle me-2"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Titre principal -->
+        <header class="text-center mb-5 animate__animated animate__slideInDown">
+            <h1 class="main-title mb-3">
+                <i class="bi bi-bar-chart me-2"></i> Tableau de Bord
+            </h1>
+            <p class="text-muted lead">Vue d’ensemble de vos plans et tâches</p>
+        </header>
+
+        <!-- Statistiques générales -->
+        <div class="row g-4 mb-5">
+            <!-- Nombre total de plans -->
+            <div class="col-md-4">
+                <div class="card bg-glass border-0 shadow-lg glow-effect animate__animated animate__fadeInUp">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-festival fw-bold">
+                            <i class="bi bi-list-task me-2"></i> Plans
+                        </h5>
+                        <p class="display-6">{{ plans|length }}</p>
+                        <p class="text-muted">Plans au total</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nombre total de tâches -->
+            <div class="col-md-4">
+                <div class="card bg-glass border-0 shadow-lg glow-effect animate__animated animate__fadeInUp">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-festival fw-bold">
+                            <i class="bi bi-check-circle me-2"></i> Tâches
+                        </h5>
+                        <p class="display-6">{{ taches|length }}</p>
+                        <p class="text-muted">Tâches au total</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Répartition des plans par priorité (Pie Chart) -->
+        <div class="row g-4 mb-5">
+            <div class="col-12">
+                <div class="card bg-glass border-0 shadow-lg glow-effect animate__animated animate__fadeInUp">
+                    <div class="card-body">
+                        <h5 class="card-title text-festival fw-bold">
+                            <i class="bi bi-star-fill me-2"></i> Plans par priorité
+                        </h5>
+                        <div class="d-flex justify-content-center">
+                            <canvas id="priorityChart" style="width: 400px !important; height: 400px !important;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Répartition des tâches par statut (Bar Chart) -->
+        <div class="row g-4 mb-5">
+            <div class="col-12">
+                <div class="card bg-glass border-0 shadow-lg glow-effect animate__animated animate__fadeInUp">
+                    <div class="card-body">
+                        <h5 class="card-title text-festival fw-bold">
+                            <i class="bi bi-check-circle-fill me-2"></i> Tâches par statut
+                        </h5>
+                        <!-- Canvas pour le bar chart avec dimensions réduites -->
+                        <div class="d-flex justify-content-center">
+                            <canvas id="statusChart" style="width: 400px !important; height: 400px !important;"></canvas>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton Retour -->
+        <div class="text-center">
+            <a href="{{ path('app_plan_index') }}" class="btn btn-outline-light btn-lg glossy-btn glow-effect">
+                <i class="bi bi-arrow-left-circle me-2"></i> Retour aux plans
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animation.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --festival-primary: #ff4d94;
+            --festival-secondary: #6b48ff;
+            --festival-accent: #00f7ff;
+            --festival-bg: #1a0b2e;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-muted: #b0b0b0;
+            --white: #ffffff;
+            --glow-color: rgba(255, 77, 148, 0.5);
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--festival-bg), #2a1b3d);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+        .plan-section {
+            padding: 80px 0;
+            background: radial-gradient(circle, rgba(255, 77, 148, 0.2), transparent);
+        }
+        .glow-effect {
+            box-shadow: 0 0 20px var(--glow-color);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .glow-effect:hover {
+            box-shadow: 0 0 30px var(--glow-color);
+            transform: translateY(-5px);
+        }
+        .main-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--festival-primary);
+            text-shadow: 0 0 15px var(--glow-color);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { text-shadow: 0 0 15px var(--glow-color); }
+            50% { text-shadow: 0 0 25px var(--glow-color); }
+            100% { text-shadow: 0 0 15px var(--glow-color); }
+        }
+        .bg-glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+        .text-festival {
+            color: var(--festival-accent);
+        }
+        .btn-outline-light {
+            border-color: var(--festival-accent);
+            color: var(--festival-accent);
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+        }
+        .btn-outline-light:hover {
+            background: var(--festival-accent);
+            color: var(--festival-bg);
+        }
+        .glossy-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .glossy-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.4s ease;
+        }
+        .glossy-btn:hover::before {
+            left: 100%;
+        }
+        .alert {
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            color: var(--white);
+        }
+        .display-6 {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.2rem;
+            }
+            .plan-section {
+                padding: 60px 0;
+            }
+            .display-6 {
+                font-size: 2rem;
+            }
+            .btn-lg {
+                padding: 0.6rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .main-title {
+                font-size: 1.8rem;
+            }
+            .display-6 {
+                font-size: 1.5rem;
+            }
+            .btn-lg {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- Inclusion du CDN Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Récupération des données depuis Twig au format JSON
+        var plansByPriorityData = {{ plansByPriority|json_encode|raw }};
+        var tachesByStatusData = {{ tachesByStatus|json_encode|raw }};
+
+        // Préparer les données pour le Pie Chart (Plans par priorité)
+        var priorityLabels = Object.keys(plansByPriorityData);
+        var priorityValues = Object.values(plansByPriorityData);
+
+        var ctxPriority = document.getElementById('priorityChart').getContext('2d');
+        var priorityChart = new Chart(ctxPriority, {
+            type: 'pie',
+            data: {
+                labels: priorityLabels,
+                datasets: [{
+                    label: 'Plans par priorité',
+                    data: priorityValues,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false
+            }
+        });
+
+        // Préparer les données pour le Bar Chart (Tâches par statut)
+        var statusLabels = Object.keys(tachesByStatusData);
+        var statusValues = Object.values(tachesByStatusData);
+
+        var ctxStatus = document.getElementById('statusChart').getContext('2d');
+        var statusChart = new Chart(ctxStatus, {
+            type: 'bar',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    label: 'Tâches par statut',
+                    data: statusValues,
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

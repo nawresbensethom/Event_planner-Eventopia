@@ -1,0 +1,262 @@
+{% extends 'backoffice/adminblog/base.html.twig' %}
+
+{% block title %}Gestion des Posts - EvenTopia{% endblock %}
+
+{% block page_title %}Gestion des Posts{% endblock %}
+
+{% block breadcrumb %}Gestion des Posts{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <style>
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            text-transform: capitalize;
+            display: inline-block;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .status-Brouillon {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        .status-En_attente {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-Published {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-Rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .post-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .post-table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .post-table td {
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+
+        .post-table tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .status-select {
+            border-radius: 50px;
+            padding: 0.375rem 2rem 0.375rem 1rem;
+            background-position: right 1rem center;
+            border: 1px solid #dee2e6;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .status-select:focus {
+            box-shadow: none;
+            border-color: #80bdff;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-action i {
+            font-size: 14px;
+        }
+
+        .btn-action.btn-info {
+            background-color: #0dcaf0;
+            border-color: #0dcaf0;
+            color: white;
+        }
+
+        .btn-action.btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: white;
+        }
+
+        .btn-action.btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            border-top: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .content-preview {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid py-4">
+        <!-- Success Messages -->
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="fas fa-check-circle me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        <!-- Error Messages -->
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        <div class="card">
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Liste des Posts</h5>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Titre</th>
+                                <th>Auteur</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in posts %}
+                                <tr>
+                                    <td>{{ post.idPost }}</td>
+                                    <td>{{ post.titre }}</td>
+                                    <td>{{ post.idUtilisateur.nom }}</td>
+                                    <td>{{ post.datePublication|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ post.statut == 'Published' ? 'success' : 'warning' }}">
+                                            {{ post.statut }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="{{ path('admin_blog_show_post', {'id_post': post.idPost}) }}" 
+                                               class="btn btn-action btn-info" 
+                                               title="Voir">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ path('admin_blog_show_post', {'id_post': post.idPost}) }}" 
+                                               class="btn btn-action btn-warning" 
+                                               title="Modifier le statut">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form method="POST" action="{{ path('admin_blog_delete_post', {'id_post': post.idPost}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.idPost) }}">
+                                                <button type="submit" class="btn btn-action btn-danger" title="Supprimer">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %} 

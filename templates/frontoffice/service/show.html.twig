@@ -1,0 +1,314 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}{{ service.nom }} - Eventopia{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .service-header {
+            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%);
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .service-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI2NDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIGQ9Ik0wIDBoMTQ0MHY2NDBIMHoiLz48cGF0aCBkPSJNMCA0NDBsMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUgMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==');
+            opacity: 0.1;
+        }
+
+        .service-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .service-meta {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s;
+            animation-fill-mode: both;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .service-content-wrapper {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-top: -3rem;
+            position: relative;
+            z-index: 2;
+            animation: slideUp 1s ease-out;
+            margin-bottom: 2rem;
+        }
+
+        .service-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .service-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .info-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #c28282;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .service-description {
+            padding: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .service-actions-container {
+            position: relative;
+            margin-bottom: 4rem;
+            z-index: 3;
+            padding: 0 1rem;
+        }
+
+        .service-actions {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            margin: 0 auto;
+            max-width: 900px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-actions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(194, 130, 130, 0.2) 20%, 
+                rgba(194, 130, 130, 0.2) 80%, 
+                transparent 100%
+            );
+        }
+
+        .btn-action {
+            padding: 1rem 2.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 160px;
+            justify-content: center;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0.1) 100%
+            );
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-action:hover::before {
+            opacity: 1;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <section class="service-header">
+        <div class="container text-center">
+            <h1 class="service-title">{{ service.nom }}</h1>
+            <div class="service-meta">
+                <div class="meta-item">
+                    <i class="fas fa-tag"></i>
+                    {{ service.categorieService.nomCategorie }}
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-euro-sign"></i>
+                    {{ service.tarif }} €
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    {{ service.dateAjout|date('d/m/Y') }}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="service-content-wrapper">
+            {% if service.photos %}
+                <img src="{{ asset('uploads/services/' ~ service.photos) }}" 
+                     alt="{{ service.nom }}" 
+                     class="service-image">
+            {% endif %}
+
+            <div class="service-info">
+                <div class="info-box">
+                    <div class="info-label">Catégorie</div>
+                    <div class="info-value">
+                        <i class="fas fa-tag mr-2"></i> {{ service.categorieService.nomCategorie }}
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">Tarif</div>
+                    <div class="info-value">
+                        <i class="fas fa-euro-sign mr-2"></i> {{ service.tarif }} €
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">Date d'ajout</div>
+                    <div class="info-value">
+                        <i class="fas fa-calendar-alt mr-2"></i> {{ service.dateAjout|date('d/m/Y') }}
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">Propriétaire</div>
+                    <div class="info-value">
+                        <i class="fas fa-user mr-2"></i> {{ service.utilisateur.nom }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-description">
+                {{ service.description|nl2br }}
+            </div>
+
+            <div class="service-actions">
+                <a href="{{ path('app_client_service_index') }}" class="btn-action btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour à la liste
+                </a>
+                
+                <a href="{{ path('app_client_service_edit', {'id': service.idService}) }}" class="btn-action btn-edit">
+                    <i class="fas fa-edit"></i>
+                    Modifier
+                </a>
+                
+                <form method="post" action="{{ path('app_client_service_delete', {'id': service.idService}) }}" 
+                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce service ?');" 
+                      style="display: inline-block;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ service.idService) }}">
+                    <button class="btn-action btn-delete">
+                        <i class="fas fa-trash-alt"></i>
+                        Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

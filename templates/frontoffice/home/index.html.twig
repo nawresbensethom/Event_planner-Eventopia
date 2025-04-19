@@ -1,0 +1,370 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Accueil - Eventopia{% endblock %}
+
+{% block hero %}
+<section class="hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="animate-on-scroll">Créez des événements inoubliables</h1>
+                <p class="animate-on-scroll">Eventopia vous accompagne dans la création et la gestion de vos événements. Trouvez les meilleurs prestataires et services pour faire de votre événement un moment unique.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ path('app_evenement_new') }}" class="btn btn-primary btn-lg animate-on-scroll">Créer un événement</a>
+                    <a  href="{{ path('app_client_service_index') }}"class="btn btn-outline-primary btn-lg animate-on-scroll">Découvrir nos services</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block body %}
+<section class="mb-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2>Nos services</h2>
+            <p class="lead">Découvrez notre large gamme de services pour vos événements</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="icon-wrapper mb-3">
+                        <i class="fas fa-calendar-check fa-3x" style="color: var(--primary);"></i>
+                    </div>
+                    <h3 class="card-title">Planification d'événements</h3>
+                    <p class="card-text">Nous vous aidons à planifier chaque détail de votre événement, de la conception initiale à l'exécution finale.</p>
+                    <a class="btn btn-outline-primary">En savoir plus</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="icon-wrapper mb-3">
+                        <i class="fas fa-utensils fa-3x" style="color: var(--secondary);"></i>
+                    </div>
+                    <h3 class="card-title">Traiteur et restauration</h3>
+                    <p class="card-text">Des options gastronomiques variées pour satisfaire tous les goûts et tous les budgets.</p>
+                    <a  class="btn btn-outline-primary">En savoir plus</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="icon-wrapper mb-3">
+                        <i class="fas fa-camera fa-3x" style="color: var(--accent);"></i>
+                    </div>
+                    <h3 class="card-title">Photographie et vidéo</h3>
+                    <p class="card-text">Capturez les moments inoubliables de votre événement avec nos services professionnels.</p>
+                    <a  class="btn btn-outline-primary">En savoir plus</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a  href="{{ path('app_client_service_index') }}" class="btn btn-primary">Voir tous les services</a>
+    </div>
+</section>
+
+<section class="mb-5 py-5 bg-light rounded">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h2>Événements à venir</h2>
+                <p class="lead">Découvrez les prochains événements organisés avec Eventopia</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{{ asset('assets/img/conference.jpeg') }}" class="card-img-top" alt="Conférence Tech">
+                    <div class="card-body">
+                        <span class="badge badge-primary mb-2">Conférence</span>
+                        <h3 class="card-title">Conférence Tech 2025</h3>
+                        <p class="card-text">Une journée dédiée aux dernières innovations technologiques avec des intervenants de renom.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted"><i class="fas fa-calendar-alt me-1"></i> 15 Mai 2025</small>
+                            <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> Paris</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a class="btn btn-outline-primary w-100">Voir les détails</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{{ asset('assets/img/festival.jpeg') }}" class="card-img-top" alt="Festival de Musique">
+                    <div class="card-body">
+                        <span class="badge badge-secondary mb-2">Festival</span>
+                        <h3 class="card-title">Festival Mélodies d'Été</h3>
+                        <p class="card-text">Trois jours de musique en plein air avec des artistes nationaux et internationaux.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted"><i class="fas fa-calendar-alt me-1"></i> 20-22 Juin 2025</small>
+                            <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> Lyon</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a  class="btn btn-outline-primary w-100">Voir les détails</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{{ asset('assets/img/charite.jpeg') }}" class="card-img-top" alt="Gala de Charité">
+                    <div class="card-body">
+                        <span class="badge badge-accent mb-2">Gala</span>
+                        <h3 class="card-title">Gala de Charité Étoiles d'Espoir</h3>
+                        <p class="card-text">Une soirée élégante au profit d'associations caritatives avec dîner et vente aux enchères.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted"><i class="fas fa-calendar-alt me-1"></i> 10 Juillet 2025</small>
+                            <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> Marseille</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a  class="btn btn-outline-primary w-100">Voir les détails</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a  href="{{ path('app_evenement_index') }}" class="btn btn-primary">Voir tous les événements</a>
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2>Témoignages</h2>
+            <p class="lead">Ce que nos clients disent de nous</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="testimonial-avatar me-3">
+                            <img src="{{ asset('images/avatar1.jpg') }}" alt="Sophie Martin" class="rounded-circle" width="60" height="60">
+                        </div>
+                        <div>
+                            <h5 class="mb-0">Sophie Martin</h5>
+                            <div class="text-warning">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="card-text">"Eventopia a transformé mon mariage en un événement de rêve. Leur équipe a géré chaque détail avec professionnalisme et créativité. Je les recommande vivement !"</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="testimonial-avatar me-3">
+                            <img src="{{ asset('images/avatar2.jpg') }}" alt="Thomas Dubois" class="rounded-circle" width="60" height="60">
+                        </div>
+                        <div>
+                            <h5 class="mb-0">Thomas Dubois</h5>
+                            <div class="text-warning">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="card-text">"Pour le lancement de notre startup, nous avons fait appel à Eventopia. Leur expertise a permis de créer un événement mémorable qui a impressionné nos investisseurs."</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="testimonial-avatar me-3">
+                            <img src="{{ asset('images/avatar3.jpg') }}" alt="Camille Leroy" class="rounded-circle" width="60" height="60">
+                        </div>
+                        <div>
+                            <h5 class="mb-0">Camille Leroy</h5>
+                            <div class="text-warning">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="card-text">"J'organise régulièrement des conférences et Eventopia est devenu mon partenaire de confiance. Leur plateforme est intuitive et leurs services sont de qualité exceptionnelle."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-5 py-5 bg-light rounded">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2>Pourquoi choisir Eventopia ?</h2>
+                <p class="lead">Nous rendons l'organisation d'événements simple et agréable</p>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-check-circle fa-2x" style="color: var(--soft-pink);"></i>
+                            </div>
+                            <div>
+                                <h4>Expertise professionnelle</h4>
+                                <p>Notre équipe d'experts vous guide à chaque étape de l'organisation de votre événement.</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="mb-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-check-circle fa-2x" style="color: var(--soft-pink);"></i>
+                            </div>
+                            <div>
+                                <h4>Services personnalisés</h4>
+                                <p>Nous adaptons nos services à vos besoins spécifiques pour créer un événement unique.</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-check-circle fa-2x" style="color: var(--soft-pink);"></i>
+                            </div>
+                            <div>
+                                <h4>Plateforme tout-en-un</h4>
+                                <p>Gérez tous les aspects de votre événement depuis notre plateforme intuitive.</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#" class="btn btn-primary mt-3">En savoir plus</a>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ asset('images/why-choose-us.jpg') }}" alt="Pourquoi choisir Eventopia" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2>Derniers articles du blog</h2>
+            <p class="lead">Conseils et tendances pour vos événements</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{{ asset('images/blog1.jpg') }}" class="card-img-top" alt="Tendances événementielles">
+                <div class="card-body">
+                    <span class="badge badge-highlight mb-2">Tendances</span>
+                    <h3 class="card-title">Les tendances événementielles à suivre en 2025</h3>
+                    <p class="card-text">Découvrez les dernières tendances qui façonneront le monde de l'événementiel cette année.</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <img src="{{ asset('assets/img/avatar.png') }}" alt="Julie Moreau" class="rounded-circle me-2" width="40" height="40">
+                        <div>
+                            <p class="mb-0 small">Julie Moreau</p>
+                            <p class="text-muted small mb-0">5 avril 2025</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <a  class="btn btn-outline-primary w-100">Lire l'article</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{{ asset('images/blog2.jpg') }}" class="card-img-top" alt="Budget événementiel">
+                <div class="card-body">
+                    <span class="badge badge-primary mb-2">Conseils</span>
+                    <h3 class="card-title">Comment établir un budget efficace pour votre événement</h3>
+                    <p class="card-text">Nos conseils pour gérer votre budget et éviter les mauvaises surprises financières.</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <img src="{{ asset('assets/img/avatar2.png') }}" alt="Marc Dupont" class="rounded-circle me-2" width="40" height="40">
+                        <div>
+                            <p class="mb-0 small">Marc Dupont</p>
+                            <p class="text-muted small mb-0">28 mars 2025</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <a  class="btn btn-outline-primary w-100">Lire l'article</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{{ asset('images/blog3.jpg') }}" class="card-img-top" alt="Événements éco-responsables">
+                <div class="card-body">
+                    <span class="badge badge-secondary mb-2">Éco-responsabilité</span>
+                    <h3 class="card-title">Organiser un événement éco-responsable : guide pratique</h3>
+                    <p class="card-text">Comment réduire l'impact environnemental de vos événements sans compromettre la qualité.</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <img src="{{ asset('assets/img/avatar3.png') }}" alt="Léa Bernard" class="rounded-circle me-2" width="40" height="40">
+                        <div>
+                            <p class="mb-0 small">Léa Bernard</p>
+                            <p class="text-muted small mb-0">15 mars 2025</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <a  class="btn btn-outline-primary w-100">Lire l'article</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ path('app_client_post_index') }}" class="btn btn-primary">Voir tous les articles</a>
+    </div>
+</section>
+
+<section class="mb-5 py-5 bg-light rounded">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mx-auto text-center">
+                <h2>Prêt à créer votre événement ?</h2>
+                <p class="lead mb-4">Rejoignez Eventopia dès aujourd'hui et commencez à planifier votre prochain événement inoubliable.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a  class="btn btn-primary btn-lg">S'inscrire</a>
+                    <a  href="{{ path('app_evenement_new') }}" class="btn btn-outline-primary btn-lg">Créer un événement</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

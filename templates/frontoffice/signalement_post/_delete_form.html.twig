@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_signalement_post_delete', {'id_signalement_post': signalement_post.id_signalement_post}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce signalement ?');" style="display: inline-block;">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ signalement_post.id_signalement_post) }}">
+    <button class="btn btn-danger">
+        <i class="fas fa-trash-alt"></i> Supprimer
+    </button>
+</form>

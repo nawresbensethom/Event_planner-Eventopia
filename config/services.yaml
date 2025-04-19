@@ -1,0 +1,24 @@
+# config/services.yaml
+parameters:
+    photos_directory: '%kernel.project_dir%/public/uploads/images'
+    services_directory: '%kernel.project_dir%/public/uploads/services'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Command\GenerateEntitiesCommand:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Command/' # Add this to exclude Commands from auto-registration
+
+    Symfony\Component\HttpFoundation\Session\SessionInterface:
+        alias: 'session'

@@ -1,0 +1,124 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+
+{% block stylesheets %}
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .mb-4 {
+            margin-bottom: 20px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        table th {
+            width: 200px;
+            font-weight: bold;
+        }
+
+        table td {
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #4e555b;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Offre Emploi Details</h1>
+
+        <div class="card">
+            <div class="card-header">
+                Offre Emploi ID: {{ offreemploi.idOffre }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ offreemploi.titrePoste }}</h5>
+                
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ offreemploi.description }}</td>
+                        </tr>
+                        <tr>
+                            <th>Type de Contrat</th>
+                            <td>{{ offreemploi.typeContrat }}</td>
+                        </tr>
+                        <tr>
+                            <th>Lieu</th>
+                            <td>{{ offreemploi.lieu }}</td>
+                        </tr>
+                        <tr>
+                            <th>Salaire</th>
+                            <td>{{ offreemploi.salaire }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date Limite</th>
+                            <td>{{ offreemploi.dateLimite ? offreemploi.dateLimite|date('Y-m-d H:i:s') : 'N/A' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-center">
+                    <a href="{{ path('client_offreemploi_index') }}" class="btn btn-secondary">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

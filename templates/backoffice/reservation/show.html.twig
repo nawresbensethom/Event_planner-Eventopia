@@ -1,0 +1,89 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Reservation{% endblock %}
+
+{% block body %}
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #212529;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+            transition: background-color 0.3s ease;
+        }
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+            background-color: #007bff;
+            color: #fff;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #0056b3;
+        }
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            color: #212529;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            background-color: #007bff;
+            border: 1px solid #007bff;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+    </style>
+
+    <h1>Reservation</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ reservation.id }}</td>
+            </tr>
+            <tr>
+                <th>Montant_total</th>
+                <td>{{ reservation.montantTotal }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>{{ reservation.statut }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_reservation_index') }}" class="btn">back to list</a>
+
+    <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}" class="btn">edit</a>
+
+    {{ include('backoffice/reservation/_delete_form.html.twig', {'class': 'btn'}) }}
+{% endblock %}

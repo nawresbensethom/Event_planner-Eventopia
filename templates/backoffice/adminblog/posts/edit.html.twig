@@ -1,0 +1,163 @@
+{% extends 'backoffice/adminblog/base.html.twig' %}
+
+{% block title %}Modifier le Post - EvenTopia{% endblock %}
+
+{% block page_title %}Modifier le Post{% endblock %}
+
+{% block breadcrumb %}Modifier le Post{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Modifier le Post</h1>
+        <a href="{{ path('app_backoffice_post_show', {'id_post': post.idPost}) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour
+        </a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Modifier le Post</h6>
+        </div>
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            {{ form_label(form.titre, 'Titre', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.titre, {'attr': {'class': 'form-control' ~ (form.titre.vars.valid ? '' : ' is-invalid')}}) }}
+                            {{ form_errors(form.titre, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.contenu, 'Contenu', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.contenu, {'attr': {'class': 'form-control' ~ (form.contenu.vars.valid ? '' : ' is-invalid'), 'rows': '10'}}) }}
+                            {{ form_errors(form.contenu, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.statut, 'Statut', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.statut, {'attr': {'class': 'form-select' ~ (form.statut.vars.valid ? '' : ' is-invalid')}}) }}
+                            {{ form_errors(form.statut, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Photos actuelles</h6>
+                            </div>
+                            <div class="card-body">
+                                {% if post.photos %}
+                                    {% set photos = post.photos|json_decode %}
+                                    {% if photos|length > 0 %}
+                                        <div class="row g-2">
+                                            {% for photo in photos %}
+                                                <div class="col-6">
+                                                    <div class="position-relative">
+                                                        <img src="{{ asset('uploads/posts/' ~ photo) }}" 
+                                                             class="img-fluid rounded" 
+                                                             style="height: 100px; width: 100%; object-fit: cover;">
+                                                        <button type="button" 
+                                                                class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                                                                onclick="removePhoto(this)">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-muted mb-0">Aucune photo</p>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="text-muted mb-0">Aucune photo</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">Ajouter des photos</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form_label(form.photos, 'Nouvelles photos', {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(form.photos, {'attr': {'class': 'form-control' ~ (form.photos.vars.valid ? '' : ' is-invalid'), 'multiple': 'multiple', 'accept': 'image/*'}}) }}
+                                    {{ form_errors(form.photos, {'attr': {'class': 'invalid-feedback'}}) }}
+                                    <div class="form-text">Vous pouvez sélectionner plusieurs photos. Formats acceptés : JPG, PNG, GIF. Taille maximale : 5 Mo par photo.</div>
+                                </div>
+
+                                <div id="preview" class="row g-2 mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const photoInput = document.querySelector('input[type="file"]');
+    const preview = document.getElementById('preview');
+
+    photoInput.addEventListener('change', function() {
+        preview.innerHTML = '';
+        
+        if (this.files) {
+            Array.from(this.files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const col = document.createElement('div');
+                        col.className = 'col-6';
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'img-fluid rounded';
+                        img.style.height = '100px';
+                        img.style.width = '100%';
+                        img.style.objectFit = 'cover';
+                        
+                        col.appendChild(img);
+                        preview.appendChild(col);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+});
+
+function removePhoto(button) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette photo ?')) {
+        button.closest('.col-6').remove();
+    }
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,189 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Détails du profil{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mt-4 mb-0">
+                <i class="fas fa-user-circle me-2"></i>Détails du profil
+            </h1>
+            <div>
+                <a href="{{ path('admin_profils_index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Retour
+                </a>
+            </div>
+        </div>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{{ label == 'success' ? 'check-circle' : 'exclamation-triangle' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Informations principales
+                            </h5>
+                            <a href="{{ path('admin_profil_edit', {'id': profil.id}) }}" class="btn btn-sm btn-light">
+                                <i class="fas fa-edit me-1"></i> Modifier
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-borderless m-0">
+                                <tbody>
+                                    <tr>
+                                        <th class="w-25 ps-0">ID</th>
+                                        <td class="fw-bold">{{ profil.id }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="w-25 ps-0">Utilisateur</th>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center" 
+                                                     style="width: 32px; height: 32px;">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                                <div>
+                                                    <span class="fw-bold">{{ profil.user.nom }}</span>
+                                                    <div class="text-muted small">{{ profil.user.email }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="w-25 ps-0">Description</th>
+                                        <td>
+                                            {% if profil.description %}
+                                                <div class="bg-light p-3 rounded">{{ profil.description }}</div>
+                                            {% else %}
+                                                <span class="text-muted fst-italic">Aucune description</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="w-25 ps-0">Note</th>
+                                        <td>
+                                            {% if profil.rating %}
+                                                <div class="d-flex align-items-center">
+                                                    <div class="star-rating me-2">
+                                                        {% for i in 1..5 %}
+                                                            <i class="fas fa-star{{ i <= profil.rating ? ' text-warning' : ' text-secondary' }}"></i>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <span class="badge bg-warning text-dark">{{ profil.rating }}/5</span>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">Aucune note</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-image me-2"></i>Photo de profil
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if profil.photo %}
+                            <img src="{{ asset('uploads/profils/' ~ profil.photo) }}" 
+                                 alt="Photo de profil" 
+                                 class="img-fluid rounded mb-3" 
+                                 style="max-height: 250px; object-fit: contain;">
+                            <div class="d-grid gap-2">
+                                <a href="{{ asset('uploads/profils/' ~ profil.photo) }}" 
+                                   class="btn btn-sm btn-outline-primary" 
+                                   target="_blank">
+                                    <i class="fas fa-expand me-1"></i> Voir en grand
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="py-5 text-center text-muted">
+                                <i class="fas fa-user-slash fa-3x mb-3"></i>
+                                <p class="mb-0">Aucune photo disponible</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-danger mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Zone dangereuse
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    La suppression de ce profil est irréversible. Toutes les données associées seront perdues.
+                </p>
+                <form action="{{ path('admin_profil_delete', {'id': profil.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer définitivement ce profil ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ profil.id) }}">
+                    <button class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i> Supprimer ce profil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Auto-hide alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .card-header {
+            border-bottom: none;
+        }
+        .star-rating {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+        th {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .table tr:not(:last-child) {
+            border-bottom: 1px solid #f0f0f0;
+        }
+    </style>
+{% endblock %}

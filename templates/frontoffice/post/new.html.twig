@@ -1,0 +1,524 @@
+{% extends 'frontoffice/base.html.twig' %}
+{% block title %}Create Post - Eventopia{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .create-header {
+            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%),
+                        url('{{ asset('images/create-post-bg.jpg') }}') center/cover no-repeat;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 4rem;
+        }
+
+        .create-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI2NDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIGQ9Ik0wIDBoMTQ0MHY2NDBIMHoiLz48cGF0aCBkPSJNMCA0NDBsMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUgMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==');
+            opacity: 0.1;
+        }
+
+        .create-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .create-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: fadeInUp 1s ease-out 0.3s;
+            animation-fill-mode: both;
+        }
+
+        .form-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem;
+            animation: slideUp 1s ease-out;
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            display: block;
+        }
+
+        .form-control {
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            border-color: #c28282;
+            box-shadow: 0 0 0 0.2rem rgba(194, 130, 130, 0.25);
+            background: white;
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+        }
+
+        .invalid-feedback {
+            display: block;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .form-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .image-upload-container {
+            border: 2px dashed #c28282;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fff;
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .image-upload-container.dragover {
+            border-color: #f6d682;
+            background: rgba(246, 214, 130, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            color: #c28282;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            aspect-ratio: 1;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-preview {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #dc3545;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .remove-preview:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .invalid-feedback {
+            display: none;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .was-validated .form-control:invalid ~ .invalid-feedback {
+            display: block;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit i {
+            margin-right: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-submit:hover i {
+            transform: rotate(90deg);
+        }
+
+        .action-btn.back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            background: #f8f9fa;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-btn.back:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            color: #38a169;
+            border-left: 4px solid #38a169;
+        }
+
+        .alert-danger {
+            background: #fff5f5;
+            color: #dc3545;
+            border-left: 4px solid #dc3545;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .create-header {
+                padding: 3rem 0;
+            }
+
+            .create-title {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 2rem;
+            }
+
+            .image-preview {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="create-header text-center">
+        <div class="container">
+            <h1 class="create-title">Create a New Post</h1>
+            <p class="create-subtitle">Share your thoughts and experiences with the community</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                <div class="form-section">
+                    {{ form_label(form.id_utilisateur, 'User ID', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.id_utilisateur, {'attr': {'class': 'form-control' ~ (form.id_utilisateur.vars.valid ? '' : ' is-invalid')}}) }}
+                    {{ form_errors(form.id_utilisateur) }}
+                    <div class="form-text">Please enter your unique user identifier</div>
+                </div>
+
+                <div class="form-section">
+                    {{ form_label(form.titre, 'Title', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.titre, {'attr': {'class': 'form-control' ~ (form.titre.vars.valid ? '' : ' is-invalid'), 'placeholder': 'Enter a captivating title'}}) }}
+                    {{ form_errors(form.titre) }}
+                </div>
+
+                <div class="form-section">
+                    {{ form_label(form.contenu, 'Content', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.contenu, {'attr': {'class': 'form-control' ~ (form.contenu.vars.valid ? '' : ' is-invalid'), 'rows': '6', 'placeholder': 'Share your story...'}}) }}
+                    {{ form_errors(form.contenu) }}
+                </div>
+
+                <div class="form-section">
+                    {{ form_label(form.photos, 'Photos', {'label_attr': {'class': 'form-label'}}) }}
+                    <div class="image-upload-container" id="dropZone">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <p class="upload-text">Drag and drop your photos here</p>
+                        <p class="upload-subtext">or click to select files</p>
+                        {{ form_widget(form.photos, {
+                            'attr': {
+                                'class': 'd-none',
+                                'id': 'file-input',
+                                'accept': 'image/*',
+                                'multiple': 'multiple'
+                            }
+                        }) }}
+                    </div>
+                    <div id="imagePreview" class="image-preview"></div>
+                    {{ form_errors(form.photos) }}
+                </div>
+
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-paper-plane me-2"></i>Create Post
+                </button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('file-input');
+            const imagePreview = document.getElementById('imagePreview');
+            let files = [];
+
+            // Make sure dropZone and fileInput exist
+            if (!dropZone || !fileInput) {
+                console.error('Required elements not found');
+                return;
+            }
+
+            // Click handling
+            dropZone.addEventListener('click', function(e) {
+                e.preventDefault();
+                fileInput.click();
+            });
+
+            // File input change handling
+            fileInput.addEventListener('change', function(e) {
+                handleFiles(Array.from(this.files));
+            });
+
+            // Drag and drop handling
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dropZone.classList.add('dragover');
+            }
+
+            function unhighlight(e) {
+                dropZone.classList.remove('dragover');
+            }
+
+            dropZone.addEventListener('drop', function(e) {
+                const dt = e.dataTransfer;
+                const droppedFiles = Array.from(dt.files);
+                handleFiles(droppedFiles);
+            });
+
+            function handleFiles(newFiles) {
+                const validFiles = newFiles.filter(file => {
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please upload only image files.');
+                        return false;
+                    }
+                    if (file.size > 5 * 1024 * 1024) { // 5MB
+                        alert('File too large. Maximum size is 5MB.');
+                        return false;
+                    }
+                    return true;
+                });
+
+                if (validFiles.length === 0) return;
+
+                // Clear previous files
+                files = validFiles;
+                imagePreview.innerHTML = '';
+
+                // Update FileList on the input
+                const dataTransfer = new DataTransfer();
+                files.forEach(file => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
+
+                // Show previews
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'preview-item';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview">
+                            <button type="button" class="remove-preview" data-filename="${file.name}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        imagePreview.appendChild(div);
+
+                        // Add remove functionality
+                        div.querySelector('.remove-preview').addEventListener('click', function() {
+                            const filename = this.dataset.filename;
+                            files = files.filter(f => f.name !== filename);
+                            
+                            // Update the file input
+                            const dt = new DataTransfer();
+                            files.forEach(f => dt.items.add(f));
+                            fileInput.files = dt.files;
+                            
+                            div.remove();
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+    </script>
+{% endblock %}

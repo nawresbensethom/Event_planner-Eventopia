@@ -1,0 +1,9 @@
+twig:
+    file_name_pattern: '*.twig'
+    paths:
+        '%kernel.project_dir%/templates': ~
+        '%kernel.project_dir%/templates/frontoffice': front
+
+when@test:
+    twig:
+        strict_variables: true

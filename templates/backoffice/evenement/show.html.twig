@@ -1,0 +1,119 @@
+{% extends 'backoffice/base.html.twig' %}
+
+
+{% block title %}Détails de l'Événement - {{ evenement.nom }}{% endblock %}
+
+{% block body %}
+<style>
+    .card {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .card-header {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+    }
+    .card-body {
+        background-color: #f8f9fa;
+        padding: 20px;
+    }
+    .card-footer {
+        background-color: #e9ecef;
+        text-align: right;
+    }
+    .btn {
+        margin: 5px;
+    }
+    .container {
+        padding: 20px;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .badge {
+        font-size: 0.9em;
+    }
+    .list-group-item {
+        border: none;
+        padding: 10px 15px;
+    }
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+</style>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="h4 mb-0">{{ evenement.nom }}</h2>
+                        <span class="badge bg-{{ evenement.statut == 'annule' ? 'danger' : (evenement.statut == 'termine' ? 'secondary' : 'success') }}">
+                            {{ evenement.statut|capitalize }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h3 class="h5">Informations de base</h3>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>Date:</strong> {{ evenement.date|date('d/m/Y H:i') }}
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Lieu:</strong> {{ evenement.lieu }}
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Type:</strong> {{ evenement.typePublic|capitalize }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="h5">Localisation</h3>
+                            <div class="ratio ratio-16x9 mb-3">
+                                <!-- Intégration Google Maps -->
+                                <iframe src="https://maps.google.com/maps?q={{ evenement.latitude }},{{ evenement.longitude }}&z=15&output=embed" 
+                                        frameborder="0" style="border:0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="h5">Description</h3>
+                    <div class="p-3 bg-light rounded mb-4">
+                        {{ evenement.description }}
+                    </div>
+
+                    {% if evenement.organisateur %}
+                    <div class="d-flex align-items-center mt-4">
+                        <div class="flex-shrink-0">
+                            <div class="bg-secondary rounded-circle p-3 text-white">
+                                <i class="fas fa-user fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h4 class="h6 mb-1">Organisateur</h4>
+                            <p class="mb-0">{{ evenement.organisateur.nom }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-footer bg-light d-flex justify-content-between">
+                    <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                    </a>
+                    <div>
+                        <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" 
+                           class="btn btn-primary me-2">
+                            <i class="fas fa-edit me-2"></i>Modifier
+                        </a>
+                        {{ include('backoffice/evenement/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

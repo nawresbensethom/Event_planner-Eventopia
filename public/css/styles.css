@@ -1,0 +1,354 @@
+/* 
+ * Styles principaux pour Eventopia
+ * Basé sur la palette de couleurs extraite du PDF
+ */
+
+:root {
+    /* Palette de couleurs */
+    --primary: #f5e6e8; /* Rose pastel */
+    --secondary: #e8f5e9; /* Vert pastel */
+    --accent: #e3f2fd; /* Bleu clair */
+    --highlight: #fff8e1; /* Jaune pastel */
+    --soft-pink: #fce4ec; /* Rose doux */
+    --soft-purple: #e8eaf6; /* Violet doux */
+    --dark: #333333; /* Texte foncé */
+    --light: #ffffff; /* Texte clair */
+    --gray: #f5f5f5; /* Gris clair pour fond */
+    --border: #e0e0e0; /* Bordures */
+}
+
+/* Styles généraux */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark);
+    background-color: var(--light);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+a {
+    color: var(--dark);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #555;
+}
+
+/* Header et navigation */
+header {
+    background-color: var(--light);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar {
+    padding: 0.5rem 0;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-brand span {
+    margin-left: 0.5rem;
+    background: linear-gradient(45deg, var(--soft-pink), var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    border-radius: 5px;
+    margin: 0 0.2rem;
+}
+
+.nav-link.active {
+    background-color: var(--primary);
+    color: var(--dark) !important;
+}
+
+.btn-primary {
+    background-color: var(--soft-pink);
+    border-color: var(--soft-pink);
+    color: var(--dark);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--dark);
+}
+
+.btn-outline-primary {
+    border-color: var(--soft-pink);
+    color: var(--dark);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--soft-pink);
+    border-color: var(--soft-pink);
+    color: var(--dark);
+}
+
+/* Hero section */
+.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--soft-pink) 100%);
+    padding: 5rem 0;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto 2rem;
+}
+
+/* Cards */
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 1.5rem;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.card-text {
+    color: #666;
+}
+
+/* Modules spécifiques */
+.module-utilisateur {
+    background-color: var(--primary);
+}
+
+.module-evenement {
+    background-color: var(--secondary);
+}
+
+.module-service {
+    background-color: var(--accent);
+}
+
+.module-blog {
+    background-color: var(--highlight);
+}
+
+.module-emploi {
+    background-color: var(--soft-pink);
+}
+
+.module-todo {
+    background-color: var(--soft-purple);
+}
+
+/* Badges et étiquettes */
+.badge {
+    padding: 0.5rem 0.75rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.badge-primary {
+    background-color: var(--primary);
+    color: var(--dark);
+}
+
+.badge-secondary {
+    background-color: var(--secondary);
+    color: var(--dark);
+}
+
+.badge-accent {
+    background-color: var(--accent);
+    color: var(--dark);
+}
+
+/* Formulaires */
+.form-control {
+    border-radius: 5px;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(245, 230, 232, 0.25);
+    border-color: var(--primary);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Boutons */
+.btn {
+    border-radius: 5px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 1rem;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--gray);
+    color: var(--dark);
+    padding: 3rem 0;
+}
+
+.footer h5 {
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.footer a {
+    color: var(--dark);
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: var(--soft-pink);
+    text-decoration: none;
+}
+
+.social-icons a {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    background-color: var(--light);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 36px;
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    background-color: var(--soft-pink);
+    color: var(--light);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero {
+        padding: 3rem 0;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .navbar-brand span {
+        display: none;
+    }
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Tableaux */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.table thead {
+    background-color: var(--primary);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(245, 230, 232, 0.1);
+}
+
+/* Pagination */
+.pagination .page-item .page-link {
+    color: var(--dark);
+    border-color: var(--border);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--dark);
+}
+
+/* Alertes */
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+.alert-success {
+    background-color: var(--secondary);
+    color: var(--dark);
+}
+
+.alert-danger {
+    background-color: var(--soft-pink);
+    color: var(--dark);
+}
+
+.alert-info {
+    background-color: var(--accent);
+    color: var(--dark);
+}
+
+.alert-warning {
+    background-color: var(--highlight);
+    color: var(--dark);
+}

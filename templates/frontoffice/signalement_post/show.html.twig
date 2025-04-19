@@ -1,0 +1,138 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Détails du signalement - Eventopia{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .signalement-details {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .signalement-header {
+            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%);
+            padding: 2rem;
+            color: white;
+        }
+
+        .signalement-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .signalement-content {
+            padding: 2rem;
+        }
+
+        .signalement-info {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .signalement-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-back {
+            background: #f6d682;
+            color: #333;
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(246, 214, 130, 0.3);
+            color: #333;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(194, 130, 130, 0.3);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .signalement-details {
+                margin: 1rem;
+            }
+
+            .signalement-title {
+                font-size: 1.5rem;
+            }
+
+            .signalement-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="signalement-details">
+        <div class="signalement-header">
+            <h1 class="signalement-title">Détails du signalement</h1>
+        </div>
+        <div class="signalement-content">
+            <div class="signalement-info">
+                <div class="info-label">Publication signalée</div>
+                <div class="info-value">{{ signalement_post.id_post.titre }}</div>
+            </div>
+
+            <div class="signalement-info">
+                <div class="info-label">Signalé par</div>
+                <div class="info-value">{{ signalement_post.id_utilisateur.nom }}</div>
+            </div>
+
+            <div class="signalement-info">
+                <div class="info-label">Date du signalement</div>
+                <div class="info-value">{{ signalement_post.date_signalement|date('d/m/Y H:i') }}</div>
+            </div>
+
+            <div class="signalement-info">
+                <div class="info-label">Raison du signalement</div>
+                <div class="info-value">{{ signalement_post.raison }}</div>
+            </div>
+
+            <div class="signalement-actions">
+                <a href="{{ path('app_client_signalement_post_index') }}" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Retour à la liste
+                </a>
+                <a href="{{ path('app_client_signalement_post_edit', {'id_signalement_post': signalement_post.id_signalement_post}) }}" class="btn-edit">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

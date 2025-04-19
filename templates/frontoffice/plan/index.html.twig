@@ -1,0 +1,267 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}
+    Liste des plans - EvenTopia
+{% endblock %}
+
+{% block body %}
+<section class="plan-section section-padding">
+    <div class="container">
+        <!-- Messages flash -->
+        <div class="mb-4">
+            {% for label in ['success', 'error', 'info', 'warning'] %}
+                {% for message in app.flashes(label) %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show rounded-3 glow-effect animate__animated animate__fadeIn" role="alert">
+                        <i class="bi bi-info-circle me-2"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Titre principal -->
+        <header class="text-center mb-5 animate__animated animate__slideInDown">
+            <h1 class="main-title mb-3">
+                <i class="bi bi-list-task me-2"></i> Liste des plans
+            </h1>
+            <p class="text-muted lead">Gérez vos plans pour le festival</p>
+        </header>
+
+        <!-- Boutons pour créer un plan et accéder au tableau de bord -->
+        <div class="text-center mb-5">
+            <a href="{{ path('app_plan_new') }}" class="btn btn-festival btn-lg glossy-btn glow-effect me-2">
+                <i class="bi bi-plus-circle me-2 icon-animate"></i> Créer un plan
+            </a>
+            <a href="{{ path('app_plan_dashboard') }}" class="btn btn-outline-light btn-lg glossy-btn glow-effect">
+                <i class="bi bi-bar-chart me-2 icon-animate"></i> Tableau de Bord
+            </a>
+        </div>
+
+        <!-- Liste des plans -->
+        <div class="row g-4">
+            {% for plan in plans %}
+                <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp">
+                    <div class="card bg-glass border-0 shadow-lg glow-effect h-100">
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold text-festival">{{ plan.titre }}</h5>
+                            <p class="card-text text-muted">
+                                {{ plan.description|length > 100 ? plan.description|slice(0, 100) ~ '...' : plan.description ?: 'Aucune description.' }}
+                            </p>
+                            <ul class="list-unstyled mb-3">
+                                <li class="mb-2">
+                                    <strong>Début :</strong> {{ plan.dateDebut ? plan.dateDebut|date('d/m/Y') : 'Non défini' }}
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Fin :</strong> {{ plan.dateFin ? plan.dateFin|date('d/m/Y') : 'Non défini' }}
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Priorité :</strong> {{ plan.priorite ? plan.priorite|capitalize : 'Non défini' }}
+                                </li>
+                                <li class="mb-2">
+                                    <strong>Lieu :</strong> {{ plan.location ?: 'Non défini' }}
+                                </li>
+                            </ul>
+                            <div class="d-flex justify-content-between flex-wrap gap-2">
+                                <a href="{{ path('app_plan_show', {'id': plan.id}) }}" class="btn btn-outline-light btn-sm glossy-btn">
+                                    <i class="bi bi-eye me-2"></i> Voir
+                                </a>
+                                <a href="{{ path('app_plan_edit', {'id': plan.id}) }}" class="btn btn-outline-light btn-sm glossy-btn">
+                                    <i class="bi bi-pencil me-2"></i> Modifier
+                                </a>
+                                <a href="{{ path('app_tache_by_plan', {'id': plan.id}) }}" class="btn btn-outline-light btn-sm glossy-btn">
+                                    <i class="bi bi-list-check me-2"></i> Voir les tâches
+                                </a>
+                                {{ include('frontoffice/plan/_delete_form.html.twig', {'plan': plan}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12 text-center animate__animated animate__fadeIn">
+                    <div class="alert alert-info bg-glass rounded-3 glow-effect">
+                        Aucun plan trouvé.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animation.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --festival-primary: #ff4d94; /* Rose vibrant */
+            --festival-secondary: #6b48ff; /* Violet électrique */
+            --festival-accent: #CDA8C3; /* Violet pastel remplace le cyan */
+            --festival-bg: #1a0b2e; /* Fond cosmique sombre */
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-muted: #b0b0b0;
+            --white: #ffffff;
+            --glow-color: rgba(255, 77, 148, 0.5);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--festival-bg), #2a1b3d);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        .plan-section {
+            padding: 80px 0;
+            background: radial-gradient(circle, rgba(255, 77, 148, 0.2), transparent);
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .glow-effect:hover {
+            box-shadow: 0 0 30px var(--glow-color), 0 0 60px var(--glow-color);
+            transform: translateY(-5px);
+        }
+
+        .main-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--festival-primary);
+            text-shadow: 0 0 15px var(--glow-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 15px var(--glow-color); }
+            50% { text-shadow: 0 0 25px var(--glow-color), 0 0 35px var(--glow-color); }
+            100% { text-shadow: 0 0 15px var(--glow-color); }
+        }
+
+        .bg-glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+
+        .card {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .text-festival {
+            color: var(--festival-accent);
+        }
+
+        .btn-festival {
+            background: linear-gradient(45deg, var(--festival-primary), var(--festival-secondary));
+            color: var(--white);
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+        }
+
+        .btn-festival:hover {
+            background: linear-gradient(45deg, var(--festival-secondary), var(--festival-primary));
+            box-shadow: 0 0 20px var(--glow-color);
+            transform: translateY(-3px);
+        }
+
+        .btn-outline-light {
+            border-color: var(--festival-accent);
+            color: var(--festival-accent);
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .btn-outline-light:hover {
+            background: var(--festival-accent);
+            color: var(--festival-bg);
+        }
+
+        .btn-outline-danger {
+            border-color: #ff4d4d;
+            color: #ff4d4d;
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .btn-outline-danger:hover {
+            background: #ff4d4d;
+            color: var(--white);
+        }
+
+        .alert {
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            color: var(--white);
+        }
+
+        .alert-info {
+            background: rgba(205, 168, 195, 0.2); /* Ajusté pour violet pastel */
+            border-color: var(--festival-accent);
+        }
+
+        .list-unstyled li {
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.2rem;
+            }
+
+            .plan-section {
+                padding: 60px 0;
+            }
+
+            .btn-lg {
+                padding: 0.6rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .btn-sm {
+                padding: 0.4rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-title {
+                font-size: 1.8rem;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .d-flex {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .btn-sm {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+{% endblock %}

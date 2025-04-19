@@ -1,0 +1,366 @@
+{% extends 'backoffice/adminblog/base.html.twig' %}
+
+{% block title %}Détails du Post - EvenTopia{% endblock %}
+
+{% block page_title %}Détails du Post{% endblock %}
+
+{% block breadcrumb %}Détails du Post{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm rounded-3 border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="h4 mb-1">{{ post.titre }}</h2>
+                        <div class="text-muted small">
+                            <i class="fas fa-user me-2"></i>{{ post.idUtilisateur.nom }}
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-calendar me-2"></i>{{ post.datePublication ? post.datePublication|date('d/m/Y H:i') : '' }}
+                        </div>
+                    </div>
+                    <span id="statusBadge" class="badge bg-{{ getStatusColor(post.statut) }} rounded-pill">
+                        {{ post.statut|title }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="post-content mb-4">
+                        {{ post.contenu|nl2br }}
+                    </div>
+
+                    {% if post.photos %}
+                        {% set photos = post.photos|json_decode %}
+                        {% if photos|length > 0 %}
+                            <div class="gallery mt-4">
+                                <h5 class="mb-3 text-muted">Photos attachées</h5>
+                                <div class="row g-3">
+                                    {% for photo in photos %}
+                                        <div class="col-md-4">
+                                            <div class="position-relative photo-card">
+                                                <img src="{{ asset('uploads/posts/' ~ photo) }}" 
+                                                     class="img-fluid rounded cursor-pointer" 
+                                                     onclick="openLightbox(this.src)"
+                                                     alt="Photo du post">
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm rounded-3 border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 text-primary">Gestion du Post</h6>
+                </div>
+                <div class="card-body">
+                    <div class="status-control mb-4">
+                        <label class="form-label text-muted small mb-2">Statut du post</label>
+                        <div class="input-group">
+                            <select id="postStatus" class="form-select" data-post-id="{{ post.idPost }}">
+                                <option value="Published" {% if post.statut == 'Published' %}selected{% endif %}>Publié</option>
+                                <option value="Brouillon" {% if post.statut == 'Brouillon' %}selected{% endif %}>Brouillon</option>
+                                <option value="En_attente" {% if post.statut == 'En_attente' %}selected{% endif %}>En attente</option>
+                                <option value="Rejected" {% if post.statut == 'Rejected' %}selected{% endif %}>Rejeté</option>
+                            </select>
+                            <button type="button" class="btn btn-primary" id="validateStatus">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                        <div id="statusErrorMessage" class="alert alert-danger mt-2 d-none" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <span id="errorText"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ path('admin_blog_edit_post', {'id_post': post.idPost}) }}" class="btn btn-warning flex-grow-1">
+                            <i class="fas fa-edit me-2"></i>Modifier
+                        </a>
+                        <button type="button" class="btn btn-danger flex-grow-1" onclick="confirmDelete({{ post.idPost }})">
+                            <i class="fas fa-trash me-2"></i>Supprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm rounded-3 border-0">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 text-primary">Statistiques</h6>
+                </div>
+                <div class="card-body">
+                    <div class="stat-item d-flex align-items-center mb-3">
+                        <div class="stat-icon me-3 bg-primary bg-opacity-10 p-2 rounded">
+                            <i class="fas fa-eye text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="small text-muted">Vues</div>
+                            <div class="fw-bold">{{ post.nombreVues ?? 0 }}</div>
+                        </div>
+                    </div>
+                    <div class="stat-item d-flex align-items-center">
+                        <div class="stat-icon me-3 bg-info bg-opacity-10 p-2 rounded">
+                            <i class="fas fa-comments text-info"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="small text-muted">Commentaires</div>
+                            <div class="fw-bold">{{ post.commentaires|length }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{{ path('admin_blog_index') }}" class="btn btn-link text-muted">
+                    <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="text-danger mb-3">
+                        <i class="fas fa-exclamation-triangle fa-3x"></i>
+                    </div>
+                    <p>Êtes-vous sûr de vouloir supprimer ce post ?<br>Cette action est irréversible.</p>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-link text-muted" data-bs-dismiss="modal">Annuler</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.idPost) }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Confirmer la suppression
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox Modal -->
+<div class="modal fade" id="lightboxModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 position-relative">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                <img src="" class="img-fluid rounded" id="lightboxImage" alt="Image en plein écran">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .post-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .photo-card {
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .photo-card img {
+            transition: transform 0.3s ease;
+            object-fit: cover;
+            height: 200px;
+            width: 100%;
+        }
+        
+        .photo-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .badge {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+        
+        .btn-link {
+            text-decoration: none;
+        }
+        
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+        
+        #lightboxModal .modal-content {
+            background: none;
+        }
+        
+        #lightboxModal .btn-close-white {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+        
+        #lightboxModal .btn-close-white:hover {
+            opacity: 1;
+        }
+        
+        .modal-backdrop.show {
+            opacity: 0.85;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusSelect = document.getElementById('postStatus');
+            const validateButton = document.getElementById('validateStatus');
+            const statusBadge = document.getElementById('statusBadge');
+            const errorDiv = document.getElementById('statusErrorMessage');
+            const errorText = document.getElementById('errorText');
+
+            validateButton.addEventListener('click', function() {
+                const postId = statusSelect.getAttribute('data-post-id');
+                const newStatus = statusSelect.value;
+
+                fetch(`/backoffice/adminblog/posts/${postId}/change-status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        status: newStatus
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la mise à jour du statut');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Mettre à jour le badge de statut
+                        statusBadge.textContent = newStatus;
+                        
+                        // Mettre à jour la classe du badge
+                        statusBadge.className = `badge bg-${getStatusColorJs(newStatus)} rounded-pill`;
+                        
+                        // Cacher le message d'erreur s'il était affiché
+                        errorDiv.classList.add('d-none');
+                        
+                        // Afficher une notification de succès
+                        showNotification('success', 'Le statut a été mis à jour avec succès');
+                    } else {
+                        throw new Error(data.error || 'Une erreur est survenue');
+                    }
+                })
+                .catch(error => {
+                    // Afficher le message d'erreur
+                    errorDiv.classList.remove('d-none');
+                    errorText.textContent = error.message;
+                    
+                    // Afficher une notification d'erreur
+                    showNotification('error', error.message);
+                });
+            });
+        });
+
+        function getStatusColorJs(status) {
+            switch(status) {
+                case 'Published':
+                    return 'success';
+                case 'Brouillon':
+                    return 'secondary';
+                case 'En_attente':
+                    return 'warning';
+                case 'Rejected':
+                    return 'danger';
+                default:
+                    return 'secondary';
+            }
+        }
+
+        function showNotification(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.role = 'alert';
+            
+            const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
+            alertDiv.innerHTML = `
+                <i class="fas fa-${icon} me-2"></i>${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            // Insérer l'alerte au début du conteneur principal
+            const container = document.querySelector('.container-fluid');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // Supprimer automatiquement l'alerte après 5 secondes
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        function confirmDelete(postId) {
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            const deleteForm = document.getElementById('deleteForm');
+            deleteForm.action = `/backoffice/adminblog/posts/${postId}/delete`;
+            deleteModal.show();
+        }
+
+        function openLightbox(imageSrc) {
+            const lightboxModal = new bootstrap.Modal(document.getElementById('lightboxModal'));
+            document.getElementById('lightboxImage').src = imageSrc;
+            lightboxModal.show();
+        }
+    </script>
+{% endblock %} 

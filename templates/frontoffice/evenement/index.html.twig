@@ -1,0 +1,274 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Evenement index{% endblock %}
+
+{% block hero %}
+<section class="hero module-evenement">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="animate-on-scroll">Gestion des Événements</h1>
+                <p class="animate-on-scroll">Créez, organisez et gérez vos événements en toute simplicité</p>
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="{{ path('app_evenement_new') }}" class="btn btn-primary btn-lg animate-on-scroll">
+                        <i class="fas fa-plus-circle me-2"></i> Créer un événement
+                    </a>
+                    <a href="#" class="btn btn-outline-primary btn-lg animate-on-scroll">
+                        <i class="fas fa-calendar-alt me-2"></i> Voir le calendrier
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block body %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Événements à venir</h2>
+    </div>
+    <div class="col-md-4">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Rechercher un événement..." id="searchEvent">
+            <button class="btn btn-outline-primary" type="button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="btn-group filter-buttons" role="group" aria-label="Filtrer les événements">
+            <button type="button" class="btn btn-outline-primary filter-button active" data-filter="all">Tous</button>
+            <button type="button" class="btn btn-outline-primary filter-button" data-filter="conference">Conférences</button>
+            <button type="button" class="btn btn-outline-primary filter-button" data-filter="festival">Festivals</button>
+            <button type="button" class="btn btn-outline-primary filter-button" data-filter="gala">Galas</button>
+            <button type="button" class="btn btn-outline-primary filter-button" data-filter="mariage">Mariages</button>
+            <button type="button" class="btn btn-outline-primary filter-button" data-filter="corporate">Événements d'entreprise</button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for evenement in evenements %}
+    <div class="col-md-4 mb-4 filterable-item {{ evenement.typePublic|lower }}">
+        <div class="card h-100">
+            <img src="{{ asset('images/event' ~ evenement.id ~ '.jpg') }}" class="card-img-top" alt="{{ evenement.nom }}">
+            <div class="card-body">
+                <span class="badge badge-primary mb-2">{{ evenement.typePublic }}</span>
+                <h3 class="card-title">{{ evenement.nom }}</h3>
+                <p class="card-text">{{ evenement.description|slice(0, 50) }}...</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted"><i class="fas fa-calendar-alt me-1"></i> {{ evenement.date ? evenement.date|date('Y-m-d H:i') : '' }}</small>
+                    <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ evenement.lieu }}</small>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-eye me-1"></i> Détails
+                </a>
+                <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-warning">
+                    <i class="fas fa-edit me-1"></i> Modifier
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center">
+        <p>Aucun enregistrement trouvé</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <nav aria-label="Pagination des événements">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Précédent</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<a href="{{ path('app_evenement_new') }}" class="btn btn-primary">Créer nouveau</a>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Include the provided CSS styles here */
+        :root {
+            --primary: #f5e6e8;
+            --secondary: #e8f5e9;
+            --accent: #e3f2fd;
+            --highlight: #fff8e1;
+            --soft-pink: #fce4ec;
+            --soft-purple: #e8eaf6;
+            --dark: #333333;
+            --light: #ffffff;
+            --gray: #f5f5f5;
+            --border: #e0e0e0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background-color: var(--light);
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        a {
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        a:hover {
+            color: #555;
+        }
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--soft-pink) 100%);
+            padding: 5rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        .card-text {
+            color: #666;
+        }
+        .btn-primary {
+            background-color: var(--soft-pink);
+            border-color: var(--soft-pink);
+            color: var(--dark);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: var(--dark);
+        }
+        .btn-outline-primary {
+            border-color: var(--soft-pink);
+            color: var(--dark);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--soft-pink);
+            border-color: var(--soft-pink);
+            color: var(--dark);
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        // Include the provided JavaScript here
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl)
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            const animateOnScroll = function() {
+                const elements = document.querySelectorAll('.animate-on-scroll');
+                elements.forEach(element => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    if (elementPosition < windowHeight - 50) {
+                        element.classList.add('fade-in');
+                    }
+                });
+            };
+
+            animateOnScroll();
+            window.addEventListener('scroll', animateOnScroll);
+
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            const filterButtons = document.querySelectorAll('.filter-button');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filterValue = this.getAttribute('data-filter');
+                    const items = document.querySelectorAll('.filterable-item');
+                    document.querySelector('.filter-button.active')?.classList.remove('active');
+                    this.classList.add('active');
+                    items.forEach(item => {
+                        if (filterValue === 'all' || item.classList.contains(filterValue)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}

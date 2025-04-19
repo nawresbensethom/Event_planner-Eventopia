@@ -1,0 +1,121 @@
+<?php
+
+namespace App\Controller\Client;
+
+use App\Entity\Service;
+use App\Form\ServiceType;
+use App\Repository\ServiceRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
+#[Route('/frontoffice/service')]
+class ServiceController extends AbstractController
+{
+    #[Route('/', name: 'app_client_service_index', methods: ['GET'])]
+    public function index(ServiceRepository $serviceRepository): Response
+    {
+        return $this->render('frontoffice/service/index.html.twig', [
+            'services' => $serviceRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/new', name: 'app_client_service_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $service = new Service();
+        $form = $this->createForm(ServiceType::class, $service);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Gestion de l'upload de fichier
+            $photoFile = $form->get('photos')->getData();
+            if ($photoFile) {
+                $newFilename = uniqid().'.'.$photoFile->guessExtension();
+                try {
+                    $photoFile->move(
+                        $this->getParameter('services_directory'),
+                        $newFilename
+                    );
+                    $service->setPhotos($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image');
+                }
+            }
+
+            $entityManager->persist($service);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_client_service_index');
+        }
+
+        return $this->render('frontoffice/service/new.html.twig', [
+            'service' => $service,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_client_service_show', methods: ['GET'])]
+    public function show(Service $service): Response
+    {
+        return $this->render('frontoffice/service/show.html.twig', [
+            'service' => $service,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_client_service_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Service $service, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(ServiceType::class, $service);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Gestion de l'upload de fichier
+            $photoFile = $form->get('photos')->getData();
+            if ($photoFile) {
+                // Suppression de l'ancienne photo si elle existe
+                $oldFilename = $service->getPhotos();
+                if ($oldFilename) {
+                    $oldFilePath = $this->getParameter('services_directory').'/'.$oldFilename;
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+
+                $newFilename = uniqid().'.'.$photoFile->guessExtension();
+                try {
+                    $photoFile->move(
+                        $this->getParameter('services_directory'),
+                        $newFilename
+                    );
+                    $service->setPhotos($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors de l\'upload de l\'image');
+                }
+            }
+
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_client_service_index');
+        }
+
+        return $this->render('frontoffice/service/edit.html.twig', [
+            'service' => $service,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_client_service_delete', methods: ['POST'])]
+    public function delete(Request $request, Service $service, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$service->getIdService(), $request->request->get('_token'))) {
+            $entityManager->remove($service);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_client_service_index');
+    }
+} 

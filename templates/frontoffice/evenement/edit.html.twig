@@ -1,0 +1,154 @@
+{% extends 'frontoffice/base.html.twig' %}
+{% block title %}Modifier l'Événement - {{ evenement.nom }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h4 mb-0">Modifier l'événement</h2>
+                </div>
+
+                <div class="card-body">
+                    {{ include('backoffice/evenement/_form.html.twig', {
+                        'button_label': 'Mettre à jour',
+                        'include_delete': true
+                    }) }}
+                </div>
+
+                <div class="card-footer bg-light">
+                    <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" 
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>Annuler
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        :root {
+            --primary: #f5e6e8;
+            --secondary: #e8f5e9;
+            --accent: #e3f2fd;
+            --highlight: #fff8e1;
+            --soft-pink: #fce4ec;
+            --soft-purple: #e8eaf6;
+            --dark: #333333;
+            --light: #ffffff;
+            --gray: #f5f5f5;
+            --border: #e0e0e0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background-color: var(--light);
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        a {
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        a:hover {
+            color: #555;
+        }
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            background-color: var(--soft-pink);
+            border-color: var(--soft-pink);
+            color: var(--dark);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: var(--dark);
+        }
+        .btn-outline-primary {
+            border-color: var(--soft-pink);
+            color: var(--dark);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--soft-pink);
+            border-color: var(--soft-pink);
+            color: var(--dark);
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl)
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            const animateOnScroll = function() {
+                const elements = document.querySelectorAll('.animate-on-scroll');
+                elements.forEach(element => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    if (elementPosition < windowHeight - 50) {
+                        element.classList.add('fade-in');
+                    }
+                });
+            };
+
+            animateOnScroll();
+            window.addEventListener('scroll', animateOnScroll);
+
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        });
+    </script>
+{% endblock %}

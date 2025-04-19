@@ -1,0 +1,296 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+<div class="form-container">
+    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+    
+    <div class="form-grid">
+        {# ID Field (if editing) #}
+        {% if form.vars.value.id %}
+            <div class="form-group">
+                <label class="form-label">ID</label>
+                <div class="form-control-plaintext">{{ form.vars.value.id }}</div>
+            </div>
+        {% endif %}
+
+        {# Description Field #}
+        <div class="form-group">
+            {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.description, {
+                'attr': {
+                    'class': 'form-control',
+                    'rows': 4,
+                    'placeholder': 'Enter profile description...'
+                }
+            }) }}
+            <div class="invalid-feedback">
+                {{ form_errors(form.description) }}
+            </div>
+        </div>
+
+        {# Address and Telephone Row #}
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                {{ form_label(form.adresse, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.adresse, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'Enter full address...'
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.adresse) }}
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                {{ form_label(form.telephone, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.telephone, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'Enter phone number...'
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.telephone) }}
+                </div>
+            </div>
+        </div>
+
+        {# Rating Field #}
+        <div class="form-group">
+            {{ form_label(form.rating, null, {'label_attr': {'class': 'form-label'}}) }}
+            <div class="rating-container d-flex align-items-center">
+                {{ form_widget(form.rating, {
+                    'attr': {
+                        'class': 'form-range',
+                        'min': 0,
+                        'max': 5,
+                        'step': 0.5
+                    }
+                }) }}
+                <span class="rating-value ms-3 badge bg-primary">
+                    {{ form.rating.vars.value ?? 0 }}/5
+                </span>
+            </div>
+            <div class="invalid-feedback">
+                {{ form_errors(form.rating) }}
+            </div>
+        </div>
+
+        {# Photo Upload Field #}
+        <div class="form-group">
+            {{ form_label(form.photo, null, {'label_attr': {'class': 'form-label'}}) }}
+            
+            {% if form.vars.value.photo %}
+                <div class="current-photo-container mb-3">
+                    <img src="{{ asset('uploads/photos/' ~ form.vars.value.photo) }}" 
+                         class="img-thumbnail current-photo" 
+                         alt="Current profile photo">
+                    <div class="form-check mt-2">
+                        {{ form_widget(form.remove_photo, {
+                            'attr': {'class': 'form-check-input'}
+                        }) }}
+                        {{ form_label(form.remove_photo, 'Remove current photo', {
+                            'label_attr': {'class': 'form-check-label'}
+                        }) }}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <div class="file-upload-container">
+                <div class="upload-area p-4 text-center border rounded">
+                    <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                    <p class="mb-1">Drag & drop your photo here</p>
+                    <p class="small text-muted mb-2">or</p>
+                    {{ form_widget(form.photo, {
+                        'attr': {
+                            'class': 'form-control d-none',
+                            'accept': 'image/*'
+                        }
+                    }) }}
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                            onclick="document.getElementById('{{ form.photo.vars.id }}').click()">
+                        <i class="fas fa-folder-open me-1"></i> Browse Files
+                    </button>
+                    <div class="file-info mt-2 small text-muted"></div>
+                </div>
+                <div class="invalid-feedback">
+                    {{ form_errors(form.photo) }}
+                </div>
+            </div>
+        </div>
+
+        {# Form Actions #}
+        <div class="form-actions mt-4 pt-3 border-top">
+            <button type="submit" class="btn btn-primary me-2">
+                <i class="fas fa-save me-1"></i> {{ button_label|default('Save') }}
+            </button>
+            <a href="{{ path('app_profil_index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-times me-1"></i> Cancel
+            </a>
+        </div>
+
+    {{ form_end(form) }}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Photo upload preview
+    const photoInput = document.getElementById('{{ form.photo.vars.id }}');
+    const fileInfo = document.querySelector('.file-info');
+    
+    if (photoInput) {
+        photoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                fileInfo.textContent = this.files[0].name + ' (' + 
+                    Math.round(this.files[0].size / 1024) + 'KB)';
+                
+                // Preview would go here if needed
+            }
+        });
+
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.upload-area');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            uploadArea.classList.add('bg-light');
+        }
+
+        function unhighlight() {
+            uploadArea.classList.remove('bg-light');
+        }
+
+        uploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            photoInput.files = files;
+            const event = new Event('change');
+            photoInput.dispatchEvent(event);
+        }
+    }
+
+    // Rating value display
+    const ratingInput = document.getElementById('{{ form.rating.vars.id }}');
+    const ratingValue = document.querySelector('.rating-value');
+    
+    if (ratingInput) {
+        ratingInput.addEventListener('input', function() {
+            ratingValue.textContent = this.value + '/5';
+        });
+    }
+
+    // Bootstrap validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+
+<style>
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback,
+.was-validated .form-control:invalid ~ .invalid-feedback {
+    display: block;
+}
+
+.current-photo {
+    max-width: 200px;
+    max-height: 200px;
+    display: block;
+}
+
+.upload-area {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.upload-area:hover {
+    border-color: #86b7fe !important;
+}
+
+.rating-container {
+    gap: 1rem;
+}
+
+.form-range {
+    flex: 1;
+}
+
+.rating-value {
+    min-width: 50px;
+}
+
+@media (max-width: 768px) {
+    .form-container {
+        padding: 1rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-group.col-md-6 {
+        width: 100%;
+    }
+}
+</style>

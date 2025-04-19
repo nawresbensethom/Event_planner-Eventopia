@@ -1,0 +1,270 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}
+    Détails de la Tâche - Festava Live
+{% endblock %}
+
+{% block body %}
+<section class="plan-section section-padding">
+    <div class="container">
+        {# Messages flash #}
+        <div class="flash-messages mb-4">
+            {% for label in ['success', 'error', 'info', 'warning'] %}
+                {% for message in app.flashes(label) %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show rounded-3 glow-effect" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        {# Détails de la tâche #}
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12">
+                <div class="card bg-glass border-0 shadow-sm glow-effect">
+                    <div class="card-body p-4">
+                        {# Titre principal #}
+                        <h2 class="main-title mb-2 text-center">Détails de : {{ tache.titre }}</h2>
+                        <p class="text-muted text-center mb-4">Consultez les informations de la tâche</p>
+
+                        {# Liste des détails #}
+                        <div class="details-section mb-4">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-transparent border-0 text-white d-flex align-items-center gap-2">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <strong class="fw-semibold me-2">Date :</strong>
+                                    <span class="fw-normal">{{ tache.date ? tache.date|date('d/m/Y') : 'Non définie' }}</span>
+                                </li>
+                                <li class="list-group-item bg-transparent border-0 text-white d-flex align-items-center gap-2">
+                                    <i class="bi bi-clock"></i>
+                                    <strong class="fw-semibold me-2">Durée estimée :</strong>
+                                    <span class="fw-normal">{{ tache.dureeEstimee ?: 'Non spécifiée' }}</span>
+                                </li>
+                                <li class="list-group-item bg-transparent border-0 text-white d-flex align-items-center gap-2">
+                                    <i class="bi bi-tag-fill"></i>
+                                    <strong class="fw-semibold me-2">Catégorie :</strong>
+                                    <span class="fw-normal">{{ tache.categorie ?: 'Non spécifiée' }}</span>
+                                </li>
+                                <li class="list-group-item bg-transparent border-0 text-white d-flex align-items-center gap-2">
+                                    <i class="bi bi-check-circle"></i>
+                                    <strong class="fw-semibold me-2">Statut :</strong>
+                                    <span class="fw-normal">{{ tache.statut ?: 'Non défini' }}</span>
+                                </li>
+                                <li class="list-group-item bg-transparent border-0 text-white d-flex align-items-center gap-2">
+                                    <i class="bi bi-list-task"></i>
+                                    <strong class="fw-semibold me-2">Plan associé :</strong>
+                                    <span class="fw-normal">{{ tache.plan ? tache.plan.titre : 'Aucun plan associé' }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {# Description #}
+                        <div class="description-section mb-4">
+                            <h6 class="fw-semibold mb-2 text-festival">Description</h6>
+                            <p class="card-text text-white">{{ tache.description ?: 'Aucune description disponible.' }}</p>
+                        </div>
+
+                        {# Boutons d'action #}
+                        <div class="action-buttons text-center d-flex justify-content-center gap-3">
+                            <a href="{{ path('app_tache_edit', {'id': tache.id}) }}" class="btn btn-festival">
+                                <i class="bi bi-pencil me-2"></i> Modifier
+                            </a>
+                            <a href="{{ path('app_tache_by_plan', {'id': tache.plan ? tache.plan.id : null}) }}" class="btn btn-outline-light">
+                                <i class="bi bi-arrow-left-circle me-2"></i> Retour à la liste
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Variables */
+        :root {
+            --festival-primary: #ff4d94; /* Rose vibrant */
+            --festival-secondary: #6b48ff; /* Violet électrique */
+            --festival-accent: #CDA8C3; /* Violet pastel */
+            --festival-bg: #1a0b2e; /* Fond violet sombre */
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --white: #ffffff;
+            --glow-color: rgba(255, 77, 148, 0.3);
+        }
+
+        /* Layout général */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--festival-bg), #2a1b3d);
+            color: var(--white);
+        }
+
+        .plan-section {
+            padding: 40px 0;
+            background: radial-gradient(circle, rgba(255, 77, 148, 0.2), transparent);
+        }
+
+        .flash-messages {
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Alertes */
+        .alert {
+            border-radius: 6px;
+            backdrop-filter: blur(5px);
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+
+        .alert-info {
+            background: rgba(205, 168, 195, 0.2);
+            border-color: var(--festival-accent);
+        }
+
+        .alert-success {
+            background: rgba(72, 187, 120, 0.2);
+            border-color: #48bb78;
+        }
+
+        .alert-error {
+            background: rgba(245, 101, 101, 0.2);
+            border-color: #f56565;
+        }
+
+        .alert-warning {
+            background: rgba(236, 201, 75, 0.2);
+            border-color: #ecc94b;
+        }
+
+        /* Carte */
+        .bg-glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+        }
+
+        .card {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--festival-primary);
+            text-shadow: 0 0 4px var(--glow-color);
+        }
+
+        .text-muted {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .card-text {
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        /* Liste des détails */
+        .details-section .list-group-item {
+            font-size: 0.9rem;
+            padding: 0.4rem 0;
+        }
+
+        .details-section i {
+            font-size: 0.9rem;
+            color: var(--festival-accent);
+        }
+
+        .text-festival {
+            color: var(--festival-accent);
+        }
+
+        /* Description */
+        .description-section h6 {
+            font-size: 1rem;
+        }
+
+        /* Boutons */
+        .btn-festival {
+            background: linear-gradient(45deg, var(--festival-primary), var(--festival-secondary));
+            border: none;
+            color: var(--white);
+            font-weight: 500;
+            padding: 0.5rem 1.2rem;
+            border-radius: 16px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-festival:hover {
+            background: linear-gradient(45deg, var(--festival-secondary), var(--festival-primary));
+            box-shadow: 0 0 8px var(--glow-color);
+            transform: scale(1.02);
+        }
+
+        .btn-outline-light {
+            border-color: var(--festival-accent);
+            color: var(--festival-accent);
+            font-weight: 500;
+            padding: 0.5rem 1.2rem;
+            border-radius: 16px;
+            background: rgba(205, 168, 195, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-outline-light:hover {
+            background: var(--festival-accent);
+            color: var(--festival-bg);
+            box-shadow: 0 0 8px var(--glow-color);
+            transform: scale(1.02);
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 8px var(--glow-color);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .glow-effect:hover {
+            box-shadow: 0 0 12px var(--glow-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .plan-section {
+                padding: 30px 0;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .main-title {
+                font-size: 1.4rem;
+            }
+
+            .details-section .list-group-item {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .btn {
+                width: 100%;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+{% endblock %}

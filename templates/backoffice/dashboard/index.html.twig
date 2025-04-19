@@ -1,0 +1,70 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Dashboard - EvenTopia{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>150</h3>
+                    <p>Posts</p>
+                </div>
+                <div class="icon">
+                    <i class="bi bi-newspaper"></i>
+                </div>
+                <a href="{{ path('admin_blog_index') }}" class="small-box-footer">
+                    Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>53</h3>
+                    <p>Services</p>
+                </div>
+                <div class="icon">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+                <a href="{{ path('app_backoffice_service_index') }}" class="small-box-footer">
+                    Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>44</h3>
+                    <p>Signalements</p>
+                </div>
+                <div class="icon">
+                    <i class="bi bi-flag"></i>
+                </div>
+                <a href="{{ path('app_backoffice_signalement_post_index') }}" class="small-box-footer">
+                    Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>65</h3>
+                    <p>Codes Promos</p>
+                </div>
+                <div class="icon">
+                    <i class="bi bi-ticket-perforated"></i>
+                </div>
+                <a href="{{ path('app_backoffice_code_promos_index') }}" class="small-box-footer">
+                    Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

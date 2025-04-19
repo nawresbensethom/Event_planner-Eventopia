@@ -1,0 +1,202 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Gestion des catégories de services{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
+        }
+        .bg-gradient-success {
+            background: linear-gradient(87deg, #2dce89 0, #2dcecc 100%) !important;
+        }
+        .bg-gradient-info {
+            background: linear-gradient(87deg, #11cdef 0, #1171ef 100%) !important;
+        }
+        .bg-gradient-danger {
+            background: linear-gradient(87deg, #f5365c 0, #f56036 100%) !important;
+        }
+        .card-category {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s ease;
+        }
+        .card-category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+        }
+        .search-card {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .header-bg {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border-bottom: 1px solid #e3e6f0;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4 header-bg p-3 rounded">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-folder-open text-primary mr-2"></i>
+                Gestion des catégories de services
+            </h1>
+            <div>
+                <a href="{{ path('app_backoffice_categorieservice_new') }}" class="btn btn-primary shadow-sm">
+                    <i class="fas fa-plus fa-sm text-white-50"></i> Nouvelle catégorie
+                </a>
+                <button type="button" class="btn btn-success shadow-sm" data-toggle="modal" data-target="#exportModal">
+                    <i class="fas fa-file-export fa-sm text-white-50"></i> Exporter
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="card search-card mb-4">
+            <div class="card-body">
+                <form class="form-inline">
+                    <div class="input-group w-100">
+                        <input type="text" class="form-control" placeholder="Rechercher une catégorie..." aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search"></i> Rechercher
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+            {% for categorieservice in categorieservices %}
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card card-category">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-gradient-primary text-white">
+                            <h6 class="m-0 font-weight-bold">Catégorie {{ categorieservice.id }}</h6>
+                            <div class="dropdown no-arrow">
+                                <a class="dropdown-toggle text-white" href="#" role="button" id="dropdownMenuLink{{ categorieservice.id }}"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v fa-sm fa-fw"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                     aria-labelledby="dropdownMenuLink{{ categorieservice.id }}">
+                                    <a class="dropdown-item" href="{{ path('app_backoffice_categorieservice_show', {'id': categorieservice.id}) }}">
+                                        <i class="fas fa-eye fa-sm fa-fw mr-2 text-primary"></i>
+                                        Voir les détails
+                                    </a>
+                                    <a class="dropdown-item" href="{{ path('app_backoffice_categorieservice_edit', {'id': categorieservice.id}) }}">
+                                        <i class="fas fa-edit fa-sm fa-fw mr-2 text-primary"></i>
+                                        Modifier
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <form method="post" action="{{ path('app_backoffice_categorieservice_delete', {'id': categorieservice.id}) }}"
+                                          onsubmit="return confirm('Voulez-vous vraiment supprimer cette catégorie ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ categorieservice.id) }}">
+                                        <button class="dropdown-item text-danger" type="submit">
+                                            <i class="fas fa-trash fa-sm fa-fw mr-2"></i>
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {{ categorieservice.nomCategorie }}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-folder fa-2x text-primary"></i>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mt-3">
+                                <a href="{{ path('app_backoffice_categorieservice_show', {'id': categorieservice.id}) }}"
+                                   class="btn btn-info btn-sm bg-gradient-info">
+                                    <i class="fas fa-eye"></i> Détails
+                                </a>
+                                <a href="{{ path('app_backoffice_categorieservice_edit', {'id': categorieservice.id}) }}"
+                                   class="btn btn-primary btn-sm bg-gradient-primary">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <form method="post" action="{{ path('app_backoffice_categorieservice_delete', {'id': categorieservice.id}) }}"
+                                      onsubmit="return confirm('Voulez-vous vraiment supprimer cette catégorie ?');"
+                                      style="display: inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ categorieservice.id) }}">
+                                    <button class="btn btn-danger btn-sm bg-gradient-danger" type="submit">
+                                        <i class="fas fa-trash"></i> Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="card card-category">
+                        <div class="card-body text-center">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Aucune catégorie trouvée
+                            </div>
+                            <a href="{{ path('app_backoffice_categorieservice_new') }}" class="btn btn-primary bg-gradient-primary">
+                                <i class="fas fa-plus"></i> Créer une nouvelle catégorie
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-gradient-primary text-white">
+                    <h5 class="modal-title" id="exportModalLabel">
+                        <i class="fas fa-file-export mr-2"></i>
+                        Exporter les catégories
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="exportFormat">Format d'export</label>
+                            <select class="form-control" id="exportFormat">
+                                <option>Excel (.xlsx)</option>
+                                <option>CSV (.csv)</option>
+                                <option>PDF (.pdf)</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success bg-gradient-success">Exporter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Initialiser les tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,329 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Modifier {{ service.nom }} - Eventopia{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .service-header {
+            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%);
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .service-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI2NDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIGQ9Ik0wIDBoMTQ0MHY2NDBIMHoiLz48cGF0aCBkPSJNMCA0NDBsMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUgMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==');
+            opacity: 0.1;
+        }
+
+        .service-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .service-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease-out 0.2s;
+            animation-fill-mode: both;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            animation: slideUp 1s ease-out;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #c28282;
+            box-shadow: 0 0 0 0.2rem rgba(194, 130, 130, 0.25);
+        }
+
+        .form-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .custom-file {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .custom-file-input {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: calc(1.5em + 1.5rem + 2px);
+            margin: 0;
+            opacity: 0;
+        }
+
+        .custom-file-label {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1;
+            height: calc(1.5em + 1.5rem + 2px);
+            padding: 0.75rem 1.2rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .custom-file-label::after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            display: block;
+            height: calc(1.5em + 1.5rem);
+            padding: 0.75rem 1.2rem;
+            line-height: 1.5;
+            color: #495057;
+            content: "Parcourir";
+            background-color: #e9ecef;
+            border-left: inherit;
+            border-radius: 0 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .custom-file-input:focus ~ .custom-file-label {
+            border-color: #c28282;
+            box-shadow: 0 0 0 0.2rem rgba(194, 130, 130, 0.25);
+        }
+
+        .custom-file-input:focus ~ .custom-file-label::after {
+            background-color: #c28282;
+            color: white;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(194, 130, 130, 0.2);
+            color: white;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.2);
+            color: white;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .current-image {
+            margin-top: 1rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .current-image img {
+            max-width: 200px;
+            height: auto;
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <section class="service-header">
+        <div class="container text-center">
+            <h1 class="service-title">Modifier {{ service.nom }}</h1>
+            <p class="service-subtitle">
+                Mettez à jour les informations de votre service
+            </p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="form-card">
+            {{ form_start(form) }}
+                <div class="form-group">
+                    {{ form_label(form.nom, 'Nom du service', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                    <small class="form-text">
+                        Donnez un nom clair et descriptif à votre service
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.categorieService, 'Catégorie', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.categorieService, {'attr': {'class': 'form-control'}}) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.photos, 'Photo du service', {'label_attr': {'class': 'form-label'}}) }}
+                    <div class="custom-file">
+                        {{ form_widget(form.photos, {'attr': {'class': 'custom-file-input'}}) }}
+                        <label class="custom-file-label" for="service_photos">Choisir une image</label>
+                    </div>
+                    {% if service.photos %}
+                        <div class="current-image">
+                            <img src="{{ asset('uploads/services/' ~ service.photos) }}" alt="Image actuelle">
+                        </div>
+                    {% endif %}
+                    <small class="form-text">
+                        Téléchargez une nouvelle image pour remplacer l'actuelle
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '5'}}) }}
+                    <small class="form-text">
+                        Décrivez en détail les caractéristiques et avantages de votre service
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.tarif, 'Tarif', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.tarif, {'attr': {'class': 'form-control'}}) }}
+                    <small class="form-text">
+                        Indiquez le prix de votre service en euros
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.utilisateur, 'Utilisateur associé', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.utilisateur, {'attr': {'class': 'form-control'}}) }}
+                    <small class="form-text">
+                        Sélectionnez l'utilisateur qui sera responsable de ce service
+                    </small>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ path('app_client_service_index') }}" class="btn-back">
+                        <i class="fas fa-arrow-left"></i>
+                        Retour
+                    </a>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-save"></i>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+            var fileName = e.target.files[0].name;
+            var nextSibling = e.target.nextElementSibling;
+            nextSibling.innerHTML = '<i class="fas fa-file-image mr-2"></i>' + fileName;
+        });
+    </script>
+{% endblock %} 

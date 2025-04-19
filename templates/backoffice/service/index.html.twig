@@ -1,0 +1,175 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Gestion des services{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
+        }
+        .bg-gradient-success {
+            background: linear-gradient(87deg, #2dce89 0, #2dcecc 100%) !important;
+        }
+        .bg-gradient-info {
+            background: linear-gradient(87deg, #11cdef 0, #1171ef 100%) !important;
+        }
+        .bg-gradient-danger {
+            background: linear-gradient(87deg, #f5365c 0, #f56036 100%) !important;
+        }
+        .service-card {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .header-bg {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border-bottom: 1px solid #e3e6f0;
+        }
+        .search-container {
+            margin-bottom: 1.5rem;
+            padding: 0.5rem;
+        }
+        .search-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .search-input {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e3e6f0;
+            border-radius: 0.35rem;
+            font-size: 0.9rem;
+        }
+        .service-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .service-image:hover {
+            transform: scale(1.1);
+        }
+        .description-cell {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4 header-bg p-3 rounded">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-cogs text-primary mr-2"></i>
+                Services
+            </h1>
+            <div>
+                <a href="{{ path('app_backoffice_service_new') }}" class="btn btn-primary bg-gradient-primary shadow-sm">
+                    <i class="fas fa-plus fa-sm text-white-50"></i> Nouveau service
+                </a>
+                <button type="button" class="btn btn-success bg-gradient-success shadow-sm">
+                    <i class="fas fa-file-export fa-sm text-white-50"></i> Exporter
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-input-group">
+                <input type="text" class="search-input" placeholder="Rechercher un service...">
+                <button class="btn btn-primary bg-gradient-primary">
+                    <i class="fas fa-search mr-2"></i> Rechercher
+                </button>
+            </div>
+        </div>
+
+        <div class="card service-card">
+            <div class="card-header py-3 bg-gradient-primary text-white">
+                <h6 class="m-0 font-weight-bold">Liste des services</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Photo</th>
+                                <th>Nom</th>
+                                <th>Description</th>
+                                <th>Tarif</th>
+                                <th>Catégorie</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for service in services %}
+                                <tr>
+                                    <td class="text-center">
+                                        {% if service.photos %}
+                                            <img src="{{ asset('uploads/services/' ~ service.photos) }}" class="service-image" alt="{{ service.nom }}">
+                                        {% else %}
+                                            <img src="{{ asset('images/default-service.jpg') }}" class="service-image" alt="Image par défaut">
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle">{{ service.nom }}</td>
+                                    <td class="align-middle description-cell">{{ service.description|slice(0, 100) }}...</td>
+                                    <td class="align-middle">{{ service.tarif }} €</td>
+                                    <td class="align-middle">{{ service.categorieService.nomCategorie }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ path('app_backoffice_service_show', {'id': service.getIdService()}) }}" 
+                                           class="btn btn-info btn-sm bg-gradient-info mx-1">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_backoffice_service_edit', {'id': service.getIdService()}) }}" 
+                                           class="btn btn-primary btn-sm bg-gradient-primary mx-1">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" 
+                                              action="{{ path('app_backoffice_service_delete', {'id': service.getIdService()}) }}"
+                                              onsubmit="return confirm('Voulez-vous vraiment supprimer ce service ?');"
+                                              style="display: inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ service.getIdService()) }}">
+                                            <button type="submit" class="btn btn-danger btn-sm bg-gradient-danger mx-1">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <div class="alert alert-info m-0">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            Aucun service trouvé.
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#dataTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Nouveau code promotionnel{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
+        }
+        .bg-gradient-success {
+            background: linear-gradient(87deg, #2dce89 0, #2dcecc 100%) !important;
+        }
+        .bg-gradient-info {
+            background: linear-gradient(87deg, #11cdef 0, #1171ef 100%) !important;
+        }
+        .form-card {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            border-radius: 0.35rem;
+        }
+        .header-bg {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border-bottom: 1px solid #e3e6f0;
+        }
+        .form-control {
+            border: 1px solid #e3e6f0;
+            border-radius: 0.35rem;
+            padding: 0.75rem 1rem;
+        }
+        .form-control:focus {
+            border-color: #5e72e4;
+            box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+        }
+        .btn {
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4 header-bg p-3 rounded">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-plus-circle text-primary mr-2"></i>
+                Créer un nouveau code promotionnel
+            </h1>
+            <a href="{{ path('app_backoffice_code_promos_index') }}" class="btn btn-secondary shadow-sm">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Retour à la liste
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="card form-card mb-4">
+                    <div class="card-header py-3 bg-gradient-primary text-white">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-edit mr-2"></i>
+                            Formulaire de création
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                            <div class="form-group">
+                                <label class="form-label font-weight-bold text-gray-800">
+                                    <i class="fas fa-tag text-primary mr-2"></i>Code
+                                </label>
+                                {{ form_widget(form.code, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le code promotionnel'}}) }}
+                                {{ form_errors(form.code) }}
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label font-weight-bold text-gray-800">
+                                    <i class="fas fa-percentage text-primary mr-2"></i>Type de réduction
+                                </label>
+                                {{ form_widget(form.reductionType, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.reductionType) }}
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label font-weight-bold text-gray-800">
+                                    <i class="fas fa-calendar-alt text-primary mr-2"></i>Date de début
+                                </label>
+                                {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.dateDebut) }}
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label font-weight-bold text-gray-800">
+                                    <i class="fas fa-calendar-times text-primary mr-2"></i>Date d'expiration
+                                </label>
+                                {{ form_widget(form.dateExpiration, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.dateExpiration) }}
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label font-weight-bold text-gray-800">
+                                    <i class="fas fa-align-left text-primary mr-2"></i>Description
+                                </label>
+                                {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                                {{ form_errors(form.description) }}
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label font-weight-bold text-gray-800">
+                                    <i class="fas fa-hashtag text-primary mr-2"></i>Limite d'utilisation
+                                </label>
+                                {{ form_widget(form.limiteUtilisation, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.limiteUtilisation) }}
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label class="form-label font-weight-bold text-gray-800">
+                                    <i class="fas fa-cogs text-primary mr-2"></i>Service associé
+                                </label>
+                                {{ form_widget(form.service, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.service) }}
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{{ path('app_backoffice_code_promos_index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times mr-2"></i> Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary bg-gradient-primary">
+                                    <i class="fas fa-save mr-2"></i> Enregistrer
+                                </button>
+                            </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Initialize date pickers
+            $('input[type="date"]').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+    </script>
+{% endblock %}

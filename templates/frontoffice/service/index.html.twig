@@ -1,0 +1,284 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Liste des services{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .services-header {
+            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%);
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .services-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI2NDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIGQ9Ik0wIDBoMTQ0MHY2NDBIMHoiLz48cGF0aCBkPSJNMCA0NDBsMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUgMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==');
+            opacity: 0.1;
+        }
+
+        .services-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .services-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: fadeInUp 0.8s ease-out 0.2s;
+            animation-fill-mode: both;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            top: 0;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .service-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 4px solid #f6d682;
+        }
+
+        .service-content {
+            padding: 1.5rem;
+        }
+
+        .service-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .service-description {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .service-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .service-price {
+            color: #2dce89;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .service-category {
+            color: #888;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .create-service-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-top: 1rem;
+            backdrop-filter: blur(5px);
+            animation: fadeInUp 1s ease-out 0.6s;
+            animation-fill-mode: both;
+        }
+
+        .create-service-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .create-service-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .no-services {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-services-icon {
+            font-size: 4rem;
+            color: #c28282;
+            margin-bottom: 1rem;
+        }
+
+        .no-services-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .services-title {
+                font-size: 2.5rem;
+            }
+
+            .services-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            .create-service-btn {
+                padding: 0.8rem 1.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <section class="services-header">
+        <div class="container text-center">
+            <h1 class="services-title">Services</h1>
+            <p class="services-subtitle">
+                Découvrez et gérez les services disponibles sur notre plateforme
+            </p>
+            <a href="{{ path('app_client_service_new') }}" class="create-service-btn">
+                <i class="fas fa-plus-circle"></i> Ajouter un service
+            </a>
+        </div>
+    </section>
+
+    <div class="container">
+        {% if services|length > 0 %}
+            <div class="services-grid">
+                {% for service in services %}
+                    <div class="service-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                        {% if service.photos %}
+                            <img src="{{ asset('uploads/services/' ~ service.photos) }}" 
+                                 alt="{{ service.nom }}" 
+                                 class="service-image">
+                        {% else %}
+                            <div class="service-image" style="background: linear-gradient(87deg, #f8f9fc 0, #e3e6f0 100%);">
+                                <i class="fas fa-image fa-3x" style="color: #5e72e4; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="service-content">
+                            <h2 class="service-title">{{ service.nom }}</h2>
+                            <p class="service-description">{{ service.description|striptags|slice(0, 150) }}{% if service.description|length > 150 %}...{% endif %}</p>
+                            
+                            <div class="service-meta">
+                                <span class="service-price">{{ service.tarif }} €</span>
+                                <span class="service-category">
+                                    <i class="fas fa-tag"></i> {{ service.categorieService.nomCategorie }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <a href="{{ path('app_client_service_show', {'id': service.idService}) }}" class="stretched-link"></a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-services">
+                <i class="fas fa-exclamation-circle no-services-icon"></i>
+                <p class="no-services-text">Aucun service disponible</p>
+                <a href="{{ path('app_client_service_new') }}" class="create-service-btn">
+                    <i class="fas fa-plus-circle"></i> Ajouter votre premier service
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Initialize DataTables
+        $(document).ready(function() {
+            $('#dataTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
+                }
+            });
+        });
+    </script>
+{% endblock %} 

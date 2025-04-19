@@ -1,0 +1,297 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}
+    Nouveau Plan - Festava Live
+{% endblock %}
+
+{% block body %}
+<section class="plan-section section-padding">
+    <div class="container">
+        {# Messages flash #}
+        <div class="flash-messages mb-4">
+            {% for label in ['success', 'error', 'info', 'warning'] %}
+                {% for message in app.flashes(label) %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show rounded-3 glow-effect" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        {# Formulaire de création #}
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12">
+                <div class="card bg-glass border-0 shadow-sm glow-effect">
+                    <div class="card-body p-4">
+                        {# Titre du formulaire #}
+                        <h2 class="main-title mb-4 text-center">Créer un nouveau plan</h2>
+
+                        {# Formulaire #}
+                        {{ form_start(form, {'attr': {'class': 'plan-form', 'novalidate': 'novalidate'}}) }}
+                        {{ form_errors(form)}}
+                        <div class="row g-3">
+                            {# Détails principaux #}
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    {{ form_label(form.titre, 'Titre', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                    {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le titre du plan'}}) }}
+                                    {{ form_errors(form.titre, {'attr': {'class': 'text-danger mt-1'}}) }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                    {{ form_widget(form.description, {'attr': {'class': 'form-control description-field', 'placeholder': 'Décrivez le plan'}}) }}
+                                    {{ form_errors(form.description, {'attr': {'class': 'text-danger mt-1'}}) }}
+                                </div>
+                            </div>
+
+                            {# Dates #}
+                            <div class="col-12">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        {{ form_label(form.dateDebut, 'Date de début', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                        {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.dateDebut, {'attr': {'class': 'text-danger mt-1'}}) }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form_label(form.dateFin, 'Date de fin', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                        {{ form_widget(form.dateFin, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.dateFin, {'attr': {'class': 'text-danger mt-1'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {# Détails secondaires #}
+                            <div class="col-12">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        {{ form_label(form.priorite, 'Priorité', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                        {{ form_widget(form.priorite, {'attr': {'class': 'form-select priority-select'}}) }}
+                                        {{ form_errors(form.priorite, {'attr': {'class': 'text-danger mt-1'}}) }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form_label(form.location, 'Lieu', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                        {{ form_widget(form.location, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le lieu'}}) }}
+                                        {{ form_errors(form.location, {'attr': {'class': 'text-danger mt-1'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Boutons d'action #}
+                        <div class="action-buttons text-center d-flex justify-content-center gap-3 mt-4">
+                            <button type="submit" class="btn btn-festival">
+                                <i class="bi bi-save me-2"></i> Créer
+                            </button>
+                            <a href="{{ path('app_plan_index') }}" class="btn btn-outline-light">
+                                <i class="bi bi-arrow-left-circle me-2"></i> Retour
+                            </a>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Variables */
+        :root {
+            --festival-primary: #ff4d94; /* Rose vibrant */
+            --festival-secondary: #6b48ff; /* Violet électrique */
+            --festival-accent: #CDA8C3; /* Violet pastel */
+            --festival-bg: #1a0b2e; /* Fond violet sombre */
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --white: #ffffff;
+            --glow-color: rgba(255, 77, 148, 0.3);
+        }
+
+        /* Layout général */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--festival-bg), #2a1b3d);
+            color: var(--white);
+        }
+
+        .plan-section {
+            padding: 40px 0;
+            background: radial-gradient(circle, rgba(255, 77, 148, 0.2), transparent);
+        }
+
+        .flash-messages {
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Alertes */
+        .alert {
+            border-radius: 6px;
+            backdrop-filter: blur(5px);
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+
+        .alert-info {
+            background: rgba(205, 168, 195, 0.2);
+            border-color: var(--festival-accent);
+        }
+
+        .alert-success {
+            background: rgba(72, 187, 120, 0.2);
+            border-color: #48bb78;
+        }
+
+        .alert-error {
+            background: rgba(245, 101, 101, 0.2);
+            border-color: #f56565;
+        }
+
+        .alert-warning {
+            background: rgba(236, 201, 75, 0.2);
+            border-color: #ecc94b;
+        }
+
+        /* Carte */
+        .bg-glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        .card {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--festival-primary);
+            text-shadow: 0 0 5px var(--glow-color);
+        }
+
+        /* Formulaire */
+        .plan-form .form-label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--festival-accent);
+            margin-bottom: 0.4rem;
+        }
+
+        .plan-form .form-control,
+        .plan-form .form-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            font-size: 0.95rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+        }
+
+        .plan-form .form-control:focus,
+        .plan-form .form-select:focus {
+            border-color: var(--festival-accent);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 5px var(--glow-color);
+            outline: none;
+        }
+
+        .plan-form .description-field {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .plan-form .priority-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            background-size: 12px;
+            padding-right: 2rem;
+        }
+
+        .plan-form .priority-select option {
+            background: var(--festival-bg);
+            color: var(--white);
+        }
+
+        .plan-form .text-danger {
+            font-size: 0.85rem;
+            color: #ff6b6b;
+        }
+
+        /* Boutons */
+        .btn-festival {
+            background: linear-gradient(45deg, var(--festival-primary), var(--festival-secondary));
+            border: none;
+            color: var(--white);
+            font-weight: 500;
+            padding: 0.6rem 1.5rem;
+            border-radius: 20px;
+        }
+
+        .btn-festival:hover {
+            background: linear-gradient(45deg, var(--festival-secondary), var(--festival-primary));
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+
+        .btn-outline-light {
+            border-color: var(--festival-accent);
+            color: var(--festival-accent);
+            font-weight: 500;
+            padding: 0.6rem 1.5rem;
+            border-radius: 20px;
+            background: rgba(205, 168, 195, 0.1);
+        }
+
+        .btn-outline-light:hover {
+            background: var(--festival-accent);
+            color: var(--festival-bg);
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 10px var(--glow-color);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .glow-effect:hover {
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .plan-section {
+                padding: 30px 0;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .main-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock %}

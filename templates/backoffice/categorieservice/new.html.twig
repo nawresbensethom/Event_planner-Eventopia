@@ -1,0 +1,102 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Nouvelle catégorie{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
+        }
+        .bg-gradient-success {
+            background: linear-gradient(87deg, #2dce89 0, #2dcecc 100%) !important;
+        }
+        .form-card {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .header-bg {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border-bottom: 1px solid #e3e6f0;
+        }
+        .form-control:focus {
+            border-color: #5e72e4;
+            box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4 header-bg p-3 rounded">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-plus-circle text-primary mr-2"></i>
+                Créer une nouvelle catégorie
+            </h1>
+            <a href="{{ path('app_backoffice_categorieservice_index') }}" class="btn btn-secondary shadow-sm">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Retour à la liste
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="card form-card mb-4">
+                    <div class="card-header py-3 bg-gradient-primary text-white">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-edit mr-2"></i>
+                            Formulaire de création
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                            {{ form_widget(form) }}
+                            <div class="form-group mt-4">
+                                <button type="submit" class="btn btn-primary bg-gradient-primary">
+                                    <i class="fas fa-save"></i> Enregistrer
+                                </button>
+                                <a href="{{ path('app_backoffice_categorieservice_index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                            </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-5">
+                <div class="card form-card mb-4">
+                    <div class="card-header py-3 bg-gradient-info text-white">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Informations
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="small font-weight-bold">Conseils de création</h4>
+                        <div class="mb-3">
+                            <i class="fas fa-check text-success mr-2"></i>
+                            Choisissez un nom clair et descriptif
+                        </div>
+                        <div class="mb-3">
+                            <i class="fas fa-check text-success mr-2"></i>
+                            Évitez les noms trop longs
+                        </div>
+                        <div class="mb-3">
+                            <i class="fas fa-check text-success mr-2"></i>
+                            Utilisez des majuscules si nécessaire
+                        </div>
+                        <hr>
+                        <div class="text-center">
+                            <i class="fas fa-lightbulb text-warning fa-2x mb-3"></i>
+                            <p class="small text-muted">
+                                Une fois créée, vous pourrez ajouter des services à cette catégorie.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

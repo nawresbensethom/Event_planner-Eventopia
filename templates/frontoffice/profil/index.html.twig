@@ -1,0 +1,249 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Mon Profil - EvenTopia{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-section {
+            padding: 2rem 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: calc(100vh - 100px);
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .breadcrumb {
+            margin: 0;
+            padding: 0.5rem 0 0;
+            background: none;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--secondary-color);
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .profile-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: var(--box-shadow);
+        }
+
+        .profile-info {
+            padding: 2rem;
+        }
+
+        .info-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-label {
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            color: var(--dark-color);
+            font-size: 1.1rem;
+        }
+
+        .rating-stars {
+            color: var(--warning-color);
+            font-size: 1.2rem;
+        }
+
+        .action-buttons {
+            padding: 1rem 2rem;
+            background: var(--light-color);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<section class="profile-section">
+    <div class="profile-container">
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-user-circle me-2"></i>Mon Profil
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Mon Profil</li>
+                </ol>
+            </nav>
+        </div>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+
+        <div class="profile-card">
+            <div class="profile-header">
+                {% if profil.photo %}
+                    <img src="{{ asset('uploads/photos/' ~ profil.photo) }}" alt="Photo de profil" class="profile-avatar">
+                {% else %}
+                    <i class="fas fa-user-circle fa-5x"></i>
+                {% endif %}
+                <div>
+                    <h2>{{ app.user.nom }} {{ app.user.prenom }}</h2>
+                    <p class="mb-0">{{ app.user.email }}</p>
+                </div>
+            </div>
+
+            <div class="profile-info">
+                <div class="info-group">
+                    <div class="info-label">Description</div>
+                    <div class="info-value">{{ profil.description|default('Aucune description') }}</div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Adresse</div>
+                    <div class="info-value">{{ profil.adresse|default('Non renseignée') }}</div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Téléphone</div>
+                    <div class="info-value">{{ profil.telephone|default('Non renseigné') }}</div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Note</div>
+                    <div class="info-value">
+                        {% if profil.rating %}
+                            <div class="rating-stars">
+                                {% for i in 1..5 %}
+                                    <i class="fas fa-star{{ i <= profil.rating ? '' : '-o' }}"></i>
+                                {% endfor %}
+                                ({{ profil.rating }}/5)
+                            </div>
+                        {% else %}
+                            Aucune note
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{{ path('app_profil_edit') }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i>
+                    Modifier mon profil
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

@@ -1,0 +1,375 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}{{ page_title|default('Inscription') }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --error-color: #ef233c;
+            --border-radius: 8px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .registration-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 2rem;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--light-color);
+            border-radius: var(--border-radius);
+        }
+
+        .form-section-title {
+            color: var(--dark-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-check {
+            padding: 1rem;
+            background: white;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-check-input {
+            margin-right: 0.5rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--light-color);
+            border-radius: var(--border-radius);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-content {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .registration-container {
+                padding: 1rem;
+            }
+
+            .form-content {
+                padding: 1.5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="registration-container">
+        <div class="form-container">
+            <div class="form-header">
+                <h1>{{ page_title|default('Créer un compte') }}</h1>
+            </div>
+
+            <div class="form-content">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }}">{{ message }}</div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% if formErrors is defined and formErrors|length > 0 %}
+                    <div class="alert alert-error">
+                        <ul class="error-list">
+                            {% for error in formErrors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {{ form_start(registrationForm, {'attr': {'class': 'form-fields', 'novalidate': 'novalidate'}}) }}
+
+                <div class="form-section">
+                    <div class="form-section-title">Informations personnelles</div>
+                    
+                    <div class="form-group">
+                        {{ form_label(registrationForm.nom, 'Nom complet') }}
+                        {{ form_widget(registrationForm.nom, {
+                            'attr': {
+                                'class': 'form-control' ~ (registrationForm.nom.vars.valid ? '' : ' is-invalid'),
+                                'placeholder': 'Entrez votre nom complet'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.nom) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(registrationForm.email, 'Adresse email') }}
+                        {{ form_widget(registrationForm.email, {
+                            'attr': {
+                                'class': 'form-control' ~ (registrationForm.email.vars.valid ? '' : ' is-invalid'),
+                                'placeholder': 'Entrez votre adresse email'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.email) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
+                        {{ form_widget(registrationForm.plainPassword, {
+                            'attr': {
+                                'class': 'form-control' ~ (registrationForm.plainPassword.vars.valid ? '' : ' is-invalid'),
+                                'placeholder': 'Choisissez un mot de passe sécurisé'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.plainPassword) }}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Type de compte</div>
+                    
+                    <div class="form-group">
+                        {{ form_label(registrationForm.role, 'Type de compte') }}
+                        {{ form_widget(registrationForm.role, {
+                            'attr': {
+                                'class': 'form-control' ~ (registrationForm.role.vars.valid ? '' : ' is-invalid')
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.role) }}
+                    </div>
+
+                    <div id="specialtyGroup" class="form-group" style="display:none;">
+                        {{ form_label(registrationForm.specialite, 'Spécialité') }}
+                        {{ form_widget(registrationForm.specialite, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Entrez votre spécialité'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.specialite) }}
+                    </div>
+
+                    <div id="privilegesGroup" class="form-group" style="display:none;">
+                        {{ form_label(registrationForm.privileges, 'Privilèges') }}
+                        {{ form_widget(registrationForm.privileges, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Définissez les privilèges'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.privileges) }}
+                    </div>
+
+                    <div id="preferencesGroup" class="form-group" style="display:none;">
+                        {{ form_label(registrationForm.preferences, 'Préférences') }}
+                        {{ form_widget(registrationForm.preferences, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Entrez vos préférences'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.preferences) }}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Informations complémentaires</div>
+                    
+                    <div class="form-group">
+                        {{ form_label(registrationForm.description, 'À propos de vous') }}
+                        {{ form_widget(registrationForm.description, {
+                            'attr': {
+                                'class': 'form-control',
+                                'rows': '4',
+                                'placeholder': 'Parlez-nous un peu de vous...'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.description) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(registrationForm.adresse, 'Adresse') }}
+                        {{ form_widget(registrationForm.adresse, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Entrez votre adresse'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.adresse) }}
+                    </div>
+                </div>
+
+                <div class="form-check">
+                    {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(registrationForm.agreeTerms, "J'accepte les conditions d'utilisation") }}
+                    {{ form_errors(registrationForm.agreeTerms) }}
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">S'inscrire</button>
+                    <a href="{{ path('app_home') }}" class="btn btn-outline">Annuler</a>
+                </div>
+
+                {{ form_end(registrationForm) }}
+
+                <div class="text-center mt-3">
+                    <p>Déjà inscrit ? <a href="{{ path('app_login') }}" class="text-primary">Connectez-vous ici</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleSelect = document.getElementById('{{ registrationForm.role.vars.id }}');
+            const specialtyGroup = document.getElementById('specialtyGroup');
+            const privilegesGroup = document.getElementById('privilegesGroup');
+            const preferencesGroup = document.getElementById('preferencesGroup');
+
+            function toggleFields() {
+                const roleValue = roleSelect.value;
+                specialtyGroup.style.display = roleValue === 'ROLE_PRESTATAIRE' ? 'block' : 'none';
+                privilegesGroup.style.display = roleValue === 'ROLE_ADMIN' ? 'block' : 'none';
+                preferencesGroup.style.display = roleValue === 'ROLE_ORGANISATEUR' ? 'block' : 'none';
+            }
+
+            toggleFields();
+            roleSelect.addEventListener('change', toggleFields);
+        });
+    </script>
+{% endblock %}

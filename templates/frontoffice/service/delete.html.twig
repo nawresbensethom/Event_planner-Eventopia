@@ -1,0 +1,87 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Supprimer le service{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .bg-gradient-danger {
+            background: linear-gradient(87deg, #f5365c 0, #f56036 100%) !important;
+        }
+        .confirmation-card {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .header-bg {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border-bottom: 1px solid #e3e6f0;
+        }
+        .warning-icon {
+            font-size: 4rem;
+            color: #f5365c;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4 header-bg p-3 rounded">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-trash text-danger mr-2"></i>
+                Supprimer le service
+            </h1>
+            <a href="{{ path('app_service_index') }}" class="btn btn-secondary shadow-sm">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Retour à la liste
+            </a>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-8">
+                <div class="card confirmation-card mb-4">
+                    <div class="card-header py-3 bg-gradient-danger text-white">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Confirmation de suppression
+                        </h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            <i class="fas fa-exclamation-circle warning-icon"></i>
+                        </div>
+                        <h4 class="text-danger mb-3">Êtes-vous sûr de vouloir supprimer ce service ?</h4>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Cette action est irréversible. Toutes les données associées au service seront également supprimées.
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-body text-left">
+                                <h5 class="card-title">{{ service.nom }}</h5>
+                                <p class="card-text">
+                                    <strong>Catégorie :</strong> {{ service.categorieService.nomCategorie }}<br>
+                                    <strong>Description :</strong> {{ service.description|slice(0, 100) }}...<br>
+                                    <strong>Tarif :</strong> {{ service.tarif }} €
+                                </p>
+                            </div>
+                        </div>
+
+                        <form method="post" action="{{ path('app_service_delete', {'id_service': service.getIdService()}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ service.getIdService()) }}">
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="{{ path('app_service_index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                                <button class="btn btn-danger bg-gradient-danger">
+                                    <i class="fas fa-trash"></i> Confirmer la suppression
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

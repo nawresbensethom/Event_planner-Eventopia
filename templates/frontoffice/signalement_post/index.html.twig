@@ -1,0 +1,278 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Liste des signalements - Eventopia{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .signalements-header {
+            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%);
+            padding: 6rem 0;
+            margin-bottom: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signalements-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .signalements-subtitle {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .signalements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        .signalement-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .signalement-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .signalement-content {
+            padding: 1.5rem;
+        }
+
+        .signalement-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .signalement-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .signalement-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .signalement-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(194, 130, 130, 0.3);
+            color: white;
+        }
+
+        .btn-edit {
+            background: #f6d682;
+            color: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(246, 214, 130, 0.3);
+            color: #333;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+            background: #c82333;
+            color: white;
+        }
+
+        .no-signalements {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-signalements-icon {
+            font-size: 4rem;
+            color: #c28282;
+            margin-bottom: 1rem;
+        }
+
+        .no-signalements-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .btn-create {
+            background: #f6d682;
+            color: #333;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(246, 214, 130, 0.3);
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        .status-en-attente {
+            background-color: #ffd700;
+            color: #000;
+        }
+        .status-traite {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .signalement-actions form {
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        @media (max-width: 768px) {
+            .signalements-title {
+                font-size: 2.5rem;
+            }
+
+            .signalements-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .signalements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="signalements-header">
+        <div class="container text-center">
+            <h1 class="signalements-title">Signalements</h1>
+            <p class="signalements-subtitle">
+                Gérez vos signalements et contribuez à maintenir la qualité de notre communauté
+            </p>
+            <a href="{{ path('app_client_signalement_post_new') }}" class="btn-create">
+                <i class="fas fa-plus-circle"></i> Créer un nouveau signalement
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if signalement_posts|length > 0 %}
+            <div class="signalements-grid">
+                {% for signalement_post in signalement_posts %}
+                    <div class="signalement-card">
+                        <div class="signalement-content">
+                            <h2 class="signalement-title">{{ signalement_post.idPost.titre }}</h2>
+                            <div class="signalement-meta">
+                                <div class="signalement-info">
+                                    <i class="bi bi-person"></i>
+                                    Signalé par: {{ signalement_post.idUtilisateur.nom }}
+                                </div>
+                                <div class="signalement-info">
+                                    <i class="bi bi-calendar3"></i>
+                                    {{ signalement_post.dateSignalement|date('M d, Y H:i') }}
+                                </div>
+                                <div class="signalement-info">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Raison: {{ signalement_post.raison }}
+                                </div>
+                                <div class="signalement-info">
+                                    <span class="status-badge status-{{ signalement_post.statut|lower|replace({' ': '-'}) }}">
+                                        {{ signalement_post.statut }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="signalement-actions">
+                                <a href="{{ path('app_client_signalement_post_show', {'id_signalement_post': signalement_post.idSignalementPost}) }}" class="btn-view">
+                                    <i class="bi bi-eye"></i> Voir
+                                </a>
+                                <a href="{{ path('app_client_signalement_post_edit', {'id_signalement_post': signalement_post.idSignalementPost}) }}" class="btn-edit">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                                <form method="post" action="{{ path('app_client_signalement_post_delete', {'id_signalement_post': signalement_post.idSignalementPost}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce signalement ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ signalement_post.idSignalementPost) }}">
+                                    <button class="btn-delete">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-signalements">
+                <i class="bi bi-exclamation-circle no-signalements-icon"></i>
+                <p class="no-signalements-text">Aucun signalement trouvé</p>
+                <a href="{{ path('app_client_signalement_post_new') }}" class="btn-create">
+                    <i class="bi bi-plus-circle"></i> Créer un signalement
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

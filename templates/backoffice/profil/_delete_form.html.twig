@@ -1,0 +1,88 @@
+<div class="delete-form-container">
+    <form method="post" 
+          action="{{ path('admin_profil_delete', {'id': profil.id}) }}" 
+          class="delete-form">
+        
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ profil.id) }}">
+        
+        <button type="button" 
+                class="btn btn-danger btn-sm"
+                data-bs-toggle="modal" 
+                data-bs-target="#deleteModal{{ profil.id }}">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+
+        {# Modal de confirmation #}
+        <div class="modal fade" 
+             id="deleteModal{{ profil.id }}" 
+             tabindex="-1" 
+             aria-labelledby="deleteModalLabel{{ profil.id }}" 
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger" id="deleteModalLabel{{ profil.id }}">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Confirmer la suppression
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Vous êtes sur le point de supprimer le profil #{{ profil.id }}.</p>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <strong>Attention :</strong> Cette action est irréversible. Toutes les données associées à ce profil seront définitivement supprimées.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Annuler
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-2"></i>Supprimer définitivement
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+.delete-form-container {
+    display: inline-block;
+}
+
+.delete-form .btn-danger {
+    transition: all 0.2s ease;
+}
+
+.delete-form .btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+.modal-content {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.alert-warning {
+    border-left: 4px solid #e67e22;
+}
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+</style>

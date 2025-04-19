@@ -1,0 +1,374 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Edit Post - Eventopia{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .edit-header {
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            color: white;
+            text-align: center;
+        }
+        
+        .edit-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .edit-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border: 2px solid #eee;
+            border-radius: 8px;
+            padding: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #c28282;
+            box-shadow: 0 0 0 0.2rem rgba(194, 130, 130, 0.25);
+        }
+
+        .image-upload-container {
+            border: 2px dashed #c28282;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload-container:hover {
+            background-color: rgba(194, 130, 130, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            color: #c28282;
+            margin-bottom: 1rem;
+        }
+
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-image:hover {
+            background: #dc3545;
+            transform: scale(1.1);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            border: none;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(194, 130, 130, 0.3);
+        }
+
+        .action-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .action-btn.back {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .action-btn.back:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger {
+            background-color: #fff5f5;
+            color: #dc3545;
+        }
+
+        .alert-success {
+            background-color: #f0fff4;
+            color: #38a169;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="edit-header">
+        <div class="container">
+            <h1 class="edit-title">Edit Post</h1>
+            <p class="edit-subtitle">Update your post content and details</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <div class="form-container">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="mb-4">
+                            {{ form_label(form.id_utilisateur, 'User ID', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.id_utilisateur, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'placeholder': 'Enter your user ID',
+                                    'min': '1',
+                                    'required': 'required'
+                                }
+                            }) }}
+                            <div class="form-text">Enter your valid user ID to update the post</div>
+                            {{ form_errors(form.id_utilisateur, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form_label(form.titre, 'Title', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.titre, {
+                                'attr': {
+                                    'class': 'form-control form-control-lg',
+                                    'placeholder': 'Enter a catchy title for your post',
+                                    'minlength': '5',
+                                    'maxlength': '100',
+                                    'required': 'required'
+                                }
+                            }) }}
+                            <div class="form-text">Make it clear and engaging (5-100 characters)</div>
+                            {{ form_errors(form.titre, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form_label(form.contenu, 'Content', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.contenu, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'rows': '8',
+                                    'placeholder': 'Write your post content here...',
+                                    'minlength': '20',
+                                    'required': 'required',
+                                    'style': 'resize: vertical;'
+                                }
+                            }) }}
+                            <div class="form-text">Share your story (minimum 20 characters)</div>
+                            {{ form_errors(form.contenu, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form_label(form.photos, 'Photos', {'label_attr': {'class': 'form-label'}}) }}
+                            <div class="image-upload-container" id="dropZone">
+                                <i class="bi bi-cloud-upload upload-icon"></i>
+                                <p class="mb-2">Drag and drop your images here</p>
+                                <p class="text-muted small mb-0">or click to select files</p>
+                                {{ form_widget(form.photos, {
+                                    'attr': {
+                                        'class': 'd-none',
+                                        'accept': 'image/*',
+                                        'multiple': 'multiple',
+                                        'data-max-size': '5242880'
+                                    }
+                                }) }}
+                            </div>
+                            <div class="form-text">Supported formats: JPG, PNG, GIF (max 5MB each)</div>
+                            {% if post.photos %}
+                                <div class="mt-3">
+                                    <p class="mb-2">Current Photo:</p>
+                                    <div class="preview-item">
+                                        <img src="{{ asset('uploads/images/' ~ post.photos) }}" alt="Current photo">
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div id="imagePreview" class="image-preview mt-3"></div>
+                            {{ form_errors(form.photos, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg btn-submit">
+                                <i class="bi bi-save"></i> Update Post
+                            </button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+
+                <div class="text-center">
+                    <a href="{{ path('app_client_post_index') }}" class="action-btn back">
+                        <i class="bi bi-arrow-left"></i> Back to Posts
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            const imageInput = document.querySelector('input[type="file"]');
+            const imagePreview = document.getElementById('imagePreview');
+            const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            // Highlight drop zone when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            // Handle dropped files
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            // Handle clicked files
+            dropZone.addEventListener('click', () => {
+                imageInput.click();
+            });
+
+            imageInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            function preventDefaults (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function highlight(e) {
+                dropZone.classList.add('bg-light');
+            }
+
+            function unhighlight(e) {
+                dropZone.classList.remove('bg-light');
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+
+            function handleFiles(files) {
+                const validFiles = [...files].filter(file => {
+                    if (!file.type.startsWith('image/')) {
+                        alert(`File ${file.name} is not an image.`);
+                        return false;
+                    }
+                    if (file.size > maxFileSize) {
+                        alert(`File ${file.name} is too large (max 5MB).`);
+                        return false;
+                    }
+                    return true;
+                });
+
+                validFiles.forEach(previewFile);
+            }
+
+            function previewFile(file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = function() {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `
+                        <img src="${reader.result}" alt="Preview">
+                        <button type="button" class="remove-image">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    `;
+                    
+                    div.querySelector('.remove-image').addEventListener('click', function() {
+                        div.remove();
+                    });
+                    
+                    imagePreview.appendChild(div);
+                }
+            }
+        });
+    </script>
+{% endblock %}

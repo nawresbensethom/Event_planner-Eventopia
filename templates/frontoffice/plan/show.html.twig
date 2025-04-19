@@ -1,0 +1,313 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}
+    Détails du plan - EvenTopia
+{% endblock %}
+
+{% block body %}
+<section class="plan-section section-padding">
+    <div class="container">
+        <!-- Messages flash -->
+        <div class="flash-messages mb-4">
+            {% for label in ['success', 'error', 'info', 'warning'] %}
+                {% for message in app.flashes(label) %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show rounded-3 glow-effect animate__animated animate__fadeIn" role="alert">
+                        <i class="bi bi-info-circle me-2"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Titre principal -->
+        <header class="text-center mb-5 animate__animated animate__slideInDown sticky-header">
+            <h1 class="main-title mb-3">
+                <i class="bi bi-eye me-2"></i> Détails du plan
+            </h1>
+            <p class="text-muted lead">Consultez les informations de votre plan</p>
+        </header>
+
+        <!-- Carte des détails -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12">
+                <div class="card bg-glass border-0 shadow-lg glow-effect animate__animated animate__fadeInUp">
+                    <div class="card-body p-4">
+                        <h2 class="card-title fw-bold text-festival mb-4">{{ plan.titre ?: 'Non défini' }}</h2>
+                        <div class="plan-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Description</span>
+                                <p class="detail-value">{{ plan.description ?: 'Non défini' }}</p>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Date de début</span>
+                                <span class="detail-value">{{ plan.dateDebut ? plan.dateDebut|date('d/m/Y') : 'Non défini' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Date de fin</span>
+                                <span class="detail-value">{{ plan.dateFin ? plan.dateFin|date('d/m/Y') : 'Non défini' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Priorité</span>
+                                <span class="detail-value">{{ plan.priorite ? plan.priorite|capitalize : 'Non défini' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Lieu</span>
+                                <span class="detail-value">{{ plan.location ?: 'Non défini' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boutons -->
+                <div class="action-buttons text-center d-flex justify-content-center gap-3 mt-5 animate__animated animate__fadeIn">
+                    <a href="{{ path('app_plan_index') }}" class="btn btn-outline-light btn-lg glossy-btn glow-effect">
+                        <i class="bi bi-arrow-left-circle me-2"></i> Retour
+                    </a>
+                    <a href="{{ path('app_plan_edit', {'id': plan.id}) }}" class="btn btn-festival btn-lg glossy-btn glow-effect">
+                        <i class="bi bi-pencil me-2"></i> Modifier
+                    </a>
+                    <form method="post" action="{{ path('app_plan_delete', {'id': plan.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce plan ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ plan.id) }}">
+                        <button type="submit" class="btn btn-outline-danger btn-lg glossy-btn glow-effect">
+                            <i class="bi bi-trash me-2"></i> Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animation.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --festival-primary: #ff4d94; /* Rose vibrant */
+            --festival-secondary: #6b48ff; /* Violet électrique */
+            --festival-accent: #CDA8C3; /* Violet pastel */
+            --festival-bg: #1a0b2e; /* Fond cosmique sombre */
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-muted: #b0b0b0;
+            --white: #ffffff;
+            --glow-color: rgba(255, 77, 148, 0.5);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--festival-bg), #2a1b3d);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        .plan-section {
+            padding: 80px 0 120px; /* Ajout de padding-bottom pour éviter le chevauchement avec le footer */
+            background: radial-gradient(circle, rgba(255, 77, 148, 0.2), transparent);
+            min-height: 100vh; /* Assure que la section prend toute la hauteur */
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .flash-messages {
+            position: relative;
+            z-index: 2;
+        }
+
+        .alert {
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            color: var(--white);
+        }
+
+        .alert-info {
+            background: rgba(205, 168, 195, 0.2);
+            border-color: var(--festival-accent);
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, var(--festival-bg), #2a1b3d);
+            z-index: 3;
+            padding: 1rem 0;
+        }
+
+        .main-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--festival-primary);
+            text-shadow: 0 0 15px var(--glow-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 15px var(--glow-color); }
+            50% { text-shadow: 0 0 25px var(--glow-color), 0 0 35px var(--glow-color); }
+            100% { text-shadow: 0 0 15px var(--glow-color); }
+        }
+
+        .bg-glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+
+        .card {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--festival-accent);
+        }
+
+        .plan-details {
+            display: grid;
+            gap: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--festival-primary);
+        }
+
+        .detail-value {
+            color: var(--text-muted);
+            flex: 1;
+            text-align: right;
+        }
+
+        .detail-value p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .glow-effect:hover {
+            box-shadow: 0 0 30px var(--glow-color), 0 0 60px var(--glow-color);
+            transform: translateY(-5px);
+        }
+
+        .action-buttons {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-festival {
+            background: linear-gradient(45deg, var(--festival-primary), var(--festival-secondary));
+            color: var(--white);
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+        }
+
+        .btn-festival:hover {
+            background: linear-gradient(45deg, var(--festival-secondary), var(--festival-primary));
+            box-shadow: 0 0 20px var(--glow-color);
+            transform: translateY(-3px);
+        }
+
+        .btn-outline-light {
+            border-color: var(--festival-accent);
+            color: var(--festival-accent);
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            background: rgba(205, 168, 195, 0.1); /* Fond léger pour plus de visibilité */
+        }
+
+        .btn-outline-light:hover {
+            background: var(--festival-accent);
+            color: var(--festival-bg);
+        }
+
+        .btn-outline-danger {
+            border-color: #ff4d4d;
+            color: #ff4d4d;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            background: rgba(255, 77, 77, 0.1); /* Fond léger pour plus de visibilité */
+        }
+
+        .btn-outline-danger:hover {
+            background: #ff4d4d;
+            color: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.2rem;
+            }
+
+            .plan-section {
+                padding: 60px 0 100px;
+            }
+
+            .card-title {
+                font-size: 1.5rem;
+            }
+
+            .btn-lg {
+                padding: 0.6rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-title {
+                font-size: 1.8rem;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .btn-lg {
+                width: 100%;
+                text-align: center;
+            }
+
+            .detail-item {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+
+            .detail-value {
+                text-align: left;
+            }
+        }
+    </style>
+{% endblock %}

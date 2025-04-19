@@ -1,0 +1,52 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Edit Reservation{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        font-family: 'Source Sans Pro', sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
+    }
+    h1 {
+        color: #007bff;
+        margin-bottom: 1rem;
+    }
+    a {
+        color: #007bff;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    a:hover {
+        color: #0056b3;
+    }
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        color: #212529;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        background-color: #007bff;
+        border: 1px solid #007bff;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 0.25rem;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+</style>
+
+<h1>Edit Reservation</h1>
+
+{{ include('backoffice/reservation/_form.html.twig', {'button_label': 'Update', 'class': 'btn'}) }}
+
+<a href="{{ path('app_reservation_index') }}" class="btn">back to list</a>
+
+{{ include('backoffice/reservation/_delete_form.html.twig', {'class': 'btn'}) }}
+{% endblock %}
