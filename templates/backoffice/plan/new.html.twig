@@ -1,0 +1,23 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Créer un Plan{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+  <div class="card shadow">
+    <div class="card-header bg-success text-white">
+      <h2 class="h4 mb-0">Nouveau Plan</h2>
+    </div>
+    <div class="card-body bg-light">
+      {{ include('backoffice/plan/_form.html.twig', {
+          button_label: 'Créer'
+      }) }}
+    </div>
+    <div class="card-footer bg-light text-end">
+      <a href="{{ path('backoffice_plan_index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-circle me-1"></i>Annuler
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

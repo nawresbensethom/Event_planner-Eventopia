@@ -1,324 +1,206 @@
 {% extends 'frontoffice/base.html.twig' %}
 
-{% block title %}
-    Modifier Tâche - Festava Live
-{% endblock %}
-
-{% block body %}
-<section class="plan-section section-padding">
-    <div class="container">
-        <!-- Messages flash -->
-        <div class="mb-4">
-            {% for label in ['success', 'error', 'info', 'warning'] %}
-                {% for message in app.flashes(label) %}
-                    <div class="alert alert-{{ label }} alert-dismissible fade show rounded-3 glow-effect animate__animated animate__fadeIn" role="alert">
-                        <i class="bi bi-info-circle me-2"></i> {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-                    </div>
-                {% endfor %}
-            {% endfor %}
-        </div>
-
-        <!-- Titre principal -->
-        <header class="text-center mb-5 animate__animated animate__slideInDown">
-            <h1 class="main-title mb-3">
-                <i class="bi bi-pencil-square me-2"></i> Modifier Tâche
-            </h1>
-            <p class="text-muted lead">Mettez à jour les détails de votre tâche</p>
-        </header>
-
-        <!-- Formulaire -->
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-12">
-                <div class="card bg-glass border-0 shadow-lg glow-effect animate__animated animate__fadeInUp">
-                    <div class="card-header bg-transparent border-0">
-                        <h2 class="mb-0 text-festival fw-bold">Modifier Tâche</h2>
-                    </div>
-                    <div class="card-body p-5">
-                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <!-- Titre -->
-                                <div class="mb-3 form-group position-relative">
-                                    <div class="d-flex align-items-center mb-2">
-                                        {{ form_label(form.titre, 'Titre', {'label_attr': {'class': 'form-label fw-bold me-2'}}) }}
-                                        <i class="bi bi-card-text text-festival"></i>
-                                    </div>
-                                    {{ form_widget(form.titre, {'attr': {'class': 'form-control form-control-lg rounded-pill shadow-sm'}}) }}
-                                    <div class="invalid-feedback mt-1">
-                                        {{ form_errors(form.titre) }}
-                                    </div>
-                                </div>
-
-                                <!-- Description -->
-                                <div class="mb-3 form-group position-relative">
-                                    <div class="d-flex align-items-center mb-2">
-                                        {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label fw-bold me-2'}}) }}
-                                        <i class="bi bi-text-paragraph text-festival"></i>
-                                    </div>
-                                    {{ form_widget(form.description, {'attr': {'class': 'form-control form-control-lg rounded-3 shadow-sm'}}) }}
-                                    <div class="invalid-feedback mt-1">
-                                        {{ form_errors(form.description) }}
-                                    </div>
-                                </div>
-
-                                <!-- Date -->
-                                <div class="mb-3 form-group position-relative">
-                                    <div class="d-flex align-items-center mb-2">
-                                        {{ form_label(form.date, 'Date', {'label_attr': {'class': 'form-label fw-bold me-2'}}) }}
-                                        <i class="bi bi-calendar-event text-festival"></i>
-                                    </div>
-                                    {{ form_widget(form.date, {'attr': {'class': 'form-control form-control-lg rounded-pill shadow-sm'}}) }}
-                                    <div class="invalid-feedback mt-1">
-                                        {{ form_errors(form.date) }}
-                                    </div>
-                                </div>
-
-                                <!-- Durée estimée -->
-                                <div class="mb-3 form-group position-relative">
-                                    <div class="d-flex align-items-center mb-2">
-                                        {{ form_label(form.duree_estimee, 'Durée estimée', {'label_attr': {'class': 'form-label fw-bold me-2'}}) }}
-                                        <i class="bi bi-clock text-festival"></i>
-                                    </div>
-                                    {{ form_widget(form.duree_estimee, {'attr': {'class': 'form-control form-control-lg rounded-pill shadow-sm'}}) }}
-                                    <div class="invalid-feedback mt-1">
-                                        {{ form_errors(form.duree_estimee) }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <!-- Catégorie -->
-                                <div class="mb-3 form-group position-relative">
-                                    <div class="d-flex align-items-center mb-2">
-                                        {{ form_label(form.categorie, 'Catégorie', {'label_attr': {'class': 'form-label fw-bold me-2'}}) }}
-                                        <i class="bi bi-tag-fill text-festival"></i>
-                                    </div>
-                                    {{ form_widget(form.categorie, {'attr': {'class': 'form-control form-control-lg rounded-pill shadow-sm'}}) }}
-                                    <div class="invalid-feedback mt-1">
-                                        {{ form_errors(form.categorie) }}
-                                    </div>
-                                </div>
-
-                                <!-- Statut -->
-                                <div class="mb-3 form-group position-relative">
-                                    <div class="d-flex align-items-center mb-2">
-                                        {{ form_label(form.statut, 'Statut', {'label_attr': {'class': 'form-label fw-bold me-2'}}) }}
-                                        <i class="bi bi-check-circle text-festival"></i>
-                                    </div>
-                                    {{ form_widget(form.statut, {'attr': {'class': 'form-select form-select-lg rounded-pill shadow-sm'}}) }}
-                                    <div class="invalid-feedback mt-1">
-                                        {{ form_errors(form.statut) }}
-                                    </div>
-                                </div>
-
-                                <!-- Plan associé -->
-                                <div class="mb-3 form-group position-relative">
-                                    <div class="d-flex align-items-center mb-2">
-                                        {{ form_label(form.plan, 'Plan associé', {'label_attr': {'class': 'form-label fw-bold me-2'}}) }}
-                                        <i class="bi bi-list-task text-festival"></i>
-                                    </div>
-                                    {{ form_widget(form.plan, {'attr': {'class': 'form-select form-select-lg rounded-pill shadow-sm'}}) }}
-                                    <div class="invalid-feedback mt-1">
-                                        {{ form_errors(form.plan) }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Boutons -->
-                        <div class="text-center d-flex justify-content-center gap-3 mt-5">
-                            <button type="submit" class="btn btn-festival btn-lg glossy-btn glow-effect">
-                                <i class="bi bi-save me-2"></i> {{ button_label|default('Enregistrer les modifications') }}
-                            </button>
-                            <a href="{{ path('app_tache_by_plan', { id: tache.plan.id }) }}" class="btn btn-outline-light btn-lg glossy-btn">
-                                <i class="bi bi-arrow-left-circle me-2"></i> Retour à la liste
-                            </a>
-
-                        </div>
-
-                        {{ form_end(form) }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block title %}Modifier une tâche – EvenTopia{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animation.min.css" rel="stylesheet">
     <style>
-        :root {
-            --festival-primary: #ff4d94; /* Rose vibrant */
-            --festival-secondary: #6b48ff; /* Violet électrique */
-            --festival-accent: #00f7ff; /* Cyan néon */
-            --festival-bg: #1a0b2e; /* Fond cosmique sombre */
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --text-muted: #b0b0b0;
-            --white: #ffffff;
-            --glow-color: rgba(255, 77, 148, 0.5);
+        .create-header {
+            background: linear-gradient(135deg, rgba(194,130,130,0.9) 0%, rgba(246,214,130,0.9) 100%);
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            text-align: center;
         }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--festival-bg), #2a1b3d);
-            color: var(--white);
-            overflow-x: hidden;
+        .create-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI2NDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIGQ9Ik0wIDBoMTQ0MHY2NDBIMHoiLz48cGF0aCBkPSJNMCA0NDBsMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUgMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9nPjwvc3ZnPg==') center/cover no-repeat;
+            opacity: 0.1;
         }
-
-        .plan-section {
-            padding: 80px 0;
-            background: radial-gradient(circle, rgba(255, 77, 148, 0.2), transparent);
+        .create-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: fadeInDown 1s ease-out;
         }
-
-        .glow-effect {
-            box-shadow: 0 0 20px var(--glow-color);
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        .create-subtitle {
+            font-size: 1.2rem;
+            animation: fadeInUp 1s ease-out 0.3s;
+            animation-fill-mode: both;
         }
-
-        .glow-effect:hover {
-            box-shadow: 0 0 30px var(--glow-color);
-            transform: translateY(-5px);
-        }
-
-        .main-title {
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: var(--festival-primary);
-            text-shadow: 0 0 15px var(--glow-color);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { text-shadow: 0 0 15px var(--glow-color); }
-            50% { text-shadow: 0 0 25px var(--glow-color); }
-            100% { text-shadow: 0 0 15px var(--glow-color); }
-        }
-
-        .bg-glass {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .form-container {
+            background: white;
+            padding: 2.5rem;
             border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: -2rem auto 4rem;
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+            animation: slideUp 1s ease-out;
         }
-
-        .card-header {
-            background: transparent;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        .form-section {
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.6s ease-out;
         }
-
-        .text-festival {
-            color: var(--festival-accent);
-        }
-
-        .form-control, .form-select {
-            background-color: rgba(255, 255, 255, 0.15);
-            border: 1px solid var(--festival-primary);
-            color: var(--white);
-            padding-left: 2.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-color: var(--festival-accent);
-            box-shadow: 0 0 10px var(--festival-accent);
-        }
-
         .form-label {
-            color: var(--white);
-        }
-
-        .invalid-feedback {
-            color: #ff4d4d;
-            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
             display: block;
         }
-
-        .form-group {
-            position: relative;
+        .form-control,
+        .form-select {
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
         }
-
-        .form-group i {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #c28282;
+            box-shadow: 0 0 0 0.2rem rgba(194,130,130,0.25);
+            outline: none;
         }
-
-        .btn-festival {
-            background: linear-gradient(45deg, var(--festival-primary), var(--festival-secondary));
-            color: var(--white);
+        .btn-submit {
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            color: white;
             border: none;
-            border-radius: 50px;
-            padding: 0.75rem 2rem;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
             font-weight: 600;
+            border-radius: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
         }
-
-        .btn-festival:hover {
-            background: linear-gradient(45deg, var(--festival-secondary), var(--festival-primary));
-            box-shadow: 0 0 20px var(--glow-color);
-            transform: translateY(-3px);
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-
-        .btn-outline-light {
-            border-color: var(--festival-accent);
-            color: var(--festival-accent);
-            border-radius: 50px;
-            padding: 0.75rem 2rem;
+        .action-btn.back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            background: #f8f9fa;
+            color: #666;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
         }
-
-        .btn-outline-light:hover {
-            background: var(--festival-accent);
-            color: var(--festival-bg);
+        .action-btn.back:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
         }
-
-        .alert {
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
-            color: var(--white);
-        }
-
-        @media (max-width: 768px) {
-            .main-title {
-                font-size: 2.2rem;
-            }
-
-            .plan-section {
-                padding: 60px 0;
-            }
-
-            .card-body {
-                padding: 1.5rem;
-            }
-
-            .form-control, .form-select {
-                font-size: 1rem;
-            }
-
-            .btn-lg {
-                padding: 0.6rem 1.5rem;
-                font-size: 1rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .main-title {
-                font-size: 1.8rem;
-            }
-
-            .d-flex {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .btn-lg {
-                width: 100%;
-                text-align: center;
-            }
-        }
+        @keyframes fadeIn     { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes fadeInDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes fadeInUp   { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes slideUp    { from {opacity:0; transform:translateY(40px);} to {opacity:1; transform:translateY(0);} }
     </style>
+{% endblock %}
+
+{% block body %}
+    <div class="create-header">
+        <div class="container">
+            <h1 class="create-title">Modifier une tâche</h1>
+            <p class="create-subtitle">Plan : {{ tache.plan.titre }}</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            {% for label in ['success','error'] %}
+                {% for msg in app.flashes(label) %}
+                    <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }}">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                <div class="form-section">
+                    {{ form_label(form.titre, 'Titre', {'label_attr':{'class':'form-label'}}) }}
+                    {{ form_widget(form.titre, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.titre.vars.valid ? '' : ' is-invalid'),
+                            'placeholder': 'Entrez le titre'
+                        }
+                    }) }}
+                    {{ form_errors(form.titre) }}
+                </div>
+
+                <div class="form-section">
+                    {{ form_label(form.description, 'Description', {'label_attr':{'class':'form-label'}}) }}
+                    {{ form_widget(form.description, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.description.vars.valid ? '' : ' is-invalid'),
+                            'rows': '4',
+                            'placeholder': 'Décrivez la tâche'
+                        }
+                    }) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6 form-section">
+                        {{ form_label(form.date, 'Date', {'label_attr':{'class':'form-label'}}) }}
+                        {{ form_widget(form.date, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.date.vars.valid ? '' : ' is-invalid')
+                            }
+                        }) }}
+                        {{ form_errors(form.date) }}
+                    </div>
+                    <div class="col-md-6 form-section">
+                        {{ form_label(form.duree_estimee, 'Durée estimée (h)', {'label_attr':{'class':'form-label'}}) }}
+                        {{ form_widget(form.duree_estimee, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.duree_estimee.vars.valid ? '' : ' is-invalid')
+                            }
+                        }) }}
+                        {{ form_errors(form.duree_estimee) }}
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6 form-section">
+                        {{ form_label(form.categorie, 'Catégorie', {'label_attr':{'class':'form-label'}}) }}
+                        {{ form_widget(form.categorie, {
+                            'attr': {
+                                'class': 'form-select' ~ (form.categorie.vars.valid ? '' : ' is-invalid')
+                            }
+                        }) }}
+                        {{ form_errors(form.categorie) }}
+                    </div>
+                    <div class="col-md-6 form-section">
+                        {{ form_label(form.statut, 'Statut', {'label_attr':{'class':'form-label'}}) }}
+                        {{ form_widget(form.statut, {
+                            'attr': {
+                                'class': 'form-select' ~ (form.statut.vars.valid ? '' : ' is-invalid')
+                            }
+                        }) }}
+                        {{ form_errors(form.statut) }}
+                    </div>
+                </div>
+
+                {{ form_widget(form.plan, {'attr': {'type':'hidden'}}) }}
+
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-save me-2"></i> Enregistrer
+                </button>
+                <a href="{{ path('app_tache_by_plan', {'id': tache.plan.id}) }}" class="action-btn back">
+                    <i class="bi bi-arrow-left-circle me-1"></i> Retour à la liste
+                </a>
+            {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}

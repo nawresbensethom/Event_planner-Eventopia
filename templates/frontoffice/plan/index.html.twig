@@ -1,267 +1,177 @@
 {% extends 'frontoffice/base.html.twig' %}
 
-{% block title %}
-    Liste des plans - EvenTopia
-{% endblock %}
-
-{% block body %}
-<section class="plan-section section-padding">
-    <div class="container">
-        <!-- Messages flash -->
-        <div class="mb-4">
-            {% for label in ['success', 'error', 'info', 'warning'] %}
-                {% for message in app.flashes(label) %}
-                    <div class="alert alert-{{ label }} alert-dismissible fade show rounded-3 glow-effect animate__animated animate__fadeIn" role="alert">
-                        <i class="bi bi-info-circle me-2"></i> {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-                    </div>
-                {% endfor %}
-            {% endfor %}
-        </div>
-
-        <!-- Titre principal -->
-        <header class="text-center mb-5 animate__animated animate__slideInDown">
-            <h1 class="main-title mb-3">
-                <i class="bi bi-list-task me-2"></i> Liste des plans
-            </h1>
-            <p class="text-muted lead">Gérez vos plans pour le festival</p>
-        </header>
-
-        <!-- Boutons pour créer un plan et accéder au tableau de bord -->
-        <div class="text-center mb-5">
-            <a href="{{ path('app_plan_new') }}" class="btn btn-festival btn-lg glossy-btn glow-effect me-2">
-                <i class="bi bi-plus-circle me-2 icon-animate"></i> Créer un plan
-            </a>
-            <a href="{{ path('app_plan_dashboard') }}" class="btn btn-outline-light btn-lg glossy-btn glow-effect">
-                <i class="bi bi-bar-chart me-2 icon-animate"></i> Tableau de Bord
-            </a>
-        </div>
-
-        <!-- Liste des plans -->
-        <div class="row g-4">
-            {% for plan in plans %}
-                <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp">
-                    <div class="card bg-glass border-0 shadow-lg glow-effect h-100">
-                        <div class="card-body p-4">
-                            <h5 class="card-title fw-bold text-festival">{{ plan.titre }}</h5>
-                            <p class="card-text text-muted">
-                                {{ plan.description|length > 100 ? plan.description|slice(0, 100) ~ '...' : plan.description ?: 'Aucune description.' }}
-                            </p>
-                            <ul class="list-unstyled mb-3">
-                                <li class="mb-2">
-                                    <strong>Début :</strong> {{ plan.dateDebut ? plan.dateDebut|date('d/m/Y') : 'Non défini' }}
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Fin :</strong> {{ plan.dateFin ? plan.dateFin|date('d/m/Y') : 'Non défini' }}
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Priorité :</strong> {{ plan.priorite ? plan.priorite|capitalize : 'Non défini' }}
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Lieu :</strong> {{ plan.location ?: 'Non défini' }}
-                                </li>
-                            </ul>
-                            <div class="d-flex justify-content-between flex-wrap gap-2">
-                                <a href="{{ path('app_plan_show', {'id': plan.id}) }}" class="btn btn-outline-light btn-sm glossy-btn">
-                                    <i class="bi bi-eye me-2"></i> Voir
-                                </a>
-                                <a href="{{ path('app_plan_edit', {'id': plan.id}) }}" class="btn btn-outline-light btn-sm glossy-btn">
-                                    <i class="bi bi-pencil me-2"></i> Modifier
-                                </a>
-                                <a href="{{ path('app_tache_by_plan', {'id': plan.id}) }}" class="btn btn-outline-light btn-sm glossy-btn">
-                                    <i class="bi bi-list-check me-2"></i> Voir les tâches
-                                </a>
-                                {{ include('frontoffice/plan/_delete_form.html.twig', {'plan': plan}) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <div class="col-12 text-center animate__animated animate__fadeIn">
-                    <div class="alert alert-info bg-glass rounded-3 glow-effect">
-                        Aucun plan trouvé.
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block title %}Plans – EvenTopia{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animation.min.css" rel="stylesheet">
     <style>
-        :root {
-            --festival-primary: #ff4d94; /* Rose vibrant */
-            --festival-secondary: #6b48ff; /* Violet électrique */
-            --festival-accent: #CDA8C3; /* Violet pastel remplace le cyan */
-            --festival-bg: #1a0b2e; /* Fond cosmique sombre */
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --text-muted: #b0b0b0;
-            --white: #ffffff;
-            --glow-color: rgba(255, 77, 148, 0.5);
+        /* --- Header Section --- */
+        .plan-header {
+            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%),
+                        url('{{ asset('images/plan-header-bg.jpg') }}') center/cover no-repeat;
+            padding: 6rem 0;
+            margin-bottom: 4rem;
+            position: relative;
+            text-align: center;
+            color: white;
+        }
+        .plan-header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0i...') center/cover no-repeat;
+            opacity: 0.1;
+        }
+        .plan-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: fadeInDown 1s ease-out;
+            position: relative;
+        }
+        .plan-subtitle {
+            font-size: 1.4rem;
+            max-width: 600px;
+            margin: 1rem auto 2rem;
+            animation: fadeInUp 1s ease-out 0.3s;
+            position: relative;
+        }
+        .create-plan-btn {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 2px solid rgba(255,255,255,0.4);
+            text-decoration: none;
+            animation: fadeInUp 1s ease-out 0.6s;
+            backdrop-filter: blur(5px);
+            position: relative;
+        }
+        .create-plan-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.6);
         }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--festival-bg), #2a1b3d);
-            color: var(--white);
-            overflow-x: hidden;
+        /* --- Grid & Cards --- */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+            gap: 2rem;
+            padding: 0 1rem 4rem;
         }
-
-        .plan-section {
-            padding: 80px 0;
-            background: radial-gradient(circle, rgba(255, 77, 148, 0.2), transparent);
-        }
-
-        .glow-effect {
-            box-shadow: 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
-        }
-
-        .glow-effect:hover {
-            box-shadow: 0 0 30px var(--glow-color), 0 0 60px var(--glow-color);
-            transform: translateY(-5px);
-        }
-
-        .main-title {
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: var(--festival-primary);
-            text-shadow: 0 0 15px var(--glow-color);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { text-shadow: 0 0 15px var(--glow-color); }
-            50% { text-shadow: 0 0 25px var(--glow-color), 0 0 35px var(--glow-color); }
-            100% { text-shadow: 0 0 15px var(--glow-color); }
-        }
-
-        .bg-glass {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .post-card {
+            background: white;
             border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            animation: fadeIn 0.6s ease-out;
         }
-
-        .card {
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        .post-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
-
-        .card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        .post-content {
+            padding: 1.5rem;
         }
-
-        .card-title {
-            font-size: 1.5rem;
+        .post-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .post-excerpt {
+            color: #666;
+            font-size: 0.95rem;
             margin-bottom: 1rem;
-        }
-
-        .card-text {
-            font-size: 1rem;
             line-height: 1.6;
         }
-
-        .text-festival {
-            color: var(--festival-accent);
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        .post-actions {
+            border-top: 1px solid #eee;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            background: #fff;
+        }
+        .post-actions .btn {
+            font-size: 0.85rem;
         }
 
-        .btn-festival {
-            background: linear-gradient(45deg, var(--festival-primary), var(--festival-secondary));
-            color: var(--white);
-            font-weight: 600;
-            border: none;
-            border-radius: 50px;
-            padding: 0.75rem 2rem;
-        }
+        /* --- Animations --- */
+        @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes fadeInDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes fadeInUp { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
 
-        .btn-festival:hover {
-            background: linear-gradient(45deg, var(--festival-secondary), var(--festival-primary));
-            box-shadow: 0 0 20px var(--glow-color);
-            transform: translateY(-3px);
-        }
-
-        .btn-outline-light {
-            border-color: var(--festival-accent);
-            color: var(--festival-accent);
-            border-radius: 50px;
-            padding: 0.5rem 1.5rem;
-        }
-
-        .btn-outline-light:hover {
-            background: var(--festival-accent);
-            color: var(--festival-bg);
-        }
-
-        .btn-outline-danger {
-            border-color: #ff4d4d;
-            color: #ff4d4d;
-            border-radius: 50px;
-            padding: 0.5rem 1.5rem;
-        }
-
-        .btn-outline-danger:hover {
-            background: #ff4d4d;
-            color: var(--white);
-        }
-
-        .alert {
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
-            color: var(--white);
-        }
-
-        .alert-info {
-            background: rgba(205, 168, 195, 0.2); /* Ajusté pour violet pastel */
-            border-color: var(--festival-accent);
-        }
-
-        .list-unstyled li {
-            font-size: 0.95rem;
-        }
-
+        /* --- Responsive --- */
         @media (max-width: 768px) {
-            .main-title {
-                font-size: 2.2rem;
-            }
-
-            .plan-section {
-                padding: 60px 0;
-            }
-
-            .btn-lg {
-                padding: 0.6rem 1.5rem;
-                font-size: 1rem;
-            }
-
-            .btn-sm {
-                padding: 0.4rem 1rem;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .main-title {
-                font-size: 1.8rem;
-            }
-
-            .card-body {
-                padding: 1.5rem;
-            }
-
-            .d-flex {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .btn-sm {
-                width: 100%;
-                text-align: center;
-            }
+            .plan-title { font-size: 2.5rem; }
+            .plan-subtitle { font-size: 1.2rem; }
+            .posts-grid { grid-template-columns: 1fr; }
         }
     </style>
+{% endblock %}
+
+{% block body %}
+    <section class="plan-header">
+        <div class="container">
+            <h1 class="plan-title">Vos Plans</h1>
+            <p class="plan-subtitle">Créez et gérez vos plannings pour l’événement</p>
+            <a href="{{ path('app_plan_new') }}" class="create-plan-btn">
+                <i class="fas fa-plus-circle me-2"></i> Nouveau Plan
+            </a>
+        </div>
+    </section>
+
+    <div class="container">
+        {% if plans|length > 0 %}
+            <div class="posts-grid">
+                {% for plan in plans %}
+                    <article class="post-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                        <div class="post-content">
+                            <h2 class="post-title">{{ plan.titre }}</h2>
+                            <p class="post-excerpt">
+                                {{ plan.description|striptags|slice(0, 100) }}{% if plan.description|length > 100 %}…{% endif %}
+                            </p>
+                            <div class="post-meta">
+                                <span><i class="bi bi-calendar3"></i> {{ plan.dateDebut|date('d/m/Y') }}</span>
+                                <span><i class="bi bi-flag"></i> {{ plan.priorite|capitalize }}</span>
+                            </div>
+                        </div>
+
+                        <div class="post-actions">
+                            <a href="{{ path('app_plan_show',      {'id': plan.id}) }}" class="btn btn-outline-dark btn-sm glossy-btn">
+                                <i class="bi bi-eye me-1"></i> Voir
+                            </a>
+                            <a href="{{ path('app_plan_edit',      {'id': plan.id}) }}" class="btn btn-outline-dark btn-sm glossy-btn">
+                                <i class="bi bi-pencil me-1"></i> Modifier
+                            </a>
+                            <a href="{{ path('app_tache_by_plan',  {'id': plan.id}) }}" class="btn btn-outline-dark btn-sm glossy-btn">
+                                <i class="bi bi-list-check me-1"></i> Tâches
+                            </a>
+                            {{ include('frontoffice/plan/_delete_form.html.twig', {'plan': plan}) }}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-posts text-center py-5">
+                <i class="bi bi-calendar-x no-posts-icon" style="font-size:4rem;color:#c28282;"></i>
+                <p class="no-posts-text">Aucun plan trouvé. Créez votre premier plan !</p>
+                <a href="{{ path('app_plan_new') }}" class="btn btn-primary btn-lg">Créer un Plan</a>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

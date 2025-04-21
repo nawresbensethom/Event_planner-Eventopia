@@ -1,441 +1,172 @@
 {% extends 'frontoffice/base.html.twig' %}
 
-{% block title %}
-    Liste des Tâches - Festava Live
-{% endblock %}
-
-{% block body %}
-<section class="plan-section section-padding">
-    <div class="container">
-        {# Messages flash #}
-        <div class="flash-messages mb-4">
-            {% for label in ['success', 'error', 'info', 'warning'] %}
-                {% for message in app.flashes(label) %}
-                    <div class="alert alert-{{ label }} alert-dismissible fade show rounded-3 glow-effect" role="alert">
-                        <i class="bi bi-info-circle me-2"></i>
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-                    </div>
-                {% endfor %}
-            {% endfor %}
-        </div>
-
-        {# Titre principal #}
-        <header class="text-center mb-5">
-            <h1 class="main-title mb-2">
-                <i class="bi bi-check2-square me-2"></i> Vos Tâches
-            </h1>
-            <p class="text-muted">Gérez vos tâches pour un festival inoubliable</p>
-        </header>
-
-        {# Formulaire de recherche et filtre #}
-        <div class="row justify-content-center mb-5">
-            <div class="col-lg-8 col-12">
-                <form method="get" class="search-form d-flex align-items-center flex-wrap gap-3 bg-glass p-4 rounded-3 glow-effect">
-                    <div class="flex-grow-1">
-                        <div class="input-group">
-                            <span class="input-group-text bg-transparent border-0">
-                                <i class="bi bi-search text-festival"></i>
-                            </span>
-                            <input
-                                type="text"
-                                name="search"
-                                id="search"
-                                class="form-control border-0 shadow-none rounded-pill"
-                                value="{{ app.request.query.get('search', '') }}"
-                                placeholder="Rechercher une tâche..."
-                                aria-label="Rechercher une tâche"
-                            >
-                        </div>
-                    </div>
-                    <div>
-                        <select
-                            name="statut"
-                            id="statut"
-                            class="form-select rounded-pill shadow-sm"
-                            aria-label="Filtrer par statut"
-                        >
-                            <option value="" {% if not app.request.query.get('statut') %}selected{% endif %}>Tous statuts</option>
-                            <option value="A_FAIRE" {% if app.request.query.get('statut') == 'A_FAIRE' %}selected{% endif %}>À faire</option>
-                            <option value="EN_COURS" {% if app.request.query.get('statut') == 'EN_COURS' %}selected{% endif %}>En cours</option>
-                            <option value="TERMINEE" {% if app.request.query.get('statut') == 'TERMINEE' %}selected{% endif %}>Terminée</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-festival rounded-pill" aria-label="Filtrer">
-                        <i class="bi bi-funnel me-1"></i> Filtrer
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        {# Bouton Ajouter une tâche #}
-        <div class="row justify-content-center mb-5">
-            <div class="col-auto">
-                <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="btn btn-festival rounded-pill glow-effect">
-                    <i class="bi bi-plus-circle me-2"></i> Ajouter une tâche
-                </a>
-            </div>
-        </div>
-
-        {# Résultat #}
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <p class="text-muted mb-0">
-                    <i class="bi bi-list-check me-2 text-festival"></i>
-                    <strong>{{ taches|length|default(0) }}</strong> tâche{{ taches|length > 1 ? 's' : '' }} trouvé{{ taches|length > 1 ? 's' : '' }}
-                </p>
-            </div>
-        </div>
-
-        {# Liste des tâches #}
-        <div class="row g-4">
-            {% for tache in taches %}
-                <div class="col-lg-4 col-md-6 col-12">
-                    <article class="card bg-glass border-0 shadow-sm glow-effect">
-                        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
-                            <h5 class="card-title fw-semibold mb-0 text-festival">
-                                <i class="bi bi-card-text me-2"></i> {{ tache.titre }}
-                            </h5>
-                            <span class="badge
-                                {{ tache.statut == 'TERMINEE' ? 'bg-success' :
-                                   tache.statut == 'EN_COURS' ? 'bg-warning' : 'bg-accent' }} text-dark">
-                                {{ tache.statut|replace({'A_FAIRE': 'À faire', 'EN_COURS': 'En cours', 'TERMINEE': 'Terminée'}) }}
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text text-muted description-ellipsis" title="{{ tache.description|default('') }}">
-                                {{ tache.description|default('Aucune description') }}
-                            </p>
-                            <ul class="list-group list-group-flush bg-transparent text-muted mb-4">
-                                <li class="list-group-item bg-transparent border-0 d-flex align-items-center gap-2">
-                                    <i class="bi bi-calendar-event text-festival"></i>
-                                    <strong class="fw-semibold">Date :</strong>
-                                    <span class="fw-normal">{{ tache.date ? tache.date|date('d/m/Y') : 'Non défini' }}</span>
-                                </li>
-                                <li class="list-group-item bg-transparent border-0 d-flex align-items-center gap-2">
-                                    <i class="bi bi-clock text-festival"></i>
-                                    <strong class="fw-semibold">Durée :</strong>
-                                    <span class="fw-normal">{{ tache.dureeEstimee|default('Non spécifiée') }}</span>
-                                </li>
-                                <li class="list-group-item bg-transparent border-0 d-flex align-items-center gap-2">
-                                    <i class="bi bi-tag-fill text-festival"></i>
-                                    <strong class="fw-semibold">Catégorie :</strong>
-                                    <span class="fw-normal">{{ tache.categorie|default('Non spécifiée') }}</span>
-                                </li>
-                                <li class="list-group-item bg-transparent border-0 d-flex align-items-center gap-2">
-                                    <i class="bi bi-list-task text-festival"></i>
-                                    <strong class="fw-semibold">Plan :</strong>
-                                    <span class="fw-normal">{{ tache.plan ? tache.plan.titre : 'Aucun plan' }}</span>
-                                </li>
-                            </ul>
-
-                            {# Actions #}
-                            <div class="d-flex flex-wrap gap-2 justify-content-center">
-                                <a href="{{ path('app_tache_show', {'id': tache.id}) }}" class="btn btn-outline-light btn-sm" title="Voir la tâche">
-                                    <i class="bi bi-eye me-1"></i> Voir
-                                </a>
-                                <a href="{{ path('app_tache_edit', {'id': tache.id}) }}" class="btn btn-outline-light btn-sm" title="Modifier">
-                                    <i class="bi bi-pencil me-1"></i> Modifier
-                                </a>
-                                <form method="post" action="{{ path('app_tache_delete', {'id': tache.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette tâche ?');" class="d-inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tache.id) }}">
-                                    <button type="submit" class="btn btn-outline-light btn-sm" title="Supprimer">
-                                        <i class="bi bi-trash me-1"></i> Supprimer
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            {% else %}
-                <div class="col-12">
-                    <div class="alert alert-info text-center rounded-3 glow-effect">
-                        <i class="bi bi-info-circle me-2"></i> Aucune tâche trouvée.
-                        <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="alert-link">Ajoutez une nouvelle tâche</a> pour commencer !
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endblock %}
+{% block title %}Tâches du Plan {{ plan.titre }} – EvenTopia{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <style>
-        /* Variables */
-        :root {
-            --festival-primary: #ff4d94; /* Rose vibrant */
-            --festival-secondary: #6b48ff; /* Violet électrique */
-            --festival-accent: #CDA8C3; /* Violet pastel */
-            --festival-bg: #1a0b2e; /* Fond violet sombre */
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --white: #ffffff;
-            --glow-color: rgba(255, 77, 148, 0.3);
+        /* --- Header Section --- */
+        .plan-header {
+            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%),
+                        url('{{ asset('images/plan-header-bg.jpg') }}') center/cover no-repeat;
+            padding: 6rem 0 4rem;
+            margin-bottom: 2rem;
+            position: relative;
+            text-align: center;
+            color: white;
         }
-
-        /* Layout général */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--festival-bg), #2a1b3d);
-            color: var(--white);
+        .plan-header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0i...') center/cover no-repeat;
+            opacity: 0.1;
         }
-
-        .plan-section {
-            padding: 40px 0;
-            background: radial-gradient(circle, rgba(255, 77, 148, 0.2), transparent);
+        .plan-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: fadeInDown 1s ease-out;
+            position: relative;
         }
-
-        .flash-messages {
-            max-width: 600px;
-            margin: 0 auto 1.5rem;
+        .plan-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease-out 0.3s;
+            position: relative;
         }
-
-        /* Alertes */
-        .alert {
-            border-radius: 6px;
-            backdrop-filter: blur(5px);
-            color: var(--white);
-            font-size: 0.9rem;
-        }
-
-        .alert-info {
-            background: rgba(205, 168, 195, 0.2);
-            border-color: var(--festival-accent);
-        }
-
-        .alert-success {
-            background: rgba(72, 187, 120, 0.2);
-            border-color: #48bb78;
-        }
-
-        .alert-error {
-            background: rgba(245, 101, 101, 0.2);
-            border-color: #f56565;
-        }
-
-        .alert-warning {
-            background: rgba(236, 201, 75, 0.2);
-            border-color: #ecc94b;
-        }
-
-        /* Titre */
-        .main-title {
-            font-size: 1.6rem;
+        .create-task-btn {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
             font-weight: 600;
-            color: var(--festival-primary);
-            text-shadow: 0 0 4px var(--glow-color);
+            border: 2px solid rgba(255,255,255,0.4);
+            text-decoration: none;
+            animation: fadeInUp 1s ease-out 0.6s;
+            backdrop-filter: blur(5px);
+        }
+        .create-task-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.6);
         }
 
-        .text-muted {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
+        /* --- Grid & Cards --- */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+            gap: 2rem;
+            padding: 0 1rem 4rem;
         }
-
-        /* Formulaire de recherche */
-        .search-form {
-            background: var(--card-bg);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-        }
-
-        .form-control,
-        .form-select {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--white);
-            font-size: 0.9rem;
-            padding: 0.5rem 0.8rem;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--festival-accent);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 5px var(--glow-color);
-            outline: none;
-        }
-
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.8rem center;
-            background-size: 12px;
-            padding-right: 2rem;
-        }
-
-        .form-select option {
-            background: var(--festival-bg);
-            color: var(--white);
-        }
-
-        .input-group-text {
-            color: var(--festival-accent);
-        }
-
-        /* Cartes */
-        .bg-glass {
-            background: var(--card-bg);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-        }
-
-        .card {
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-        }
-
-        .card-text {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .list-group-item {
-            font-size: 0.85rem;
-            padding: 0.4rem 0;
-        }
-
-        .list-group-item strong {
-            font-weight: 500;
-        }
-
-        .list-group-item span {
-            font-weight: 400;
-        }
-
-        .text-festival {
-            color: var(--festival-accent);
-        }
-
-        /* Badges */
-        .badge {
-            font-weight: 500;
-            padding: 0.3rem 0.8rem;
-            border-radius: 10px;
-            font-size: 0.8rem;
-        }
-
-        .bg-accent {
-            background-color: var(--festival-accent);
-            color: var(--festival-bg);
-        }
-
-        /* Boutons */
-        .btn-festival {
-            background: linear-gradient(45deg, var(--festival-primary), var(--festival-secondary));
-            border: none;
-            color: var(--white);
-            font-weight: 500;
-            padding: 0.5rem 1.2rem;
-            border-radius: 16px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-festival:hover {
-            background: linear-gradient(45deg, var(--festival-secondary), var(--festival-primary));
-            box-shadow: 0 0 8px var(--glow-color);
-            transform: scale(1.02);
-        }
-
-        .btn-outline-light {
-            border-color: var(--festival-accent);
-            color: var(--festival-accent);
-            font-weight: 500;
-            padding: 0.5rem 1.2rem;
-            border-radius: 16px;
-            background: rgba(205, 168, 195, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-outline-light:hover {
-            background: var(--festival-accent);
-            color: var(--festival-bg);
-            box-shadow: 0 0 8px var(--glow-color);
-            transform: scale(1.02);
-        }
-
-        .btn-delete {
-            background: rgba(245, 101, 101, 0.8);
-            color: var(--white);
-            border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 16px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-delete:hover {
-            background: rgba(245, 101, 101, 1);
-            box-shadow: 0 0 8px var(--glow-color);
-            transform: scale(1.02);
-        }
-
-        .glow-effect {
-            box-shadow: 0 0 8px var(--glow-color);
-            transition: box-shadow 0.3s ease;
-        }
-
-        .glow-effect:hover {
-            box-shadow: 0 0 12px var(--glow-color);
-        }
-
-        .description-ellipsis {
-            white-space: nowrap;
+        .post-card {
+            background: white;
+            border-radius: 20px;
             overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease-out;
+        }
+        .post-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .post-content {
+            padding: 1.5rem;
+        }
+        .post-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .post-excerpt {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        .post-actions {
+            border-top: 1px solid #eee;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            background: #fff;
+        }
+        .post-actions .btn {
+            font-size: 0.85rem;
         }
 
-        /* Responsive */
+        /* --- Animations --- */
+        @keyframes fadeIn     { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes fadeInDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes fadeInUp   { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+
+        /* --- Responsive --- */
         @media (max-width: 768px) {
-            .plan-section {
-                padding: 30px 0;
-            }
-
-            .card-body {
-                padding: 1.5rem;
-            }
-
-            .main-title {
-                font-size: 1.4rem;
-            }
-
-            .card-title {
-                font-size: 1rem;
-            }
-
-            .list-group-item {
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .search-form {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .form-select,
-            .form-control {
-                width: 100%;
-            }
-
-            .btn {
-                width: 100%;
-                font-size: 0.9rem;
-            }
-
-            .d-flex {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
+            .plan-title    { font-size: 2.5rem; }
+            .plan-subtitle { font-size: 1.2rem; }
+            .posts-grid    { grid-template-columns: 1fr; }
         }
     </style>
+{% endblock %}
+
+{% block body %}
+    <section class="plan-header">
+        <div class="container">
+            <h1 class="plan-title">Tâches du Plan « {{ plan.titre }} »</h1>
+            <p class="plan-subtitle">Gérez les tâches associées à ce planning</p>
+            <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="create-task-btn">
+                <i class="bi bi-plus-circle me-2"></i> Ajouter une tâche
+            </a>
+        </div>
+    </section>
+
+    <div class="container">
+        {% if taches|length > 0 %}
+            <div class="posts-grid">
+                {% for tache in taches %}
+                    <article class="post-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                        <div class="post-content">
+                            <h2 class="post-title">{{ tache.titre }}</h2>
+                            <p class="post-excerpt">
+                                {{ tache.description|striptags|slice(0, 100) }}{% if tache.description|length > 100 %}…{% endif %}
+                            </p>
+                        </div>
+                        <div class="post-meta">
+                            <span><i class="bi bi-calendar-event"></i> {{ tache.date ? tache.date|date('d/m/Y') : '–' }}</span>
+                            <span><i class="bi bi-clock"></i> {{ tache.dureeEstimee }} h</span>
+                        </div>
+                        <div class="post-actions">
+                            <a href="{{ path('app_tache_show', {'id': tache.id}) }}" class="btn btn-outline-dark btn-sm">
+                                <i class="bi bi-eye me-1"></i> Voir
+                            </a>
+                            <a href="{{ path('app_tache_edit', {'id': tache.id}) }}" class="btn btn-outline-dark btn-sm">
+                                <i class="bi bi-pencil me-1"></i> Modifier
+                            </a>
+                            {{ include('frontoffice/tache/_delete_form.html.twig', { 'tache': tache }) }}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Aucune tâche trouvée. 
+                    <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="alert-link">Ajoutez-en une</a> pour commencer !
+                </div>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

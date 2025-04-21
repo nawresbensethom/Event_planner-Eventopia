@@ -1,0 +1,93 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Liste des Tâches{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Tâches</h1>
+
+    <style>
+        .table {
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+        .table th {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+        }
+        .table td {
+            background-color: #f8f9fa;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .btn {
+            margin: 0 5px;
+        }
+        .container {
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Durée</th>
+                <th>Catégorie</th>
+                <th>Statut</th>
+                <th>Plan</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tache in taches %}
+                <tr>
+                    <td>{{ tache.id }}</td>
+                    <td>{{ tache.titre }}</td>
+                    <td>{{ tache.description|slice(0, 50) ~ '…' }}</td>
+                    <td>{{ tache.date ? tache.date|date('Y-m-d') }}</td>
+                    <td>{{ tache.dureeEstimee }}</td>
+                    <td>{{ tache.categorie }}</td>
+                    <td>{{ tache.statut }}</td>
+                    <td>{{ tache.plan ? tache.plan.titre : '—' }}</td>
+                    <td>
+                        <a href="{{ path('backoffice_tache_show', {id: tache.id}) }}" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye me-1"></i>Voir
+                        </a>
+                        <a href="{{ path('backoffice_tache_edit', {id: tache.id}) }}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil me-1"></i>Modifier
+                        </a>
+                        <form method="post"
+                              action="{{ path('backoffice_tache_delete', {id: tache.id}) }}"
+                              onsubmit="return confirm('Voulez-vous vraiment supprimer cette tâche ?');"
+                              class="d-inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tache.id) }}">
+                            <button class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i>Supprimer
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="9" class="text-center">Aucune tâche trouvée</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('backoffice_tache_new') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle me-1"></i>Créer une Tâche
+    </a>
+</div>
+{% endblock %}
