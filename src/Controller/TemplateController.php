@@ -9,13 +9,11 @@ use App\Entity\Post;
 
 class TemplateController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
+    #[Route('/template', name: 'app_template')]
     public function index(): Response
     {
         return $this->render('frontoffice/base.html.twig');
     }
-
-  
 
     #[Route('/backoffice/dashboard', name: 'dashboard')]
     public function dashboard(EntityManagerInterface $entityManager): Response

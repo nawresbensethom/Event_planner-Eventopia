@@ -217,42 +217,63 @@
             <!--begin::User Menu Dropdown-->
             <li class="nav-item dropdown user-menu">
               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                <img
-                  src="{{ asset('assets/img/user2-160x160.jpg') }}"
-                  class="user-image rounded-circle shadow"
-                  alt="User Image"
-                />
-                <span class="d-none d-md-inline">Alexander Pierce</span>
+                {% if app.user.profil and app.user.profil.photo %}
+                  <img
+                    src="{{ asset('uploads/photos/' ~ app.user.profil.photo) }}"
+                    class="user-image rounded-circle shadow"
+                    alt="User Image"
+                    style="width: 32px; height: 32px; object-fit: cover;"
+                  />
+                {% else %}
+                  <img
+                    src="{{ asset('assets/img/default-profile.png') }}"
+                    class="user-image rounded-circle shadow"
+                    alt="User Image"
+                    style="width: 32px; height: 32px; object-fit: cover;"
+                  />
+                {% endif %}
+                <span class="d-none d-md-inline">
+                  {% if app.user %}
+                    {{ app.user.nom }}
+                  {% else %}
+                    Utilisateur
+                  {% endif %}
+                </span>
               </a>
               <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                 <!--begin::User Image-->
                 <li class="user-header text-bg-primary">
-                  <img
-                    src="{{ asset('assets/img/user2-160x160.jpg') }}"
-                    class="rounded-circle shadow"
-                    alt="User Image"
-                  />
-                  <p>
-                    Alexander Pierce - Web Developer
-                    <small>Member since Nov. 2023</small>
+                  {% if app.user.profil and app.user.profil.photo %}
+                    <img
+                      src="{{ asset('uploads/photos/' ~ app.user.profil.photo) }}"
+                      class="rounded-circle shadow"
+                      alt="User Image"
+                      style="width: 90px; height: 90px; object-fit: cover;"
+                    />
+                  {% else %}
+                    <img
+                      src="{{ asset('assets/img/default-profile.png') }}"
+                      class="rounded-circle shadow"
+                      alt="User Image"
+                      style="width: 90px; height: 90px; object-fit: cover;"
+                    />
+                  {% endif %}
+                  <p class="mt-2">
+                    {% if app.user %}
+                      {{ app.user.nom }}
+                      <small>Administrateur</small>
+                    {% endif %}
                   </p>
                 </li>
                 <!--end::User Image-->
-                <!--begin::Menu Body-->
-                <li class="user-body">
-                  <!--begin::Row-->
-                  <div class="row">
-                    <div class="col-4 text-center"><a href="#">Followers</a></div>
-                    <div class="col-4 text-center"><a href="#">Sales</a></div>
-                    <div class="col-4 text-center"><a href="#">Friends</a></div>
-                  </div>
-                  <!--end::Row-->
-                </li>
-                <!--end::Menu Body-->
                 <!--begin::Menu Footer-->
-                <li class="user-footer">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
-                  <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                <li class="user-footer d-flex justify-content-between p-3">
+                  <a href="{{ path('app_profil_show') }}" class="btn btn-default btn-flat">
+                    <i class="bi bi-person-circle me-2"></i>Voir le profil
+                  </a>
+                  <a href="{{ path('app_logout') }}" class="btn btn-default btn-flat">
+                    <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
+                  </a>
                 </li>
                 <!--end::Menu Footer-->
               </ul>

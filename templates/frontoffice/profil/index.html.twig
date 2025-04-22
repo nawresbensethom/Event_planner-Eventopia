@@ -7,20 +7,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --success-color: #2ecc71;
-            --warning-color: #f1c40f;
-            --danger-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #34495e;
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --light-color: #f8f9fa;
+            --dark-color: #1e1e2d;
+            --accent-color: #fda085;
+            --soft-pink: #fda085;
             --border-radius: 8px;
-            --box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         }
 
         .profile-section {
             padding: 2rem 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, var(--light-color) 0%, #eef2ff 100%);
             min-height: calc(100vh - 100px);
         }
 
@@ -69,7 +71,7 @@
         }
 
         .profile-header {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             padding: 1.5rem;
             display: flex;
@@ -136,7 +138,7 @@
         }
 
         .btn-primary:hover {
-            background-color: #2980b9;
+            background-color: var(--secondary-color);
             transform: translateY(-2px);
         }
 

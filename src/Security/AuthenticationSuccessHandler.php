@@ -20,22 +20,24 @@ class AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterf
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
     {
-        // Redirection par défaut pour tous les utilisateurs
-        $targetPath = $request->getSession()->get('_security.main.target_path');
+        // Clear any existing session data that might cause loops
+        $session = $request->getSession();
+        $session->remove('_security.main.target_path');
         
-        if ($targetPath) {
-            $request->getSession()->remove('_security.main.target_path');
-            return new RedirectResponse($targetPath);
+        // Get user's roles
+        $roles = $token->getRoleNames();
+        
+        // Determine redirect based on role
+        if (in_array('ROLE_ADMIN', $roles)) {
+            return new RedirectResponse($this->urlGenerator->generate('dashboard'));
+        } 
+        
+        // For both ROLE_PRESTATAIRE and ROLE_ORGANISATEUR, redirect to app_home2
+        if (in_array('ROLE_PRESTATAIRE', $roles) || in_array('ROLE_ORGANISATEUR', $roles)) {
+            return new RedirectResponse($this->urlGenerator->generate('app_home2'));
         }
 
-        // Si pas de targetPath, rediriger selon le rôle
-        if ($this->security->isGranted('ROLE_ADMIN')) {
-            return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
-        } elseif ($this->security->isGranted('ROLE_PRESTATAIRE') || $this->security->isGranted('ROLE_ORGANISATEUR')) {
-            return new RedirectResponse($this->urlGenerator->generate('app_home'));
-        }
-
-        // Redirection par défaut si aucun rôle spécifique
-        return new RedirectResponse($this->urlGenerator->generate('app_home'));
+        // Default fallback
+        return new RedirectResponse($this->urlGenerator->generate('app_home2'));
     }
 } 

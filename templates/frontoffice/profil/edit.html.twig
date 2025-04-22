@@ -7,13 +7,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
             --light-color: #f8f9fa;
+            --accent-color: #fda085;
+            --soft-pink: #fda085;
             --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         }
 
         .profile-edit-container {
@@ -35,7 +37,7 @@
         }
 
         .page-title {
-            color: var(--secondary-color);
+            color: var(--primary-color);
             font-weight: 600;
             margin: 0;
         }
@@ -73,19 +75,17 @@
         }
 
         .btn-outline:hover {
-            background-color: rgba(52, 152, 219, 0.1);
+            background-color: rgba(67, 97, 238, 0.1);
         }
 
         .btn-warning {
-            background-color: var(--warning-color);
+            background-color: var(--primary-color);
             color: white;
-            border: 1px solid var(--warning-color);
+            border: 1px solid var(--primary-color);
         }
 
         .btn-warning:hover {
-            background-color: #e67e22;
-            transform: translateY(-1px);
-            box-shadow: var(--box-shadow);
+            background-color: var(--secondary-color);
         }
 
         .btn-danger {
@@ -122,7 +122,7 @@
 
         .upload-area:hover {
             border-color: var(--primary-color);
-            background: rgba(52, 152, 219, 0.05);
+            background: rgba(67, 97, 238, 0.05);
         }
 
         .photo-actions {
@@ -154,83 +154,64 @@
     <div class="profile-edit-container">
         <div class="page-header">
             <h1 class="page-title">
-                <i class="fas fa-user-edit me-2"></i>Edit Profile #{{ profil.id }}
+                <i class="fas fa-user-edit me-2"></i>Modifier mon profil
             </h1>
         </div>
 
         <div class="form-card">
-            {{ form_start(form, {'attr': {'class': 'profile-form', 'novalidate': 'novalidate'}}) }}
+            {{ form_start(form, {'attr': {'class': 'profile-form'}}) }}
 
                 <div class="mb-4">
-                    {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
                     {{ form_errors(form.description) }}
                 </div>
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        {{ form_label(form.adresse, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_label(form.adresse, 'Adresse', {'label_attr': {'class': 'form-label'}}) }}
                         {{ form_widget(form.adresse, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.adresse) }}
                     </div>
                     <div class="col-md-6">
-                        {{ form_label(form.telephone, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_label(form.telephone, 'Téléphone', {'label_attr': {'class': 'form-label'}}) }}
                         {{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.telephone) }}
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    {{ form_label(form.rating, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_label(form.rating, 'Note', {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.rating, {'attr': {'class': 'form-control', 'min': 0, 'max': 5, 'step': 0.5}}) }}
                     {{ form_errors(form.rating) }}
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label">Profile Photo</label>
-
+                    <label class="form-label">Photo de profil</label>
                     {% if profil.photo %}
                         <div class="photo-preview-container">
                             <img src="{{ asset('uploads/photos/' ~ profil.photo) }}" 
                                  class="current-photo" 
-                                 alt="Current profile photo">
-                            <div class="photo-actions mt-3">
-                                <button type="button" class="btn btn-outline btn-sm" 
-                                        onclick="document.getElementById('{{ form.photo.vars.id }}').click()">
-                                    <i class="fas fa-sync-alt me-2"></i>Change Photo
-                                </button>
-                                <button type="button" class="btn btn-outline btn-sm"
-                                        onclick="document.getElementById('{{ form.remove_photo.vars.id }}').checked = true; 
-                                                document.querySelector('.current-photo').style.opacity = '0.5';
-                                                this.disabled = true;">
-                                    <i class="fas fa-trash-alt me-2"></i>Remove Photo
-                                </button>
-                                {{ form_widget(form.remove_photo, {'attr': {'class': 'd-none'}}) }}
-                            </div>
+                                 alt="Photo de profil actuelle">
                         </div>
                     {% endif %}
 
-                    <div class="upload-area" id="uploadArea" {% if profil.photo %}style="display: none"{% endif %}>
+                    <div class="upload-area" id="uploadArea">
                         <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
-                        <p class="mb-2">Drag & drop your photo here or click to browse</p>
+                        <p class="mb-2">Glissez et déposez votre photo ici ou cliquez pour parcourir</p>
                         <small class="text-muted">(JPEG, PNG - Max 2MB)</small>
-                        {{ form_widget(form.photo, {'attr': {'class': profil.photo ? 'd-none' : '', 'required': 'required'}}) }}
+                        {{ form_widget(form.photo, {'attr': {'class': 'form-control', 'accept': 'image/*'}}) }}
                     </div>
                     {{ form_errors(form.photo) }}
                 </div>
 
-                <div class="form-actions">
-                    <div>
-                        <a href="{{ path('app_profil_edit') }}" class="btn btn-outline">
-                            <i class="fas fa-arrow-left me-2"></i>Back to list
-                        </a>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-save me-2"></i>{{ button_label|default('Update') }}
-                        </button>
-                        
-                    </div>
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a href="{{ path('app_profil_show') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Enregistrer
+                    </button>
                 </div>
 
             {{ form_end(form) }}
@@ -239,60 +220,72 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const photoInput = document.getElementById('{{ form.photo.vars.id }}');
             const uploadArea = document.getElementById('uploadArea');
+            const photoInput = document.querySelector('input[type="file"]');
 
-            if (photoInput) {
-                photoInput.addEventListener('change', function(e) {
-                    if (this.files && this.files[0]) {
+            uploadArea.addEventListener('click', function() {
+                photoInput.click();
+            });
+
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--primary-color)';
+                uploadArea.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
+            });
+
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.borderColor = '#ccc';
+                uploadArea.style.backgroundColor = '';
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#ccc';
+                uploadArea.style.backgroundColor = '';
+                
+                if (e.dataTransfer.files.length) {
+                    photoInput.files = e.dataTransfer.files;
+                    // Show preview if needed
+                    const file = e.dataTransfer.files[0];
+                    if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
                         reader.onload = function(e) {
-                            const preview = document.createElement('img');
-                            preview.src = e.target.result;
-                            preview.className = 'current-photo';
-                            preview.alt = 'New profile photo preview';
-
-                            const container = document.querySelector('.photo-preview-container') || document.createElement('div');
-                            container.className = 'photo-preview-container';
-                            container.innerHTML = '';
-                            container.appendChild(preview);
-
-                            const actions = document.createElement('div');
-                            actions.className = 'photo-actions mt-3';
-                            actions.innerHTML = `
-                                <button type="button" class="btn btn-outline btn-sm" 
-                                        onclick="document.getElementById('{{ form.photo.vars.id }}').click()">
-                                    <i class="fas fa-sync-alt me-2"></i>Change Photo
-                                </button>
-                                
-                            `;
-                            container.appendChild(actions);
-
-                            uploadArea.style.display = 'none';
-                            uploadArea.parentNode.insertBefore(container, uploadArea.nextSibling);
-                        }
-                        reader.readAsDataURL(this.files[0]);
+                            const preview = document.querySelector('.current-photo');
+                            if (preview) {
+                                preview.src = e.target.result;
+                            } else {
+                                const newPreview = document.createElement('div');
+                                newPreview.className = 'photo-preview-container';
+                                newPreview.innerHTML = `
+                                    <img src="${e.target.result}" class="current-photo" alt="Preview">
+                                `;
+                                uploadArea.parentNode.insertBefore(newPreview, uploadArea);
+                            }
+                        };
+                        reader.readAsDataURL(file);
                     }
-                });
+                }
+            });
 
-                uploadArea.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    uploadArea.style.borderColor = 'var(--primary-color)';
-                    uploadArea.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
-                });
-
-                uploadArea.addEventListener('dragleave', () => {
-                    uploadArea.style.borderColor = '#ccc';
-                    uploadArea.style.backgroundColor = '';
-                });
-
-                uploadArea.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    photoInput.files = e.dataTransfer.files;
-                    const event = new Event('change');
-                    photoInput.dispatchEvent(event);
-                });
-            }
+            photoInput.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.querySelector('.current-photo');
+                        if (preview) {
+                            preview.src = e.target.result;
+                        } else {
+                            const newPreview = document.createElement('div');
+                            newPreview.className = 'photo-preview-container';
+                            newPreview.innerHTML = `
+                                <img src="${e.target.result}" class="current-photo" alt="Preview">
+                            `;
+                            uploadArea.parentNode.insertBefore(newPreview, uploadArea);
+                        }
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
         });
     </script>
 {% endblock %}

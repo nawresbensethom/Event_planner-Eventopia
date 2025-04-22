@@ -372,4 +372,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         }
         return $this;
     }
+
+    public function isBlocked(): bool
+    {
+        return $this->statut === 'inactive';
+    }
 }
