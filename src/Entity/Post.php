@@ -8,8 +8,9 @@ use App\Entity\Commentaire;
 use App\Entity\SignalementPost;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\PostRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PostRepository::class)]
 #[ORM\Table(name: "post")]
 class Post
 {
@@ -42,6 +43,12 @@ class Post
 
     #[ORM\OneToMany(mappedBy: "id_post", targetEntity: SignalementPost::class)]
     private Collection $signalements;
+
+    #[ORM\Column(name: "like_count", type: "integer", options: ["default" => 0])]
+    private ?int $likeCount = 0;
+
+    #[ORM\Column(name: "dislike_count", type: "integer", options: ["default" => 0])]
+    private ?int $dislikeCount = 0;
 
     public function __construct()
     {
@@ -160,6 +167,40 @@ class Post
     public function removeSignalement(SignalementPost $signalement): self
     {
         $this->signalements->removeElement($signalement);
+        return $this;
+    }
+
+    public function getLikeCount(): ?int
+    {
+        return $this->likeCount;
+    }
+
+    public function setLikeCount(int $likeCount): self
+    {
+        $this->likeCount = $likeCount;
+        return $this;
+    }
+
+    public function incrementLikeCount(): self
+    {
+        $this->likeCount++;
+        return $this;
+    }
+
+    public function getDislikeCount(): ?int
+    {
+        return $this->dislikeCount;
+    }
+
+    public function setDislikeCount(int $dislikeCount): self
+    {
+        $this->dislikeCount = $dislikeCount;
+        return $this;
+    }
+
+    public function incrementDislikeCount(): self
+    {
+        $this->dislikeCount++;
         return $this;
     }
 }

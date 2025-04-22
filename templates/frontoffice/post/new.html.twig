@@ -362,13 +362,6 @@
 
             {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                 <div class="form-section">
-                    {{ form_label(form.id_utilisateur, 'User ID', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.id_utilisateur, {'attr': {'class': 'form-control' ~ (form.id_utilisateur.vars.valid ? '' : ' is-invalid')}}) }}
-                    {{ form_errors(form.id_utilisateur) }}
-                    <div class="form-text">Please enter your unique user identifier</div>
-                </div>
-
-                <div class="form-section">
                     {{ form_label(form.titre, 'Title', {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.titre, {'attr': {'class': 'form-control' ~ (form.titre.vars.valid ? '' : ' is-invalid'), 'placeholder': 'Enter a captivating title'}}) }}
                     {{ form_errors(form.titre) }}

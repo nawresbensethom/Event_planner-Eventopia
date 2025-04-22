@@ -41,6 +41,12 @@ final class PostController extends AbstractController
     #[Route('/new', name: 'app_client_post_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
+        // Check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            throw new AccessDeniedException('You need to be logged in to create a post.');
+        }
+
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
@@ -52,21 +58,9 @@ final class PostController extends AbstractController
                 }
                 $this->logger->error('Form validation errors: ' . json_encode($form->getErrors(true)));
             } else {
-                // Check if user exists
-                $userId = $form->get('id_utilisateur')->getData();
-                $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($userId);
-                
-                if (!$utilisateur) {
-                    $this->addFlash('error', 'User ID ' . $userId . ' does not exist.');
-                    return $this->render('frontoffice/post/new.html.twig', [
-                        'post' => $post,
-                        'form' => $form->createView(),
-                    ]);
-                }
-
                 // Set post metadata
                 $post->setDatePublication(new DateTime());
-                $post->setIdUtilisateur($utilisateur);
+                $post->setIdUtilisateur($user);
                 $post->setStatut('Published');
 
                 // Handle photo uploads
@@ -116,13 +110,11 @@ final class PostController extends AbstractController
                     $jsonPhotos = json_encode($photoFilenames);
                     $this->logger->info('Storing photos in database: ' . $jsonPhotos);
                     $post->setPhotos($jsonPhotos);
-                } else {
-                    $post->setPhotos(null);
                 }
 
                 try {
-            $entityManager->persist($post);
-            $entityManager->flush();
+                    $entityManager->persist($post);
+                    $entityManager->flush();
                     $this->addFlash('success', 'Your post has been created successfully!');
                     return $this->redirectToRoute('app_client_post_index', [], Response::HTTP_SEE_OTHER);
                 } catch (\Exception $e) {
@@ -157,24 +149,20 @@ final class PostController extends AbstractController
     #[Route('/{id_post}/edit', name: 'app_client_post_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Post $post, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
+        // Check if user is logged in and is the owner of the post
+        $user = $this->getUser();
+        if (!$user) {
+            throw new AccessDeniedException('You need to be logged in to edit a post.');
+        }
+
+        if ($post->getIdUtilisateur() !== $user) {
+            throw new AccessDeniedException('You can only edit your own posts.');
+        }
+
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Check if user exists
-            $userId = $form->get('id_utilisateur')->getData();
-            $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($userId);
-            
-            if (!$utilisateur) {
-                $this->addFlash('error', 'User ID ' . $userId . ' does not exist.');
-                return $this->render('frontoffice/post/edit.html.twig', [
-                    'post' => $post,
-                    'form' => $form->createView(),
-                ]);
-            }
-
-            $post->setIdUtilisateur($utilisateur);
-
             // Handle photo uploads
             $photos = $form->get('photos')->getData();
             $uploadDir = $this->getParameter('photos_directory');
@@ -212,9 +200,9 @@ final class PostController extends AbstractController
             }
 
             try {
-            $entityManager->flush();
+                $entityManager->flush();
                 $this->addFlash('success', 'Your post has been updated successfully!');
-            return $this->redirectToRoute('app_client_post_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_client_post_index', [], Response::HTTP_SEE_OTHER);
             } catch (\Exception $e) {
                 $this->addFlash('error', 'An error occurred while updating your post. Please try again.');
             }
@@ -241,5 +229,45 @@ final class PostController extends AbstractController
         }
 
         return $this->redirectToRoute('app_client_post_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id_post}/like', name: 'app_client_post_like', methods: ['POST'])]
+    public function like(Post $post, EntityManagerInterface $entityManager): Response
+    {
+        try {
+            $post->incrementLikeCount();
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'likes' => $post->getLikeCount()
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Error in like action: ' . $e->getMessage());
+            return $this->json([
+                'success' => false,
+                'error' => 'Une erreur est survenue'
+            ], 500);
+        }
+    }
+
+    #[Route('/{id_post}/dislike', name: 'app_client_post_dislike', methods: ['POST'])]
+    public function dislike(Post $post, EntityManagerInterface $entityManager): Response
+    {
+        try {
+            $post->incrementDislikeCount();
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'dislikes' => $post->getDislikeCount()
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Error in dislike action: ' . $e->getMessage());
+            return $this->json([
+                'success' => false,
+                'error' => 'Une erreur est survenue'
+            ], 500);
+        }
     }
 }

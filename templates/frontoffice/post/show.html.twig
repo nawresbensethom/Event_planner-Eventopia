@@ -356,21 +356,19 @@
 {% endblock %}
 
 {% block body %}
-    <div class="post-header">
+    <div class="post-header text-center">
         <div class="container">
             <h1 class="post-title">{{ post.titre }}</h1>
             <div class="post-meta">
                 <div class="meta-item">
-                    <i class="bi bi-calendar3"></i>
-                    {{ post.datePublication|date('F d, Y') }}
+                    <i class="fas fa-user"></i>
+                    {{ post.idUtilisateur.nom }}
                 </div>
                 <div class="meta-item">
-                    <i class="bi bi-person"></i>
-                    User #{{ post.idUtilisateur.id }}
+                    <i class="fas fa-calendar"></i>
+                    {{ post.datePublication|date('d M Y') }}
                 </div>
-                <div class="post-status">
-                    {{ post.statut }}
-                </div>
+                <div class="post-status">{{ post.statut }}</div>
             </div>
         </div>
     </div>
@@ -379,45 +377,55 @@
         <div class="post-content-wrapper">
             {% if post.photos %}
                 <div class="post-gallery">
-                    {% for photo in post.photos|json_decode %}
-                        <div class="gallery-item" onclick="openLightbox('{{ asset('uploads/images/' ~ photo) }}')">
-                            <img src="{{ asset('uploads/images/' ~ photo) }}" alt="Post image">
+                    {% for photo in post.photos|split(',') %}
+                        <div class="gallery-item">
+                            <img src="{{ asset('uploads/photos/' ~ photo) }}" alt="Post image">
                         </div>
                     {% endfor %}
                 </div>
             {% endif %}
 
             <div class="post-body">
-                {{ post.contenu|nl2br }}
+                {{ post.contenu|raw }}
             </div>
         </div>
 
         <div class="post-actions-container">
             <div class="post-actions">
-                <a href="{{ path('app_client_post_index') }}" class="btn-action btn-back">
-                    <i class="fas fa-arrow-left"></i>
-                    Retour à la liste
-                </a>
-                
-                <a href="{{ path('app_client_post_edit', {'id_post': post.idPost}) }}" class="btn-action btn-edit">
+                <a href="{{ path('app_client_post_edit', {'id_post': post.idPost}) }}" class="btn btn-action btn-edit">
                     <i class="fas fa-edit"></i>
                     Modifier
                 </a>
-                
-                <form method="post" action="{{ path('app_client_post_delete', {'id_post': post.idPost}) }}" 
-                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?');" 
-                      style="display: inline-block;">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.idPost) }}">
-                    <button class="btn-action btn-delete">
-                        <i class="fas fa-trash-alt"></i>
-                        Supprimer
-                    </button>
-                </form>
-                
-                <a href="{{ path('app_client_signalement_post_new', {'id_post': post.idPost}) }}" class="btn-action btn-report">
+                <button type="button" class="btn btn-action btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="fas fa-trash-alt"></i>
+                    Supprimer
+                </button>
+                <a href="{{ path('app_client_signalement_post_new', {'id_post': post.idPost}) }}" class="btn btn-action btn-report">
                     <i class="fas fa-flag"></i>
                     Signaler
                 </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer cette publication ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <form method="post" action="{{ path('app_client_post_delete', {'id_post': post.idPost}) }}" style="display: inline-block;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.idPost) }}">
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
