@@ -341,8 +341,8 @@
 {% block body %}
     <div class="create-header text-center">
         <div class="container">
-            <h1 class="create-title">Create a New Post</h1>
-            <p class="create-subtitle">Share your thoughts and experiences with the community</p>
+            <h1 class="create-title">Créer un nouveau post</h1>
+            <p class="create-subtitle">Partagez vos moments avec la communauté</p>
         </div>
     </div>
 
@@ -362,38 +362,38 @@
 
             {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                 <div class="form-section">
-                    {{ form_label(form.titre, 'Title', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.titre, {'attr': {'class': 'form-control' ~ (form.titre.vars.valid ? '' : ' is-invalid'), 'placeholder': 'Enter a captivating title'}}) }}
+                    {{ form_label(form.titre, 'Titre', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.titre, {'attr': {'class': 'form-control' ~ (form.titre.vars.valid ? '' : ' is-invalid')}}) }}
                     {{ form_errors(form.titre) }}
                 </div>
 
                 <div class="form-section">
-                    {{ form_label(form.contenu, 'Content', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.contenu, {'attr': {'class': 'form-control' ~ (form.contenu.vars.valid ? '' : ' is-invalid'), 'rows': '6', 'placeholder': 'Share your story...'}}) }}
+                    {{ form_label(form.contenu, 'Contenu', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.contenu, {'attr': {'class': 'form-control' ~ (form.contenu.vars.valid ? '' : ' is-invalid')}}) }}
                     {{ form_errors(form.contenu) }}
                 </div>
 
                 <div class="form-section">
                     {{ form_label(form.photos, 'Photos', {'label_attr': {'class': 'form-label'}}) }}
                     <div class="image-upload-container" id="dropZone">
-                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                        <p class="upload-text">Drag and drop your photos here</p>
-                        <p class="upload-subtext">or click to select files</p>
-                        {{ form_widget(form.photos, {
-                            'attr': {
-                                'class': 'd-none',
-                                'id': 'file-input',
-                                'accept': 'image/*',
-                                'multiple': 'multiple'
-                            }
-                        }) }}
+                        <i class="bi bi-cloud-upload upload-icon"></i>
+                        <p class="upload-text">Glissez et déposez vos images ici</p>
+                        <p class="upload-subtext">ou</p>
+                        {{ form_widget(form.photos, {'attr': {
+                            'class': 'form-control visually-hidden',
+                            'id': 'post_photos'
+                        }}) }}
+                        <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('post_photos').click()">
+                            Sélectionner des fichiers
+                        </button>
+                        <p class="form-text mt-2">Formats acceptés : JPG, PNG, GIF (max. 5MB par image)</p>
                     </div>
-                    <div id="imagePreview" class="image-preview"></div>
+                    <div class="image-preview" id="imagePreview"></div>
                     {{ form_errors(form.photos) }}
                 </div>
 
-                <button type="submit" class="btn btn-submit">
-                    <i class="fas fa-paper-plane me-2"></i>Create Post
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-send"></i> Publier le post
                 </button>
             {{ form_end(form) }}
         </div>
@@ -405,37 +405,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const dropZone = document.getElementById('dropZone');
-            const fileInput = document.getElementById('file-input');
+            const fileInput = document.getElementById('post_photos');
             const imagePreview = document.getElementById('imagePreview');
-            let files = [];
+            const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
-            // Make sure dropZone and fileInput exist
-            if (!dropZone || !fileInput) {
-                console.error('Required elements not found');
-                return;
-            }
-
-            // Click handling
-            dropZone.addEventListener('click', function(e) {
-                e.preventDefault();
-                fileInput.click();
-            });
-
-            // File input change handling
-            fileInput.addEventListener('change', function(e) {
-                handleFiles(Array.from(this.files));
-            });
-
-            // Drag and drop handling
+            // Prevent default drag behaviors
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropZone.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
             });
 
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
+            // Highlight drop zone when item is dragged over it
             ['dragenter', 'dragover'].forEach(eventName => {
                 dropZone.addEventListener(eventName, highlight, false);
             });
@@ -443,6 +424,19 @@
             ['dragleave', 'drop'].forEach(eventName => {
                 dropZone.addEventListener(eventName, unhighlight, false);
             });
+
+            // Handle dropped files
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            // Handle selected files
+            fileInput.addEventListener('change', function(e) {
+                handleFiles(e.target.files);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
 
             function highlight(e) {
                 dropZone.classList.add('dragover');
@@ -452,65 +446,50 @@
                 dropZone.classList.remove('dragover');
             }
 
-            dropZone.addEventListener('drop', function(e) {
+            function handleDrop(e) {
                 const dt = e.dataTransfer;
-                const droppedFiles = Array.from(dt.files);
-                handleFiles(droppedFiles);
-            });
+                const files = dt.files;
+                handleFiles(files);
+            }
 
-            function handleFiles(newFiles) {
-                const validFiles = newFiles.filter(file => {
-                    if (!file.type.startsWith('image/')) {
-                        alert('Please upload only image files.');
+            function handleFiles(files) {
+                const filesArray = Array.from(files);
+                const validFiles = filesArray.filter(file => {
+                    if (file.size > maxFileSize) {
+                        alert(`Le fichier ${file.name} est trop volumineux. La taille maximale est de 5MB.`);
                         return false;
                     }
-                    if (file.size > 5 * 1024 * 1024) { // 5MB
-                        alert('File too large. Maximum size is 5MB.');
+                    if (!allowedTypes.includes(file.type)) {
+                        alert(`Le fichier ${file.name} n'est pas un format d'image valide.`);
                         return false;
                     }
                     return true;
                 });
 
-                if (validFiles.length === 0) return;
+                // Update the file input with valid files only
+                const dt = new DataTransfer();
+                validFiles.forEach(file => dt.items.add(file));
+                fileInput.files = dt.files;
 
-                // Clear previous files
-                files = validFiles;
+                // Preview valid files
                 imagePreview.innerHTML = '';
+                validFiles.forEach(previewFile);
+            }
 
-                // Update FileList on the input
-                const dataTransfer = new DataTransfer();
-                files.forEach(file => dataTransfer.items.add(file));
-                fileInput.files = dataTransfer.files;
-
-                // Show previews
-                files.forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.className = 'preview-item';
-                        div.innerHTML = `
-                            <img src="${e.target.result}" alt="Preview">
-                            <button type="button" class="remove-preview" data-filename="${file.name}">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        `;
-                        imagePreview.appendChild(div);
-
-                        // Add remove functionality
-                        div.querySelector('.remove-preview').addEventListener('click', function() {
-                            const filename = this.dataset.filename;
-                            files = files.filter(f => f.name !== filename);
-                            
-                            // Update the file input
-                            const dt = new DataTransfer();
-                            files.forEach(f => dt.items.add(f));
-                            fileInput.files = dt.files;
-                            
-                            div.remove();
-                        });
-                    };
-                    reader.readAsDataURL(file);
-                });
+            function previewFile(file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = function() {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `
+                        <img src="${reader.result}" alt="${file.name}"/>
+                        <button type="button" class="remove-preview" onclick="this.closest('.preview-item').remove();">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    `;
+                    imagePreview.appendChild(div);
+                }
             }
         });
     </script>
