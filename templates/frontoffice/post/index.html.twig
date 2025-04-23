@@ -316,9 +316,93 @@
             font-size: 0.8rem;
         }
 
+        .comment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .comment-action-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 0.2rem;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .comment-action-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .comment-action-btn.delete:hover {
+            color: #dc3545;
+        }
+
+        .comment-action-btn.edit:hover {
+            color: #28a745;
+        }
+
         .comment-content {
             color: #555;
             line-height: 1.4;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-edit-form {
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .comment-edit-form.active {
+            display: block;
+        }
+
+        .comment-edit-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            resize: none;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .comment-edit-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(194, 130, 130, 0.1);
+        }
+
+        .comment-edit-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .comment-edit-btn {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .comment-edit-save {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .comment-edit-cancel {
+            background-color: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .comment-edit-btn:hover {
+            opacity: 0.9;
         }
 
         .text-muted {
@@ -350,6 +434,7 @@
 
         .report-button:hover {
             background-color: #dc3545;
+
             color: white;
         }
 
@@ -406,6 +491,31 @@
 
         .reaction-btn.disliked {
             color: #F44336;
+        }
+
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 {% endblock %}
@@ -471,19 +581,42 @@
 
                                 <div class="comments-list">
                                     {% for commentaire in post.commentaires %}
-                                        <div class="comment-item">
+                                        <div class="comment-item" data-comment-id="{{ commentaire.idCommentaire }}">
                                             <div class="comment-header">
                                                 <span class="comment-author">
                                                     <i class="bi bi-person-circle"></i>
                                                     {{ commentaire.idUtilisateur.nom }}
                                                 </span>
-                                                <span class="comment-date">
-                                                    {{ commentaire.dateCommentaire|date('d M Y H:i') }}
-                                </span>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="comment-date me-2">
+                                                        {{ commentaire.dateCommentaire|date('d M Y H:i') }}
+                                                    </span>
+                                                    {% if app.user and (app.user == commentaire.idUtilisateur or is_granted('ROLE_ADMIN')) %}
+                                                        <div class="comment-actions">
+                                                            <button class="comment-action-btn edit" title="Modifier le commentaire">
+                                                                <i class="bi bi-pencil"></i>
+                                                            </button>
+                                                            <button class="comment-action-btn delete" 
+                                                                    data-comment-id="{{ commentaire.idCommentaire }}"
+                                                                    data-csrf-token="{{ csrf_token('delete' ~ commentaire.idCommentaire) }}"
+                                                                    title="Supprimer le commentaire">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                             <div class="comment-content">
                                                 {{ commentaire.contenu }}
                                             </div>
+                                            <form class="comment-edit-form" action="{{ path('app_client_commentaire_edit', {'id_commentaire': commentaire.idCommentaire}) }}" method="post">
+                                                <textarea class="comment-edit-input" name="contenu">{{ commentaire.contenu }}</textarea>
+                                                <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ commentaire.idCommentaire) }}">
+                                                <div class="comment-edit-actions">
+                                                    <button type="button" class="comment-edit-btn comment-edit-cancel">Annuler</button>
+                                                    <button type="submit" class="comment-edit-btn comment-edit-save">Enregistrer</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     {% else %}
                                         <p class="no-comments-message">
@@ -510,6 +643,7 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Gestion des réactions (likes/dislikes)
             function handleReaction(button, url, countElement) {
                 console.log('Sending request to:', url);
                 fetch(url, { 
@@ -545,6 +679,314 @@
                     console.error('Failed to process reaction');
                 });
             }
+
+            // Gestion des commentaires
+            document.querySelectorAll('.comment-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const textarea = this.querySelector('textarea');
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    const commentsList = this.closest('.comments-section').querySelector('.comments-list');
+                    
+                    if (!textarea.value.trim()) {
+                        const errorMessage = document.createElement('div');
+                        errorMessage.className = 'alert alert-error';
+                        errorMessage.textContent = 'Le commentaire ne peut pas être vide.';
+                        form.parentNode.insertBefore(errorMessage, form);
+                        setTimeout(() => errorMessage.remove(), 3000);
+                        return;
+                    }
+                    
+                    // Désactiver le bouton pendant l'envoi
+                    submitButton.disabled = true;
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => Promise.reject(data));
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            const errorMessage = document.createElement('div');
+                            errorMessage.className = 'alert alert-error';
+                            errorMessage.textContent = data.error;
+                            form.parentNode.insertBefore(errorMessage, form);
+                            setTimeout(() => errorMessage.remove(), 3000);
+                        } else if (data.success) {
+                            // Créer le nouveau commentaire
+                            const newComment = document.createElement('div');
+                            newComment.className = 'comment-item';
+                            
+                            // Générer un ID temporaire pour le nouveau commentaire
+                            const tempCommentId = Date.now();
+                            newComment.dataset.commentId = tempCommentId;
+
+                            const currentDate = new Date().toLocaleDateString('fr-FR', { 
+                                day: 'numeric', 
+                                month: 'short', 
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+
+                            // Récupérer le nom d'utilisateur depuis app.user
+                            const userName = '{{ app.user ? app.user.nom : "Utilisateur" }}';
+
+                            newComment.innerHTML = `
+                                <div class="comment-header">
+                                    <span class="comment-author">
+                                        <i class="bi bi-person-circle"></i>
+                                        ${userName}
+                                    </span>
+                                    <div class="d-flex align-items-center">
+                                        <span class="comment-date me-2">
+                                            ${currentDate}
+                                        </span>
+                                        <div class="comment-actions">
+                                            <button class="comment-action-btn edit" title="Modifier le commentaire">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="comment-action-btn delete" 
+                                                    data-comment-id="${tempCommentId}"
+                                                    data-csrf-token="{{ csrf_token('delete' ~ 'temp') }}"
+                                                    title="Supprimer le commentaire">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="comment-content">
+                                    ${textarea.value}
+                                </div>
+                                <form class="comment-edit-form" action="/frontoffice/commentaire/${tempCommentId}/edit" method="post">
+                                    <textarea class="comment-edit-input" name="contenu">${textarea.value}</textarea>
+                                    <div class="comment-edit-actions">
+                                        <button type="button" class="comment-edit-btn comment-edit-cancel">Annuler</button>
+                                        <button type="submit" class="comment-edit-btn comment-edit-save">Enregistrer</button>
+                                    </div>
+                                </form>
+                            `;
+                            
+                            // Supprimer le message "Aucun commentaire" s'il existe
+                            const noCommentsMessage = commentsList.querySelector('.no-comments-message');
+                            if (noCommentsMessage) {
+                                noCommentsMessage.remove();
+                            }
+                            
+                            // Ajouter le nouveau commentaire en haut de la liste avec animation
+                            newComment.style.opacity = '0';
+                            newComment.style.transform = 'translateY(-10px)';
+                            commentsList.insertBefore(newComment, commentsList.firstChild);
+                            
+                            // Déclencher l'animation
+                            setTimeout(() => {
+                                newComment.style.transition = 'all 0.3s ease';
+                                newComment.style.opacity = '1';
+                                newComment.style.transform = 'translateY(0)';
+                            }, 10);
+                            
+                            // Réinitialiser le formulaire
+                            textarea.value = '';
+                            
+                            // Afficher un message de succès
+                            const successMessage = document.createElement('div');
+                            successMessage.className = 'alert alert-success';
+                            successMessage.textContent = data.message || 'Commentaire ajouté avec succès.';
+                            form.parentNode.insertBefore(successMessage, form);
+                            
+                            // Supprimer le message après 3 secondes avec animation
+                            setTimeout(() => {
+                                successMessage.style.opacity = '0';
+                                successMessage.style.transform = 'translateY(-10px)';
+                                setTimeout(() => successMessage.remove(), 300);
+                            }, 3000);
+
+                            // Ajouter les événements aux nouveaux boutons
+                            initializeCommentButtons(newComment);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        const errorMessage = document.createElement('div');
+                        errorMessage.className = 'alert alert-error';
+                        errorMessage.textContent = error.error || 'Une erreur est survenue lors de l\'envoi du commentaire.';
+                        form.parentNode.insertBefore(errorMessage, form);
+                        setTimeout(() => errorMessage.remove(), 3000);
+                    })
+                    .finally(() => {
+                        // Réactiver le bouton
+                        submitButton.disabled = false;
+                    });
+                });
+            });
+
+            // Fonction pour initialiser les boutons d'un commentaire
+            function initializeCommentButtons(commentElement) {
+                // Initialiser le bouton de modification
+                const editButton = commentElement.querySelector('.comment-action-btn.edit');
+                if (editButton) {
+                    editButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const commentItem = this.closest('.comment-item');
+                        const commentContent = commentItem.querySelector('.comment-content');
+                        const editForm = commentItem.querySelector('.comment-edit-form');
+                        
+                        commentContent.style.display = 'none';
+                        editForm.classList.add('active');
+                        
+                        // Focus sur le textarea
+                        const textarea = editForm.querySelector('.comment-edit-input');
+                        textarea.focus();
+                        
+                        // Gérer l'annulation
+                        const cancelButton = editForm.querySelector('.comment-edit-cancel');
+                        cancelButton.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            commentContent.style.display = 'block';
+                            editForm.classList.remove('active');
+                        }, { once: true });
+                        
+                        // Gérer la soumission
+                        editForm.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            
+                            const formData = new FormData(this);
+                            
+                            fetch(this.action, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(data => Promise.reject(data));
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    commentContent.textContent = formData.get('contenu');
+                                    commentContent.style.display = 'block';
+                                    editForm.classList.remove('active');
+                                    
+                                    const successMessage = document.createElement('div');
+                                    successMessage.className = 'alert alert-success';
+                                    successMessage.textContent = data.message || 'Commentaire modifié avec succès';
+                                    commentItem.insertBefore(successMessage, commentContent);
+                                    
+                                    setTimeout(() => {
+                                        successMessage.style.opacity = '0';
+                                        successMessage.style.transform = 'translateY(-10px)';
+                                        setTimeout(() => successMessage.remove(), 300);
+                                    }, 3000);
+                                }
+                            })
+                            .catch(error => {
+                                const errorMessage = document.createElement('div');
+                                errorMessage.className = 'alert alert-error';
+                                errorMessage.textContent = error.error || 'Une erreur est survenue lors de la modification.';
+                                commentItem.insertBefore(errorMessage, commentContent);
+                                setTimeout(() => errorMessage.remove(), 3000);
+                                
+                                // Remettre l'affichage comme avant en cas d'erreur
+                                commentContent.style.display = 'block';
+                                editForm.classList.remove('active');
+                            });
+                        }, { once: true });
+                    });
+                }
+
+                // Initialiser le bouton de suppression
+                const deleteButton = commentElement.querySelector('.comment-action-btn.delete');
+                if (deleteButton) {
+                    deleteButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const commentId = this.dataset.commentId;
+                        const csrfToken = this.dataset.csrfToken;
+                        const commentItem = this.closest('.comment-item');
+                        const commentsList = commentItem.closest('.comments-list');
+                        
+                        if (confirm('Voulez-vous vraiment supprimer ce commentaire ?')) {
+                            const formData = new FormData();
+                            formData.append('_token', csrfToken);
+                            
+                            fetch(`/frontoffice/commentaire/${commentId}/delete`, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(data => Promise.reject(data));
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    // Animation de suppression
+                                    commentItem.style.opacity = '0';
+                                    commentItem.style.transform = 'translateY(-10px)';
+                                    commentItem.style.transition = 'all 0.3s ease';
+                                    
+                                    setTimeout(() => {
+                                        commentItem.remove();
+                                        
+                                        // Vérifier s'il reste des commentaires
+                                        if (commentsList.children.length === 0) {
+                                            const noCommentsMessage = document.createElement('p');
+                                            noCommentsMessage.className = 'no-comments-message';
+                                            noCommentsMessage.textContent = 'Aucun commentaire pour le moment. Soyez le premier à commenter !';
+                                            commentsList.appendChild(noCommentsMessage);
+                                        }
+                                        
+                                        // Afficher le message de succès
+                                        const successMessage = document.createElement('div');
+                                        successMessage.className = 'alert alert-success';
+                                        successMessage.textContent = data.message || 'Commentaire supprimé avec succès';
+                                        commentsList.parentNode.insertBefore(successMessage, commentsList);
+                                        
+                                        setTimeout(() => {
+                                            successMessage.style.opacity = '0';
+                                            successMessage.style.transform = 'translateY(-10px)';
+                                            setTimeout(() => successMessage.remove(), 300);
+                                        }, 3000);
+                                    }, 300);
+                                }
+                            })
+                            .catch(error => {
+                                const errorMessage = document.createElement('div');
+                                errorMessage.className = 'alert alert-error';
+                                errorMessage.textContent = error.error || 'Une erreur est survenue lors de la suppression.';
+                                commentsList.parentNode.insertBefore(errorMessage, commentsList);
+                                setTimeout(() => errorMessage.remove(), 3000);
+                            });
+                        }
+                    });
+                }
+            }
+
+            // Initialiser les boutons pour les commentaires existants
+            document.querySelectorAll('.comment-item').forEach(commentItem => {
+                initializeCommentButtons(commentItem);
+            });
 
             document.querySelectorAll('.like-btn, .dislike-btn').forEach(button => {
                 button.addEventListener('click', function(e) {
