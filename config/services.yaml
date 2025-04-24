@@ -2,6 +2,7 @@
 parameters:
     photos_directory: '%kernel.project_dir%/public/uploads/images'
     services_directory: '%kernel.project_dir%/public/uploads/services'
+    stripe_secret_key: '%env(STRIPE_SECRET_KEY)%'
 
 services:
     _defaults:
@@ -22,3 +23,9 @@ services:
 
     Symfony\Component\HttpFoundation\Session\SessionInterface:
         alias: 'session'
+    
+    App\Service\StripeService:
+        arguments:
+            $router: '@router'
+            $params: '@parameter_bag'
+            $stripeSecretKey: '%stripe_secret_key%'

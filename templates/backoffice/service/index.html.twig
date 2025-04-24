@@ -5,43 +5,47 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .bg-gradient-primary {
-            background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
-        }
-        .bg-gradient-success {
-            background: linear-gradient(87deg, #2dce89 0, #2dcecc 100%) !important;
-        }
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+        margin: 0 2px;
+        display: inline-block;
+    }
+
+    .action-buttons {
+        white-space: nowrap;
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
         .bg-gradient-info {
             background: linear-gradient(87deg, #11cdef 0, #1171ef 100%) !important;
         }
+
+    .bg-gradient-primary {
+        background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
+    }
+
         .bg-gradient-danger {
             background: linear-gradient(87deg, #f5365c 0, #f56036 100%) !important;
         }
-        .service-card {
-            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
-            border: none;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
+
+    .bg-gradient-success {
+        background: linear-gradient(87deg, #2dce89 0, #2dcecc 100%) !important;
+    }
+        
+      
         .header-bg {
             background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
             border-bottom: 1px solid #e3e6f0;
         }
-        .search-container {
-            margin-bottom: 1.5rem;
-            padding: 0.5rem;
-        }
-        .search-input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-        }
-        .search-input {
-            flex: 1;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #e3e6f0;
-            border-radius: 0.35rem;
-            font-size: 0.9rem;
+    .service-card {
+        background: white;
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
         }
         .service-image {
             width: 80px;
@@ -49,16 +53,90 @@
             object-fit: cover;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-        .service-image:hover {
-            transform: scale(1.1);
         }
         .description-cell {
             max-width: 300px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+    .filters-container {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        margin-bottom: 1.5rem;
+    }
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .filter-group {
+        margin-bottom: 1rem;
+    }
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #4e73df;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .filter-group input,
+    .filter-group select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        font-size: 0.9rem;
+    }
+    .filter-buttons {
+            display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+    .filter-button {
+        padding: 0.5rem 1rem;
+        border-radius: 0.35rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+            cursor: pointer;
+        transition: all 0.2s;
+    }
+    .search-button {
+        background: #4e73df;
+        color: white;
+        border: none;
+    }
+    .reset-button {
+        background: #858796;
+        color: white;
+        border: none;
+    }
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #4e73df;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
         }
     </style>
 {% endblock %}
@@ -68,24 +146,48 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4 header-bg p-3 rounded">
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="fas fa-cogs text-primary mr-2"></i>
-                Services
+                Gestion des services
             </h1>
             <div>
-                <a href="{{ path('app_backoffice_service_new') }}" class="btn btn-primary bg-gradient-primary shadow-sm">
-                    <i class="fas fa-plus fa-sm text-white-50"></i> Nouveau service
-                </a>
-                <button type="button" class="btn btn-success bg-gradient-success shadow-sm">
+              
+                <button type="button" class="btn btn-success bg-gradient-success shadow-sm" data-toggle="modal" data-target="#exportModal">
                     <i class="fas fa-file-export fa-sm text-white-50"></i> Exporter
                 </button>
             </div>
         </div>
 
-        <!-- Search Bar -->
-        <div class="search-container">
-            <div class="search-input-group">
-                <input type="text" class="search-input" placeholder="Rechercher un service...">
-                <button class="btn btn-primary bg-gradient-primary">
-                    <i class="fas fa-search mr-2"></i> Rechercher
+        <div class="filters-container">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="searchTerm">Rechercher</label>
+                    <input type="text" id="searchTerm" placeholder="Nom ou description...">
+                </div>
+                <div class="filter-group">
+                    <label for="minPrice">Prix minimum</label>
+                    <input type="number" id="minPrice" min="0">
+                </div>
+                <div class="filter-group">
+                    <label for="maxPrice">Prix maximum</label>
+                    <input type="number" id="maxPrice" min="0">
+                </div>
+                <div class="filter-group">
+                    <label for="category">Catégorie</label>
+                    <select id="category">
+                        <option value="">Toutes les catégories</option>
+                        {% for service in services %}
+                            <option value="{{ service.categorieService.id }}">
+                                {{ service.categorieService.nomCategorie }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="filter-buttons">
+                <button type="button" class="filter-button reset-button" onclick="resetFilters()">
+                    <i class="fas fa-undo"></i> Réinitialiser
+                </button>
+                <button type="button" class="filter-button search-button" onclick="searchServices()">
+                    <i class="fas fa-search"></i> Rechercher
                 </button>
             </div>
         </div>
@@ -96,8 +198,8 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="bg-light">
+                    <table class="table table-hover" id="servicesTable">
+                        <thead>
                             <tr>
                                 <th>Photo</th>
                                 <th>Nom</th>
@@ -117,36 +219,25 @@
                                             <img src="{{ asset('images/default-service.jpg') }}" class="service-image" alt="Image par défaut">
                                         {% endif %}
                                     </td>
-                                    <td class="align-middle">{{ service.nom }}</td>
-                                    <td class="align-middle description-cell">{{ service.description|slice(0, 100) }}...</td>
-                                    <td class="align-middle">{{ service.tarif }} €</td>
-                                    <td class="align-middle">{{ service.categorieService.nomCategorie }}</td>
+                                    <td>{{ service.nom }}</td>
+                                    <td class="description-cell">{{ service.description|slice(0, 100) }}...</td>
+                                    <td>{{ service.tarif }} €</td>
+                                    <td>{{ service.categorieService.nomCategorie }}</td>
                                     <td class="text-center">
-                                        <a href="{{ path('app_backoffice_service_show', {'id': service.getIdService()}) }}" 
-                                           class="btn btn-info btn-sm bg-gradient-info mx-1">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ path('app_backoffice_service_edit', {'id': service.getIdService()}) }}" 
-                                           class="btn btn-primary btn-sm bg-gradient-primary mx-1">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form method="post" 
-                                              action="{{ path('app_backoffice_service_delete', {'id': service.getIdService()}) }}"
-                                              onsubmit="return confirm('Voulez-vous vraiment supprimer ce service ?');"
-                                              style="display: inline;">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ service.getIdService()) }}">
-                                            <button type="submit" class="btn btn-danger btn-sm bg-gradient-danger mx-1">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        <div class="action-buttons">
+                                        <a href="{{ path('app_backoffice_service_show', {'id': service.getIdService}) }}" 
+                                               class="btn btn-info btn-sm bg-gradient-info" >
+                                                voir 
+                                            </a>
+                                         
+                                        </div>
                                     </td>
                                 </tr>
                             {% else %}
                                 <tr>
                                     <td colspan="6" class="text-center">
                                         <div class="alert alert-info m-0">
-                                            <i class="fas fa-info-circle mr-2"></i>
-                                            Aucun service trouvé.
+                                            <i class="fas fa-info-circle"></i> Aucun service trouvé.
                                         </div>
                                     </td>
                                 </tr>
@@ -156,20 +247,108 @@
                 </div>
             </div>
         </div>
+
+        <div class="loading-overlay">
+            <div class="spinner"></div>
+        </div>
     </div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#dataTable').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        const servicesTable = document.getElementById('servicesTable');
+
+        function searchServices() {
+            const searchTerm = document.getElementById('searchTerm').value;
+            const minPrice = document.getElementById('minPrice').value;
+            const maxPrice = document.getElementById('maxPrice').value;
+            const category = document.getElementById('category').value;
+
+            loadingOverlay.style.display = 'flex';
+
+            fetch(`/backoffice/service/search?${new URLSearchParams({
+                search: searchTerm,
+                minPrice: minPrice,
+                maxPrice: maxPrice,
+                category: category
+            })}`)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = servicesTable.querySelector('tbody');
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <div class="alert alert-info m-0">
+                                    <i class="fas fa-info-circle"></i> Aucun service trouvé.
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
                 }
+
+                data.forEach(service => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="text-center">
+                            ${service.photos 
+                                ? `<img src="/uploads/services/${service.photos}" class="service-image" alt="${service.nom}">`
+                                : `<img src="/images/default-service.jpg" class="service-image" alt="Image par défaut">`
+                            }
+                        </td>
+                        <td>${service.nom}</td>
+                        <td class="description-cell">${service.description.slice(0, 100)}...</td>
+                        <td>${service.tarif} €</td>
+                        <td>${service.categorie}</td>
+                        <td class="text-center">
+                            <div class="action-buttons">
+                                <a href="/backoffice/service/${service.id}" class="btn btn-info btn-sm bg-gradient-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/backoffice/service/${service.id}/edit" class="btn btn-primary btn-sm bg-gradient-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="post" action="/backoffice/service/${service.id}" style="display: inline;">
+                                    <input type="hidden" name="_token" value="${service.token}">
+                                    <button type="submit" class="btn btn-danger btn-sm bg-gradient-danger" onclick="return confirm('Voulez-vous vraiment supprimer ce service ?');">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                const tbody = servicesTable.querySelector('tbody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <div class="alert alert-danger m-0">
+                                <i class="fas fa-exclamation-circle"></i> Une erreur est survenue lors de la recherche.
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            })
+            .finally(() => {
+                loadingOverlay.style.display = 'none';
             });
-        });
+        }
+
+        function resetFilters() {
+            document.getElementById('searchTerm').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('category').value = '';
+            searchServices();
+        }
     </script>
 {% endblock %}

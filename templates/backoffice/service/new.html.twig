@@ -15,35 +15,98 @@
             background: linear-gradient(87deg, #11cdef 0, #1171ef 100%) !important;
         }
         .form-card {
-            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            background: white;
             border: none;
+            border-radius: 15px;
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
         }
         .header-bg {
             background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
             border-bottom: 1px solid #e3e6f0;
         }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e3e6f0;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
         .form-control:focus {
             border-color: #5e72e4;
-            box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.15);
+        }
+        .form-group label {
+            color: #4e73df;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .custom-file-label {
+            border-radius: 10px;
+            border: 2px solid #e3e6f0;
+            padding: 12px;
         }
         .custom-file-input:focus ~ .custom-file-label {
             border-color: #5e72e4;
-            box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.15);
+        }
+        .btn-submit {
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(94, 114, 228, 0.3);
+        }
+        .image-preview-container {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            display: none;
+        }
+        .info-card {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .info-item {
+            padding: 1rem;
+            border-left: 4px solid;
+            margin-bottom: 1rem;
+            background: #f8f9fc;
+            border-radius: 10px;
+        }
+        .info-item.info {
+            border-left-color: #36b9cc;
+        }
+        .info-item.warning {
+            border-left-color: #f6c23e;
+        }
+        .card-header {
+            border-bottom: none;
+            padding: 1.5rem;
+        }
+        .card-body {
+            padding: 2rem;
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container-fluid">
-        <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4 header-bg p-3 rounded">
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="fas fa-plus text-primary mr-2"></i>
                 Nouveau service
             </h1>
             <a href="{{ path('app_backoffice_service_index') }}" class="btn btn-secondary shadow-sm">
-                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Retour à la liste
+                <i class="fas fa-arrow-left fa-sm text-white-50 mr-2"></i> Retour à la liste
             </a>
         </div>
 
@@ -57,51 +120,110 @@
                         </h6>
                     </div>
                     <div class="card-body">
-                        {{ form_start(form) }}
-                        <div class="form-group">
-                            {{ form_label(form.nom, 'Nom du service', {'label_attr': {'class': 'font-weight-bold'}}) }}
-                            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
-                        </div>
-                        <div class="form-group">
-                            {{ form_label(form.description, 'Description', {'label_attr': {'class': 'font-weight-bold'}}) }}
-                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4'}}) }}
-                        </div>
-                        <div class="form-group">
-                            {{ form_label(form.tarif, 'Tarif', {'label_attr': {'class': 'font-weight-bold'}}) }}
-                            {{ form_widget(form.tarif, {'attr': {'class': 'form-control'}}) }}
-                        </div>
-                        <div class="form-group">
-                            {{ form_label(form.categorieService, 'Catégorie', {'label_attr': {'class': 'font-weight-bold'}}) }}
-                            {{ form_widget(form.categorieService, {'attr': {'class': 'form-control'}}) }}
-                        </div>
-                        <div class="form-group">
-                            {{ form_label(form.photos, 'Photo', {'label_attr': {'class': 'font-weight-bold'}}) }}
-                            {{ form_widget(form.photos, {'attr': {'class': 'form-control-file'}}) }}
-                        </div>
-                        <button type="submit" class="btn btn-primary bg-gradient-primary">
-                            <i class="fas fa-save mr-2"></i> Créer le service
-                        </button>
-                        {{ form_end(form) }}
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            <div class="form-group">
+                                {{ form_label(form.nom, 'Nom du service') }}
+                                {{ form_widget(form.nom, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'Entrez le nom du service'
+                                    }
+                                }) }}
+                                {{ form_errors(form.nom) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.description, 'Description') }}
+                                {{ form_widget(form.description, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'rows': '4',
+                                        'placeholder': 'Décrivez le service en détail'
+                                    }
+                                }) }}
+                                {{ form_errors(form.description) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.tarif, 'Tarif (€)') }}
+                                {{ form_widget(form.tarif, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'Entrez le tarif'
+                                    }
+                                }) }}
+                                {{ form_errors(form.tarif) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.categorieService, 'Catégorie') }}
+                                {{ form_widget(form.categorieService, {
+                                    'attr': {
+                                        'class': 'form-control'
+                                    }
+                                }) }}
+                                {{ form_errors(form.categorieService) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.photos, 'Photo du service') }}
+                                {{ form_widget(form.photos, {
+                                    'attr': {
+                                        'class': 'form-control-file',
+                                        'accept': 'image/*'
+                                    }
+                                }) }}
+                                {{ form_errors(form.photos) }}
+                                
+                                <div class="image-preview-container mt-3">
+                                    <img id="imagePreview" class="image-preview" src="#" alt="Aperçu de l'image">
+                                </div>
+                            </div>
+
+ {{ form_end(form) }} <br>
+                            <button type="submit" class="btn btn-primary bg-gradient-primary btn-submit">
+                                <i class="fas fa-save mr-2"></i> Créer le service
+                            </button>
+                       
                     </div>
                 </div>
             </div>
 
             <div class="col-xl-4">
-                <div class="card form-card mb-4">
+                <div class="card info-card mb-4">
                     <div class="card-header py-3 bg-gradient-info text-white">
                         <h6 class="m-0 font-weight-bold">
                             <i class="fas fa-info-circle mr-2"></i>
-                            Informations
+                            Guide de création
                         </h6>
                     </div>
                     <div class="card-body">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            Remplissez tous les champs obligatoires pour créer un nouveau service.
+                        <div class="info-item info">
+                            <h6 class="font-weight-bold text-info mb-2">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Champs requis
+                            </h6>
+                            <p class="mb-0">Tous les champs marqués d'un astérisque (*) sont obligatoires.</p>
                         </div>
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>
-                            L'image doit être au format JPG, PNG ou GIF.
+
+                        <div class="info-item warning">
+                            <h6 class="font-weight-bold text-warning mb-2">
+                                <i class="fas fa-image mr-2"></i>
+                                Format d'image
+                            </h6>
+                            <p class="mb-0">Formats acceptés : JPG, PNG, GIF<br>Taille maximale : 2 Mo</p>
+                        </div>
+
+                        <div class="info-item info">
+                            <h6 class="font-weight-bold text-info mb-2">
+                                <i class="fas fa-lightbulb mr-2"></i>
+                                Conseils
+                            </h6>
+                            <ul class="mb-0 pl-3">
+                                <li>Choisissez un nom clair et descriptif</li>
+                                <li>Détaillez bien la description</li>
+                                <li>Utilisez une image de bonne qualité</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -113,15 +235,39 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        // Preview image before upload
+        // Prévisualisation de l'image
         document.getElementById('service_photos').addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-                var reader = new FileReader();
+            const preview = document.getElementById('imagePreview');
+            const file = e.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('imagePreview').src = e.target.result;
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
                 }
-                reader.readAsDataURL(e.target.files[0]);
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '#';
+                preview.style.display = 'none';
             }
         });
+
+        // Validation du formulaire
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
     </script>
 {% endblock %} 

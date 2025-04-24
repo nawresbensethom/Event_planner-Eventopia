@@ -11,15 +11,26 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Attribute\MapEntity;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/backoffice/code-promos')]
 class CodePromosController extends AbstractController
 {
     #[Route('/', name: 'app_backoffice_code_promos_index', methods: ['GET'])]
-    public function index(Code_promosRepository $codePromosRepository): Response
+    public function index(Request $request, Code_promosRepository $codePromosRepository, PaginatorInterface $paginator): Response
     {
+        $query = $codePromosRepository->createQueryBuilder('c')
+            ->orderBy('c.id', 'DESC')
+            ->getQuery();
+
+        $code_promos = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+         3
+        );
+
         return $this->render('backoffice/code_promos/index.html.twig', [
-            'code_promos' => $codePromosRepository->findAll(),
+            'code_promos' => $code_promos,
         ]);
     }
 

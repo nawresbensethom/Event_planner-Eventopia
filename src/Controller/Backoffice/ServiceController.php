@@ -11,16 +11,95 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/backoffice/service')]
 class ServiceController extends AbstractController
 {
     #[Route('/', name: 'app_backoffice_service_index', methods: ['GET'])]
-    public function index(ServiceRepository $serviceRepository): Response
+    public function index(Request $request, ServiceRepository $serviceRepository, PaginatorInterface $paginator): Response
     {
+        $query = $serviceRepository->createQueryBuilder('s')
+            ->leftJoin('s.categorieService', 'c')
+            ->addSelect('c')
+            ->orderBy('s.id_service', 'DESC')
+            ->getQuery();
+
+        $services = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            3 // Nombre d'éléments par page
+        );
+
         return $this->render('backoffice/service/index.html.twig', [
-            'services' => $serviceRepository->findAll(),
+            'services' => $services,
         ]);
+    }
+
+    #[Route('/search', name: 'app_backoffice_service_search', methods: ['GET'])]
+    public function search(Request $request, ServiceRepository $serviceRepository): JsonResponse
+    {
+        try {
+            $searchTerm = $request->query->get('search', '');
+            $minPrice = $request->query->get('minPrice');
+            $maxPrice = $request->query->get('maxPrice');
+            $category = $request->query->get('category');
+
+            $queryBuilder = $serviceRepository->createQueryBuilder('s')
+                ->leftJoin('s.categorieService', 'c')
+                ->addSelect('c');
+
+            if ($searchTerm) {
+                $queryBuilder->andWhere('s.nom LIKE :searchTerm OR s.description LIKE :searchTerm')
+                    ->setParameter('searchTerm', '%' . $searchTerm . '%');
+            }
+
+            if ($minPrice !== null && $minPrice !== '') {
+                $queryBuilder->andWhere('s.tarif >= :minPrice')
+                    ->setParameter('minPrice', $minPrice);
+            }
+
+            if ($maxPrice !== null && $maxPrice !== '') {
+                $queryBuilder->andWhere('s.tarif <= :maxPrice')
+                    ->setParameter('maxPrice', $maxPrice);
+            }
+
+            if ($category !== null && $category !== '') {
+                $queryBuilder->andWhere('c.id = :category')
+                    ->setParameter('category', $category);
+            }
+
+            $services = $queryBuilder->getQuery()->getResult();
+
+            $results = [];
+            foreach ($services as $service) {
+                $results[] = [
+                    'id' => $service->getIdService(),
+                    'nom' => $service->getNom(),
+                    'description' => $service->getDescription(),
+                    'tarif' => $service->getTarif(),
+                    'photos' => $service->getPhotos(),
+                    'categorie' => $service->getCategorieService()->getNomCategorie(),
+                    'token' => $this->generateToken($service),
+                ];
+            }
+
+            return new JsonResponse($results);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    }
+
+    private function generateToken(Service $service): string
+    {
+        return $this->container->get('security.csrf.token_manager')
+            ->getToken('delete' . $service->getIdService())
+            ->getValue();
     }
 
     #[Route('/new', name: 'app_backoffice_service_new', methods: ['GET', 'POST'])]
