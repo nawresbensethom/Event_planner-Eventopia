@@ -54,6 +54,38 @@
             border-color: rgba(255,255,255,0.6);
         }
 
+        /* --- Button Style Changes for the Action Buttons --- */
+        .btn-glossy {
+            background: linear-gradient(135deg,rgb(224, 134, 32),rgb(191, 198, 211)); /* Cool gradient background */
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .btn-glossy i {
+            margin-right: 0.5rem; /* Space between the icon and text */
+        }
+        .btn-glossy:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb); /* Reverse gradient on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 50px;
+        }
+        .btn-glossy:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Add focus outline for accessibility */
+        }
+        .btn-glossy i {
+            font-size: 1.2rem; /* Slightly larger icon size */
+        }
+
         /* --- Grid & Cards --- */
         .posts-grid {
             display: grid;
@@ -61,6 +93,7 @@
             gap: 2rem;
             padding: 0 1rem 4rem;
         }
+
         .post-card {
             background: white;
             border-radius: 20px;
@@ -97,19 +130,7 @@
             font-size: 0.9rem;
             color: #888;
         }
-        .post-actions {
-            border-top: 1px solid #eee;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            background: #fff;
-        }
-        .post-actions .btn {
-            font-size: 0.85rem;
-        }
-
+        
         /* --- Animations --- */
         @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
         @keyframes fadeInDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
@@ -120,61 +141,147 @@
             .plan-title { font-size: 2.5rem; }
             .plan-subtitle { font-size: 1.2rem; }
             .posts-grid { grid-template-columns: 1fr; }
+            .btn-glossy {
+                width: 100%; /* Buttons will take full width on smaller screens */
+                text-align: center; /* Center the icon and text */
+            }
         }
     </style>
 {% endblock %}
-
 {% block body %}
-    <section class="plan-header">
-        <div class="container">
-            <h1 class="plan-title">Vos Plans</h1>
-            <p class="plan-subtitle">Créez et gérez vos plannings pour l’événement</p>
-            <a href="{{ path('app_plan_new') }}" class="create-plan-btn">
-                <i class="fas fa-plus-circle me-2"></i> Nouveau Plan
-            </a>
-        </div>
-    </section>
+<section class="plan-header">
+  <div class="container">
+    <h1 class="plan-title">Vos Plans</h1>
+    <p class="plan-subtitle">Créez et gérez vos plannings pour l’événement</p>
+    <a href="{{ path('app_plan_new') }}" class="create-plan-btn">
+      <i class="fas fa-plus-circle me-2"></i> Nouveau Plan
+    </a>
+  </div>
+</section>
 
-    <div class="container">
-        {% if plans|length > 0 %}
-            <div class="posts-grid">
-                {% for plan in plans %}
-                    <article class="post-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
-                        <div class="post-content">
-                            <h2 class="post-title">{{ plan.titre }}</h2>
-                            <p class="post-excerpt">
-                                {{ plan.description|striptags|slice(0, 100) }}{% if plan.description|length > 100 %}…{% endif %}
-                            </p>
-                            <div class="post-meta">
-                                <span><i class="bi bi-calendar3"></i> {{ plan.dateDebut|date('d/m/Y') }}</span>
-                                <span><i class="bi bi-flag"></i> {{ plan.priorite|capitalize }}</span>
-                            </div>
-                        </div>
-
-                        <div class="post-actions">
-                            <a href="{{ path('app_plan_show',      {'id': plan.id}) }}" class="btn btn-outline-dark btn-sm glossy-btn">
-                                <i class="bi bi-eye me-1"></i> Voir
-                            </a>
-                            <a href="{{ path('app_plan_map',      {'id': plan.id}) }}" class="btn btn-outline-dark btn-sm glossy-btn">
-                                <i class="bi bi-geo-alt"></i> Voir map
-                            </a>
-                            <a href="{{ path('app_plan_edit',      {'id': plan.id}) }}" class="btn btn-outline-dark btn-sm glossy-btn">
-                                <i class="bi bi-pencil me-1"></i> Modifier
-                            </a>
-                            <a href="{{ path('app_tache_by_plan',  {'id': plan.id}) }}" class="btn btn-outline-dark btn-sm glossy-btn">
-                                <i class="bi bi-list-check me-1"></i> Tâches
-                            </a>
-                            {{ include('frontoffice/plan/_delete_form.html.twig', {'plan': plan}) }}
-                        </div>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="no-posts text-center py-5">
-                <i class="bi bi-calendar-x no-posts-icon" style="font-size:4rem;color:#c28282;"></i>
-                <p class="no-posts-text">Aucun plan trouvé. Créez votre premier plan !</p>
-                <a href="{{ path('app_plan_new') }}" class="btn btn-primary btn-lg">Créer un Plan</a>
-            </div>
-        {% endif %}
+<div class="container mb-4">
+  <div class="row">
+    <div class="col-md-6">
+      <input type="text" id="search" class="form-control" placeholder="Search plans..." />
     </div>
+    <div class="col-md-6">
+      <select id="sort" class="form-control">
+        <option value="id">Sort by ID</option>
+        <option value="titre">Sort by Title</option>
+        <option value="dateDebut">Sort by Start Date</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="plans-container">
+  <div class="posts-grid">
+    {% for plan in plans %}
+      <article class="post-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+        <div class="post-content">
+          <h2 class="post-title">{{ plan.titre }}</h2>
+          <p class="post-excerpt">{{ plan.description|striptags|slice(0,100) }}{% if plan.description|length>100 %}…{% endif %}</p>
+          <div class="post-meta">
+            <span><i class="bi bi-calendar3"></i> {{ plan.dateDebut|date('d/m/Y') }}</span>
+            <span><i class="bi bi-flag"></i> {{ plan.priorite|capitalize }}</span>
+          </div>
+        </div>
+        <div class="post-actions">
+          <a href="{{ path('app_plan_show', {'id': plan.id}) }}" class="btn btn-glossy btn-sm">
+            <i class="bi bi-eye me-1"></i> Voir
+          </a>
+          <a href="{{ path('app_plan_map', {'id': plan.id}) }}" class="btn btn-glossy btn-sm">
+            <i class="bi bi-geo-alt"></i> Voir map
+          </a>
+          <a href="{{ path('app_plan_edit', {'id': plan.id}) }}" class="btn btn-glossy btn-sm">
+            <i class="bi bi-pencil me-1"></i> Modifier
+          </a>
+          <a href="{{ path('app_tache_by_plan', {'id': plan.id}) }}" class="btn btn-glossy btn-sm">
+            <i class="bi bi-list-check me-1"></i> Tâches
+          </a>
+          {{ include('frontoffice/plan/_delete_form.html.twig', {'plan': plan}) }}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const plansData = {{ plans
+    |map(p => {
+        'id': p.id,
+        'titre': p.titre,
+        'description': p.description,
+        'dateDebut': p.dateDebut ? p.dateDebut|date('Y-m-d') : '',
+        'priorite': p.priorite
+    })
+    |json_encode|raw
+  }};
+  const container = document.getElementById('plans-container');
+  const searchEl  = document.getElementById('search');
+  const sortEl    = document.getElementById('sort');
+
+  function render(plans) {
+    if (!plans.length) {
+      container.innerHTML = `
+        <div class="no-posts text-center py-5">
+          <i class="bi bi-calendar-x" style="font-size:4rem;color:#c28282;"></i>
+          <p>Aucun plan trouvé. Créez votre premier plan !</p>
+          <a href="{{ path('app_plan_new') }}" class="btn btn-primary btn-lg">Créer un Plan</a>
+        </div>`;
+      return;
+    }
+    let html = '<div class="posts-grid">';
+    plans.forEach((p,i) => {
+      html += `
+        <article class="post-card" style="animation-delay:${i*0.1}s">
+          <div class="post-content">
+            <h2 class="post-title">${p.titre}</h2>
+            <p class="post-excerpt">${p.description.slice(0,100)}${p.description.length>100?'…':''}</p>
+            <div class="post-meta">
+              <span><i class="bi bi-calendar3"></i> ${p.dateDebut}</span>
+              <span><i class="bi bi-flag"></i> ${p.priorite}</span>
+            </div>
+          </div>
+          <div class="post-actions">
+            <a href="/plan/${p.id}"       class="btn btn-glossy btn-sm"><i class="bi bi-eye me-1"></i>Voir</a>
+            <a href="/plan/${p.id}/map"   class="btn btn-glossy btn-sm"><i class="bi bi-geo-alt"></i>Voir map</a>
+            <a href="/plan/${p.id}/edit"  class="btn btn-glossy btn-sm"><i class="bi bi-pencil me-1"></i>Modifier</a>
+            <a href="/tache/plan/${p.id}" class="btn btn-glossy btn-sm"><i class="bi bi-list-check me-1"></i>Tâches</a>
+          </div>
+        </article>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function filterAndSort() {
+    const term = searchEl.value.trim().toLowerCase();
+    let filtered = plansData.filter(p => {
+      const t = (p.titre || '').toLowerCase();
+      const d = (p.description || '').toLowerCase();
+      return t.includes(term) || d.includes(term);
+    });
+
+    const key = sortEl.value;
+    filtered.sort((a,b) => {
+      if (key === 'id') return a.id - b.id;
+      if (key === 'titre') return a.titre.localeCompare(b.titre);
+      if (key === 'dateDebut') return new Date(a.dateDebut) - new Date(b.dateDebut);
+      return 0;
+    });
+
+    render(filtered);
+  }
+
+  searchEl.addEventListener('input', filterAndSort);
+  sortEl.addEventListener('change', filterAndSort);
+  render(plansData);
+});
+</script>
+{% endblock %}
+

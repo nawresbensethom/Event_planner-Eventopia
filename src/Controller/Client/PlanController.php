@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Service\PlanQrCodeGenerator;
 use App\Service\LocationResolver;
+use Symfony\Component\HttpFoundation\JsonResponse;
 #[Route('/plan')]
 final class PlanController extends AbstractController
 {
@@ -23,6 +24,32 @@ final class PlanController extends AbstractController
         return $this->render('frontoffice/plan/index.html.twig', [
             'plans' => $plans,
         ]);
+    }
+    #[Route('/search', name: 'app_plan_search', methods: ['GET'])]
+    public function search(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $q = $request->query->get('search', '');
+        $sort = $request->query->get('sortBy', 'id');
+        $qb = $entityManager->getRepository(Plan::class)->createQueryBuilder('p');
+        if ($q !== '') {
+            $qb->andWhere('p.titre LIKE :q OR p.description LIKE :q OR p.location LIKE :q')
+               ->setParameter('q', '%' . $q . '%');
+        }
+        $qb->orderBy('p.' . $sort, 'ASC');
+        $plans = $qb->getQuery()->getResult();
+        $data = [];
+        foreach ($plans as $plan) {
+            $data[] = [
+                'id' => $plan->getId(),
+                'titre' => $plan->getTitre(),
+                'description' => $plan->getDescription(),
+                'dateDebut' => $plan->getDateDebut()?->format('Y-m-d') ?: '',
+                'dateFin' => $plan->getDateFin()?->format('Y-m-d') ?: '',
+                'priorite' => $plan->getPriorite(),
+                'location' => $plan->getLocation(),
+            ];
+        }
+        return new JsonResponse(['plans' => $data]);
     }
 
     #[Route('/new', name: 'app_plan_new', methods: ['GET', 'POST'])]

@@ -122,51 +122,142 @@
 {% endblock %}
 
 {% block body %}
-    <section class="plan-header">
-        <div class="container">
-            <h1 class="plan-title">Tâches du Plan « {{ plan.titre }} »</h1>
-            <p class="plan-subtitle">Gérez les tâches associées à ce planning</p>
-            <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="create-task-btn">
-                <i class="bi bi-plus-circle me-2"></i> Ajouter une tâche
-            </a>
-        </div>
-    </section>
+<section class="plan-header">
+  <div class="container">
+    <h1 class="plan-title">Tâches du Plan « {{ plan.titre }} »</h1>
+    <p class="plan-subtitle">Gérez les tâches associées à ce planning</p>
+    <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="create-task-btn">
+      <i class="bi bi-plus-circle me-2"></i> Ajouter une tâche
+    </a>
+  </div>
+</section>
 
-    <div class="container">
-        {% if taches|length > 0 %}
-            <div class="posts-grid">
-                {% for tache in taches %}
-                    <article class="post-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
-                        <div class="post-content">
-                            <h2 class="post-title">{{ tache.titre }}</h2>
-                            <p class="post-excerpt">
-                                {{ tache.description|striptags|slice(0, 100) }}{% if tache.description|length > 100 %}…{% endif %}
-                            </p>
-                        </div>
-                        <div class="post-meta">
-                            <span><i class="bi bi-calendar-event"></i> {{ tache.date ? tache.date|date('d/m/Y') : '–' }}</span>
-                            <span><i class="bi bi-clock"></i> {{ tache.dureeEstimee }} h</span>
-                        </div>
-                        <div class="post-actions">
-                            <a href="{{ path('app_tache_show', {'id': tache.id}) }}" class="btn btn-outline-dark btn-sm">
-                                <i class="bi bi-eye me-1"></i> Voir
-                            </a>
-                            <a href="{{ path('app_tache_edit', {'id': tache.id}) }}" class="btn btn-outline-dark btn-sm">
-                                <i class="bi bi-pencil me-1"></i> Modifier
-                            </a>
-                            {{ include('frontoffice/tache/_delete_form.html.twig', { 'tache': tache }) }}
-                        </div>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="text-center py-5">
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    Aucune tâche trouvée. 
-                    <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="alert-link">Ajoutez-en une</a> pour commencer !
-                </div>
-            </div>
-        {% endif %}
+<div class="container mb-4">
+  <div class="row g-2">
+    <div class="col-md-6">
+      <input type="text" id="task-search" class="form-control" placeholder="Rechercher une tâche…" />
     </div>
+    <div class="col-md-6">
+      <select id="task-sort" class="form-control">
+        <option value="id">Trier par ID</option>
+        <option value="titre">Trier par titre</option>
+        <option value="date">Trier par date</option>
+        <option value="dureeEstimee">Trier par durée</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="tasks-container">
+  <div class="posts-grid">
+    {% for tache in taches %}
+      <article class="post-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+        <div class="post-content">
+          <h2 class="post-title">{{ tache.titre }}</h2>
+          <p class="post-excerpt">{{ tache.description|striptags|slice(0,100) }}{% if tache.description|length>100 %}…{% endif %}</p>
+        </div>
+        <div class="post-meta">
+          <span><i class="bi bi-calendar-event"></i> {{ tache.date ? tache.date|date('d/m/Y') : '–' }}</span>
+          <span><i class="bi bi-clock"></i> {{ tache.dureeEstimee }} h</span>
+        </div>
+        <div class="post-actions">
+          <a href="{{ path('app_tache_show', {'id': tache.id}) }}" class="btn btn-outline-dark btn-sm">
+            <i class="bi bi-eye me-1"></i> Voir
+          </a>
+          <a href="{{ path('app_tache_edit', {'id': tache.id}) }}" class="btn btn-outline-dark btn-sm">
+            <i class="bi bi-pencil me-1"></i> Modifier
+          </a>
+          {{ include('frontoffice/tache/_delete_form.html.twig', { 'tache': tache }) }}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Build a JS array from Twig taches
+    const tasksData = [
+        {% for t in taches %}
+        {
+            id: {{ t.id }},
+            titre: {{ t.titre|json_encode|raw }},
+            description: {{ t.description|json_encode|raw }},
+            date: {{ t.date ? t.date|date('Y-m-d')|json_encode|raw : '""' }},
+            duree: {{ t.dureeEstimee }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    const container = document.getElementById('tasks-container');
+    const searchEl  = document.getElementById('task-search');
+    const sortEl    = document.getElementById('task-sort');
+
+    function render(tasks) {
+        if (!tasks.length) {
+            container.innerHTML = `
+              <div class="text-center py-5">
+                <div class="alert alert-info">
+                  <i class="bi bi-info-circle me-2"></i>
+                  Aucune tâche trouvée.
+                  <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="alert-link">Ajoutez-en une</a> !
+                </div>
+              </div>`;
+            return;
+        }
+        let html = '<div class="posts-grid">';
+        tasks.forEach((t,i) => {
+            html += `
+            <article class="post-card" style="animation-delay:${i*0.1}s">
+              <div class="post-content">
+                <h2 class="post-title">${t.titre}</h2>
+                <p class="post-excerpt">
+                  ${t.description.slice(0,100)}${t.description.length>100?'…':''}
+                </p>
+              </div>
+              <div class="post-meta">
+                <span><i class="bi bi-calendar-event"></i> ${t.date || '–'}</span>
+                <span><i class="bi bi-clock"></i> ${t.duree} h</span>
+              </div>
+              <div class="post-actions">
+                <a href="/tache/${t.id}" class="btn btn-outline-dark btn-sm">
+                  <i class="bi bi-eye me-1"></i>Voir
+                </a>
+                <a href="/tache/${t.id}/edit" class="btn btn-outline-dark btn-sm">
+                  <i class="bi bi-pencil me-1"></i>Modifier
+                </a>
+              </div>
+            </article>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function filterAndSort() {
+        const term = (searchEl.value||'').trim().toLowerCase();
+        let filtered = tasksData.filter(t => {
+            return t.titre.toLowerCase().includes(term)
+                || t.description.toLowerCase().includes(term);
+        });
+
+        const key = sortEl.value;
+        filtered.sort((a,b) => {
+            if (key==='id')           return a.id - b.id;
+            if (key==='titre')        return a.titre.localeCompare(b.titre);
+            if (key==='date')         return new Date(a.date) - new Date(b.date);
+            if (key==='dureeEstimee') return a.duree - b.duree;
+            return 0;
+        });
+
+        render(filtered);
+    }
+
+    searchEl.addEventListener('input', filterAndSort);
+    sortEl.addEventListener('change', filterAndSort);
+    render(tasksData);
+});
+</script>
 {% endblock %}
