@@ -19,6 +19,7 @@
             background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI2NDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIGQ9Ik0wIDBoMTQ0MHY2NDBIMHoiLz48cGF0aCBkPSJNMCA0NDBsMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUgMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==');
             opacity: 0.1;
         }
+        
         .plan-title {
             font-size: 3rem;
             font-weight: 800;
@@ -190,7 +191,14 @@
             .plan-actions { padding:1rem; gap:0.5rem; }
             .btn-action { flex:1 1 calc(50% - 0.5rem); min-width:0; padding:0.9rem 1.2rem; font-size:0.85rem; }
         }
+        
     </style>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44c="
+      crossorigin=""
+    />
 {% endblock %}
 
 {% block body %}
@@ -211,14 +219,20 @@
             <div class="plan-body">
                 {{ plan.description|nl2br }}
             </div>
+            {% if qrCodePath is defined %}
+                <div class="text-center my-4">
+                    <h3>QR Code météo</h3>
+                    <img src="{{ asset(qrCodePath) }}" alt="QR Code météo pour le plan {{ plan.id }}">
+                </div>
+            {% endif %}
+            
         </div>
-
         <div class="plan-actions-container">
             <div class="plan-actions">
                 <a href="{{ path('app_plan_index') }}" class="btn-action btn-back">
                     <i class="bi bi-arrow-left-circle"></i> Retour
                 </a>
-                <a href="{{ path('app_plan_edit',   {id: plan.id}) }}" class="btn-action btn-edit">
+                <a href="{{ path('app_plan_edit', {id: plan.id}) }}" class="btn-action btn-edit">
                     <i class="bi bi-pencil"></i> Modifier
                 </a>
                 <form method="post"
@@ -233,4 +247,5 @@
             </div>
         </div>
     </div>
+    
 {% endblock %}

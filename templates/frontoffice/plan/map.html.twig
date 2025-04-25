@@ -1,0 +1,36 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Carte de {{ plan.titre }} – EvenTopiaa{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h2 class="mb-4">Localisation pour "{{ plan.titre }}"</h2>
+    <div id="map" style="height: 600px; border: 1px solid #ccc;"></div>
+</div>
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+</script>
+<script>
+    const coords = {{ coords|json_encode|raw }};
+    const map = L.map('map').setView([coords.lat, coords.lon], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker([coords.lat, coords.lon]).addTo(map);
+</script>
+{% endblock %}

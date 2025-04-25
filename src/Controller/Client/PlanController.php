@@ -10,7 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
+use App\Service\PlanQrCodeGenerator;
+use App\Service\LocationResolver;
 #[Route('/plan')]
 final class PlanController extends AbstractController
 {
@@ -99,17 +100,28 @@ final class PlanController extends AbstractController
             return $this->redirectToRoute('app_plan_index', [], Response::HTTP_SEE_OTHER);
         }
     }
+    #[Route('/{id}/map', name: 'app_plan_map', methods: ['GET'])]
+    public function map(Plan $plan, LocationResolver $resolver): Response
+    {
+        $coords = $resolver->getCoordinates($plan->getLocation());
+
+        return $this->render('frontoffice/plan/map.html.twig', [
+            'plan'   => $plan,
+            'coords' => $coords,
+        ]);
+    }
 
     #[Route('/{id}', name: 'app_plan_show', methods: ['GET'])]
-    public function show(?Plan $plan): Response
+    public function show(?Plan $plan,PlanQrCodeGenerator $qrGenerator): Response
     {
         if (!$plan) {
             $this->addFlash('error', 'Le plan demandé n\'existe pas.');
             return $this->redirectToRoute('app_plan_index', [], Response::HTTP_SEE_OTHER);
         }
-
+        $qrCodePath=$qrGenerator->generate($plan);
         return $this->render('frontoffice/plan/show.html.twig', [
             'plan' => $plan,
+            'qrCodePath'=>$qrCodePath,
         ]);
     }
 
