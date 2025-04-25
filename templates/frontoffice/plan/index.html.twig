@@ -35,6 +35,35 @@
             animation: fadeInUp 1s ease-out 0.3s;
             position: relative;
         }
+        .pagination {
+            display: flex !important;
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+            justify-content: center;
+            }
+            .pagination li {
+            margin: 0 0.25rem;
+            }
+            .pagination li a,
+            .pagination li span {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 0.25rem;
+            text-decoration: none;
+            color: #333;
+            }
+            .pagination li.active span {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+            }
+            .pagination li.disabled span {
+            color: #aaa;
+            cursor: not-allowed;
+            }
+
         .create-plan-btn {
             display: inline-block;
             background: rgba(255,255,255,0.2);
@@ -158,7 +187,7 @@
     </a>
   </div>
 </section>
-
+ 
 <div class="container mb-4">
   <div class="row">
     <div class="col-md-6">
@@ -176,7 +205,8 @@
 
 <div class="container" id="plans-container">
   <div class="posts-grid">
-    {% for plan in plans %}
+  
+    {% for plan in pagination %}
       <article class="post-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
         <div class="post-content">
           <h2 class="post-title">{{ plan.titre }}</h2>
@@ -204,14 +234,21 @@
       </article>
     {% endfor %}
   </div>
+
+
+
+ 
 </div>
+<div class="d-flex justify-content-center my-4">
+    {{ knp_pagination_render(pagination, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig') }}
+  </div>
 {% endblock %}
 
 {% block javascripts %}
 {{ parent() }}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const plansData = {{ plans
+  const plansData = {{ pagination
     |map(p => {
         'id': p.id,
         'titre': p.titre,

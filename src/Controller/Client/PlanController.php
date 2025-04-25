@@ -13,16 +13,24 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Service\PlanQrCodeGenerator;
 use App\Service\LocationResolver;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Knp\Component\Pager\PaginatorInterface;
 #[Route('/plan')]
 final class PlanController extends AbstractController
 {
     #[Route('/', name: 'app_plan_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(Request $request, PaginatorInterface $paginator,EntityManagerInterface $entityManager): Response
     {
-        $plans = $entityManager->getRepository(Plan::class)->findAll();
+        $qb = $entityManager->getRepository(Plan::class)
+             ->createQueryBuilder('p')
+             ->orderBy('p.id', 'DESC');
+             $pagination = $paginator->paginate(
+                $qb,
+                $request->query->getInt('page',1),
+                2
+             );  
 
         return $this->render('frontoffice/plan/index.html.twig', [
-            'plans' => $plans,
+            'pagination' => $pagination,
         ]);
     }
     #[Route('/search', name: 'app_plan_search', methods: ['GET'])]
