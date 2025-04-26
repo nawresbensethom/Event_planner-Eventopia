@@ -2,166 +2,302 @@
 
 namespace App\Controller\Client;
 
-use App\Entity\Service;
-use App\Repository\ServiceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Service;
 use App\Entity\Code_promos;
+use Doctrine\ORM\EntityManagerInterface;
+use DateTime;
+use Psr\Log\LoggerInterface;
 
-#[Route('/client/cart')]
+#[Route('/client')]
 class CartController extends AbstractController
 {
-    private $serviceRepository;
-    private $params;
+    private $entityManager;
+    private $logger;
 
-    public function __construct(ServiceRepository $serviceRepository, ParameterBagInterface $params)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
-        $this->serviceRepository = $serviceRepository;
-        $this->params = $params;
+        $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
-    #[Route('/', name: 'app_cart_index')]
-    public function index(SessionInterface $session): Response
+    #[Route('/cart/add/{id}', name: 'app_cart_add', methods: ['GET', 'POST'])]
+    public function cartAdd(Request $request, int $id): Response
     {
-        $cart = $session->get('cart', []);
-        $cartItems = [];
-        $total = 0;
-
-        foreach ($cart as $id => $quantity) {
-            $service = $this->serviceRepository->find($id);
+        try {
+            $service = $this->entityManager->getRepository(Service::class)->find($id);
             if (!$service) {
-                continue;
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'success' => false,
+                        'error' => 'Service non trouvé'
+                    ], Response::HTTP_NOT_FOUND);
+                }
+                $this->addFlash('error', 'Service non trouvé');
+                return $this->redirectToRoute('app_client_cart_index');
             }
 
-            // Récupérer le tarif brut
-            $tarif = $service->getTarif();
-            
-            // Nettoyer et convertir le tarif
-            if (is_string($tarif)) {
-                $tarif = str_replace(['€', ' ', ','], ['', '', '.'], $tarif);
+            $session = $request->getSession();
+            $cart = $session->get('cart', []);
+
+            $cart[$id] = ($cart[$id] ?? 0) + 1;
+            $session->set('cart', $cart);
+
+            $cartCount = array_sum($cart);
+
+            $this->logger->info('Service added to cart', [
+                'service_id' => $id,
+                'cart' => $cart,
+                'cart_count' => $cartCount
+            ]);
+
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Service ajouté au panier',
+                    'cartCount' => $cartCount
+                ]);
             }
-            $tarif = (float) $tarif;
 
-            // Calculer le sous-total pour cet article
-            $sousTotal = $tarif * $quantity;
-            $total += $sousTotal;
+            $this->addFlash('success', 'Service ajouté au panier');
+            return $this->redirectToRoute('app_client_cart_index');
+        } catch (\Exception $e) {
+            $this->logger->error('Error adding service to cart', [
+                'service_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-            $cartItems[] = [
-                'service' => $service,
-                'quantity' => $quantity,
-                'sousTotal' => $sousTotal
-            ];
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Une erreur est survenue'
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+            $this->addFlash('error', 'Une erreur est survenue lors de l\'ajout au panier');
+            return $this->redirectToRoute('app_client_cart_index');
         }
-
-        // Stocker le total dans la session pour Stripe
-        $session->set('cart_total', $total);
-
-        return $this->render('frontoffice/cart/index.html.twig', [
-            'items' => $cartItems,
-            'total' => $total,
-            'stripe_public_key' => $this->params->get('stripe_public_key')
-        ]);
     }
 
-    #[Route('/add/{id}', name: 'app_cart_add')]
-    public function add(int $id, SessionInterface $session): JsonResponse
+    #[Route('/cart/remove/{id}', name: 'app_cart_remove', methods: ['POST'])]
+    public function removeFromCart(Request $request, int $id): Response
     {
-        $cart = $session->get('cart', []);
+        try {
+            $session = $request->getSession();
+            $cart = $session->get('cart', []);
 
-        if (!empty($cart[$id])) {
-            $cart[$id]++;
-        } else {
-            $cart[$id] = 1;
-        }
+            if (!isset($cart[$id])) {
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'success' => false,
+                        'error' => 'Service non trouvé dans le panier'
+                    ], Response::HTTP_NOT_FOUND);
+                }
+                $this->addFlash('error', 'Service non trouvé dans le panier');
+                return $this->redirectToRoute('app_client_cart_index');
+            }
 
-        $session->set('cart', $cart);
-
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Service ajouté au panier avec succès !',
-            'cartCount' => array_sum($cart)
-        ]);
-    }
-
-    #[Route('/remove/{id}', name: 'app_cart_remove')]
-    public function remove(int $id, SessionInterface $session): Response
-    {
-        $cart = $session->get('cart', []);
-
-        if (!empty($cart[$id])) {
             unset($cart[$id]);
+            $session->set('cart', $cart);
+
+            // Remove promo code if cart is empty
+            if (empty($cart)) {
+                $session->remove('promo_code');
+                $session->remove('promo_discount');
+            }
+
+            $cartCount = array_sum($cart);
+
+            $this->logger->info('Service removed from cart', [
+                'service_id' => $id,
+                'cart' => $cart,
+                'cart_count' => $cartCount
+            ]);
+
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Service supprimé du panier',
+                    'cartCount' => $cartCount
+                ]);
+            }
+
+            $this->addFlash('success', 'Service supprimé du panier');
+            return $this->redirectToRoute('app_client_cart_index');
+        } catch (\Exception $e) {
+            $this->logger->error('Error removing service from cart', [
+                'service_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Une erreur est survenue'
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+            $this->addFlash('error', 'Une erreur est survenue lors de la suppression du service');
+            return $this->redirectToRoute('app_client_cart_index');
         }
-
-        $session->set('cart', $cart);
-
-        $this->addFlash('success', 'Service retiré du panier avec succès !');
-        return $this->redirectToRoute('app_cart_index');
     }
 
-    #[Route('/clear', name: 'app_cart_clear')]
-    public function clear(SessionInterface $session): Response
+    #[Route('/cart/count', name: 'app_cart_count', methods: ['GET'])]
+    public function getCartCount(Request $request): JsonResponse
     {
-        $session->remove('cart');
-        $session->remove('promo_code');
+        try {
+            $session = $request->getSession();
+            $cart = $session->get('cart', []);
+            $cartCount = array_sum($cart);
 
-        $this->addFlash('success', 'Panier vidé avec succès !');
-        return $this->redirectToRoute('app_cart_index');
+            return new JsonResponse([
+                'success' => true,
+                'cartCount' => $cartCount
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Error retrieving cart count', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Une erreur est survenue'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    #[Route('/verify-promo', name: 'app_verify_promo', methods: ['POST'])]
-    public function verifyPromoCode(
-        Request $request, 
-        SessionInterface $session,
-        EntityManagerInterface $entityManager
-    ): JsonResponse
+    #[Route('/cart/apply-promo', name: 'app_cart_apply_promo', methods: ['POST'])]
+    public function applyPromoCode(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        $promoCode = $data['promoCode'] ?? null;
+        $promoCode = $data['promo_code'] ?? null;
+        $session = $request->getSession();
+        $cart = $session->get('cart', []);
 
         if (!$promoCode) {
             return new JsonResponse([
-                'valid' => false,
-                'message' => 'Code promo manquant'
-            ]);
+                'success' => false,
+                'error' => 'Veuillez entrer un code promo'
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        $codePromo = $entityManager->getRepository(Code_promos::class)
-            ->findOneBy(['code' => $promoCode]);
+        try {
+            $codePromo = $this->entityManager->getRepository(Code_promos::class)
+                ->findOneBy(['code' => $promoCode]);
 
-        if (!$codePromo) {
+            if (!$codePromo) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Code promo invalide'
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $now = new DateTime();
+            if ($now < $codePromo->getDateDebut() || $now > $codePromo->getDateExpiration()) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Code promo expiré'
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $serviceId = array_keys($cart)[0] ?? null;
+            if (!$serviceId || !$codePromo->getService() || $codePromo->getService()->getIdService() != $serviceId) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Ce code promo n\'est pas valide pour ce service'
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            if ($codePromo->getLimiteUtilisation() <= 0) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Ce code promo a atteint sa limite d\'utilisation'
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $reductionValue = (int)str_replace('%', '', $codePromo->getReductionType());
+
+            $session->set('promo_code', $promoCode);
+            $session->set('promo_discount', [
+                'type' => 'percentage',
+                'value' => $reductionValue
+            ]);
+
+            $codePromo->setLimiteUtilisation($codePromo->getLimiteUtilisation() - 1);
+            $this->entityManager->flush();
+
+            $service = $this->entityManager->getRepository(Service::class)->find($serviceId);
+            $quantity = $cart[$serviceId];
+            $originalTotal = $service->getTarif() * $quantity;
+            $reduction = ($originalTotal * $reductionValue) / 100;
+            $newTotal = $originalTotal - $reduction;
+
             return new JsonResponse([
-                'valid' => false,
-                'message' => 'Code promo invalide'
+                'success' => true,
+                'message' => 'Code promo appliqué avec succès',
+                'discount_type' => 'percentage',
+                'discount_value' => $reductionValue,
+                'original_total' => $originalTotal,
+                'reduction' => $reduction,
+                'new_total' => $newTotal
             ]);
-        }
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur lors de l\'application du code promo', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-        // Vérifier si le code promo est valide (dates)
-        $now = new \DateTime();
-        if ($now < $codePromo->getDateDebut() || $now > $codePromo->getDateExpiration()) {
             return new JsonResponse([
-                'valid' => false,
-                'message' => 'Ce code promo a expiré ou n\'est pas encore valide'
-            ]);
+                'success' => false,
+                'error' => 'Une erreur est survenue lors de la vérification du code promo'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/cart', name: 'app_client_cart_index')]
+    public function index(Request $request): Response
+    {
+        $session = $request->getSession();
+        $cart = $session->get('cart', []);
+        $items = [];
+        $total = 0;
+        $subtotal = 0;
+
+        foreach ($cart as $id => $quantity) {
+            $service = $this->entityManager->getRepository(Service::class)->find($id);
+            if ($service) {
+                $items[] = [
+                    'service' => $service,
+                    'quantity' => $quantity
+                ];
+                $subtotal += $service->getTarif() * $quantity;
+            }
         }
 
-        // Extraire le pourcentage de réduction du type de réduction (ex: "30%" -> 30)
-        $reduction = (int)str_replace('%', '', $codePromo->getReductionType());
+        $total = $subtotal;
+        $discountAmount = 0;
+        $promoDiscount = $session->get('promo_discount');
+        $promoCode = $session->get('promo_code');
 
-        $session->set('promo_code', [
-            'code' => $promoCode,
-            'reduction' => $reduction
-        ]);
+        if ($promoCode && $promoDiscount && isset($promoDiscount['value'])) {
+            $discountAmount = ($subtotal * $promoDiscount['value']) / 100;
+            $total = $subtotal - $discountAmount;
+        }
 
-        return new JsonResponse([
-            'valid' => true,
-            'reduction' => $reduction,
-            'message' => 'Code promo appliqué avec succès !'
+        return $this->render('frontoffice/cart/index.html.twig', [
+            'items' => $items,
+            'subtotal' => $subtotal,
+            'total' => $total,
+            'discount_amount' => $discountAmount,
+            'stripe_public_key' => $this->getParameter('stripe_public_key'),
+            'promo_code' => $promoCode
         ]);
     }
-} 
+}

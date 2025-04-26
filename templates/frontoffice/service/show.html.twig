@@ -325,28 +325,30 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token('cart-token') }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token('cart-add') }}' // Updated token ID
                 }
             })
-            .then(response => {
+            .then(async response => {
+                const responseText = await response.text();
+                console.log('Add to cart response:', responseText); // Debug 404 response
                 if (!response.ok) {
-                    throw new Error('Erreur réseau');
+                    throw new Error('Erreur réseau: ' + response.status);
                 }
-                return response.json();
+                return JSON.parse(responseText);
             })
             .then(data => {
                 if (data.success) {
-                    // Mettre à jour le compteur du panier dans le header
+                    // Update cart badge
                     const cartBadge = document.querySelector('.cart-badge');
                     if (cartBadge) {
-                        cartBadge.textContent = data.cartCount;
+                        cartBadge.textContent = data.cartCount || 0;
                     }
 
-                    // Animation de succès
+                    // Success animation
                     button.innerHTML = '<i class="fas fa-check"></i> Ajouté au panier';
                     button.classList.add('success');
 
-                    // Afficher une notification
+                    // Show toast notification
                     const toast = document.createElement('div');
                     toast.className = 'toast-notification';
                     toast.innerHTML = `
@@ -355,7 +357,7 @@
                     `;
                     document.body.appendChild(toast);
                     
-                    // Supprimer la notification après 3 secondes
+                    // Remove toast and reset button
                     setTimeout(() => {
                         toast.remove();
                         button.disabled = false;
@@ -363,14 +365,15 @@
                         button.classList.remove('success');
                     }, 3000);
                 } else {
-                    throw new Error(data.message || 'Erreur lors de l\'ajout au panier');
+                    throw new Error(data.error || 'Erreur lors de l\'ajout au panier');
                 }
             })
             .catch(error => {
-                console.error('Erreur:', error);
+                console.error('Add to cart error:', error);
                 button.disabled = false;
                 button.innerHTML = '<i class="fas fa-shopping-cart"></i> Ajouter au panier';
                 
+                // Show error toast
                 const toast = document.createElement('div');
                 toast.className = 'toast-notification';
                 toast.style.background = '#dc3545';
@@ -412,7 +415,7 @@
     <div class="container">
         <div class="service-content-wrapper">
             {% if service.photos %}
-                <img src="{{ asset('uploads/services/' ~ service.photos) }}" 
+                <img src="{{ asset('Uploads/services/' ~ service.photos) }}" 
                      alt="{{ service.nom }}" 
                      class="service-image">
             {% endif %}
@@ -475,6 +478,4 @@
             </div>
         </div>
     </div>
-
-    
-{% endblock %} 
+{% endblock %}

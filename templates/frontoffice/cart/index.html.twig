@@ -18,10 +18,10 @@
             align-items: center;
             padding: 1.5rem;
             border-bottom: 1px solid #eee;
-            transition: all 0.3s ease;
+            margin-bottom: 1rem;
             background: white;
             border-radius: 8px;
-            margin-bottom: 1rem;
+            transition: all 0.3s ease;
         }
 
         .cart-item:hover {
@@ -39,7 +39,6 @@
 
         .cart-item-details {
             flex-grow: 1;
-            padding-right: 1.5rem;
         }
 
         .cart-item-title {
@@ -47,299 +46,364 @@
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 0.5rem;
-            text-decoration: none;
-        }
-
-        .cart-item-title:hover {
-            color: #c28282;
-        }
-
-        .cart-item-category {
-            color: #6c757d;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
         }
 
         .cart-item-price {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             color: #c28282;
-            font-weight: 600;
             margin-bottom: 0.5rem;
         }
 
         .cart-item-quantity {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
             color: #6c757d;
         }
 
-        .cart-item-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
+        .promo-code {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .promo-message {
+            margin-top: 0.5rem;
         }
 
         .cart-summary {
-            background: #f8f9fa;
-            padding: 2rem;
+            background-color: #f8f9fa;
+            padding: 1.5rem;
             border-radius: 8px;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
         }
 
         .cart-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e9ecef;
         }
 
-        .cart-total-amount {
-            color: #c28282;
+        .discount-info {
+            color: #28a745;
+            margin: 0.5rem 0;
         }
 
-        .cart-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .btn-checkout {
-            background: linear-gradient(135deg, #5469d4 0%, #7795f8 100%);
+        .btn-apply-promo {
+            background-color: #c28282;
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 600;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
-        .btn-checkout:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(84, 105, 212, 0.3);
-            background: linear-gradient(135deg, #4a5cc9 0%, #6b89f8 100%);
+        .btn-apply-promo:hover {
+            background-color: #b27272;
+            transform: translateY(-1px);
+        }
+
+        .btn-remove {
+            background-color: #dc3545;
             color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
         }
 
-        .btn-checkout:disabled {
-            opacity: 0.7;
+        .btn-remove:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-remove:disabled {
+            background-color: #6c757d;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .btn-checkout i {
-            font-size: 1.2rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .spinner {
-            animation: spin 1s linear infinite;
-        }
-
-        .btn-clear-cart {
-            background: transparent;
-            border: 2px solid #6c757d;
-            color: #6c757d;
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
             padding: 1rem 2rem;
             border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-clear-cart:hover {
-            background: #6c757d;
-            color: white;
-        }
-
-        .empty-cart {
-            text-align: center;
-            padding: 4rem 2rem;
-        }
-
-        .empty-cart i {
-            font-size: 4rem;
-            color: #c28282;
-            margin-bottom: 1.5rem;
-        }
-
-        .empty-cart p {
-            color: #6c757d;
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        .btn-continue-shopping {
-            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
         }
 
-        .btn-continue-shopping:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            color: white;
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
     </style>
 {% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://js.stripe.com/v3/"></script>
-    <script>
-        // Initialiser Stripe avec votre clé publique
-        const stripe = Stripe('{{ stripe_public_key }}');
-
-        async function handlePayment() {
-            const button = document.getElementById('payment-button');
-            const spinner = button.querySelector('.spinner');
-            
-            // Disable button and show spinner
-            button.disabled = true;
-            spinner.style.display = 'inline-block';
-
-            try {
-                const response = await fetch('{{ path('payment_checkout') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                const session = await response.json();
-
-                if (session.error) {
-                    throw new Error(session.error);
-                }
-
-                // Redirect to Stripe Checkout
-                const result = await stripe.redirectToCheckout({
-                    sessionId: session.id
-                });
-
-                if (result.error) {
-                    throw new Error(result.error.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                // Show error in a nice alert
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-                alertDiv.role = 'alert';
-                alertDiv.innerHTML = `
-                    Une erreur est survenue lors du paiement. Veuillez réessayer.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                `;
-                document.querySelector('.cart-container').insertAdjacentElement('afterbegin', alertDiv);
-                
-                // Re-enable button and hide spinner
-                button.disabled = false;
-                spinner.style.display = 'none';
-            }
-        }
-    </script>
-{% endblock %}
-
 {% block body %}
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
-
-    {% for message in app.flashes('error') %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
-
     <div class="cart-container">
         <h1 class="mb-4">Mon Panier</h1>
 
         {% if items|length > 0 %}
             <div class="cart-items">
                 {% for item in items %}
-                    <div class="cart-item">
-                        <img src="{{ asset('uploads/services/' ~ item.service.photos) }}" 
+                    <div class="cart-item" data-service-id="{{ item.service.idService }}">
+                        <img src="{{ asset('Uploads/services/' ~ item.service.photos) }}" 
                              alt="{{ item.service.nom }}" 
                              class="cart-item-image">
                         <div class="cart-item-details">
-                            <a href="{{ path('app_client_service_show', {'id': item.service.idService}) }}" 
-                               class="cart-item-title">{{ item.service.nom }}</a>
-                            <div class="cart-item-category">
-                                <i class="fas fa-tag"></i> {{ item.service.categorieService.nomCategorie }}
-                            </div>
-                            <div class="cart-item-price">{{ item.service.tarif|number_format(2, ',', ' ') }} €</div>
+                            <h5 class="card-item-title">{{ item.service.nom }}</h5>
+                            <p class="cart-item-price">{{ item.service.tarif|number_format(2, ',', ' ') }} €</p>
                             <div class="cart-item-quantity">
-                                <i class="fas fa-times"></i> {{ item.quantity }}
-                                <span class="ms-3">Sous-total: {{ item.sousTotal|number_format(2, ',', ' ') }} €</span>
+                                Quantité: {{ item.quantity }}
                             </div>
                         </div>
-                        <div class="cart-item-actions">
-                            <form method="post" action="{{ path('app_cart_remove', {'id': item.service.idService}) }}" 
-                                  style="display: inline;">
-                                <button type="submit" class="btn btn-outline-danger" 
-                                        title="Retirer du panier">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
+                        <button class="btn-remove" onclick="removeFromCart({{ item.service.idService }})">
+                            <i class="fas fa-trash-alt"></i> Supprimer
+                        </button>
                     </div>
                 {% endfor %}
             </div>
 
+            <div class="promo-code">
+                <form id="promo-form" class="d-flex gap-2">
+                    <div class="flex-grow-1">
+                        <input type="text" 
+                               class="form-control" 
+                               id="promo-code" 
+                               placeholder="Avez-vous un code promo ?"
+                               value="{{ promo_code|default('') }}">
+                    </div>
+                    <button type="submit" class="btn btn-apply-promo">
+                        <i class="fas fa-ticket-alt"></i> Appliquer
+                    </button>
+                </form>
+                <div id="promo-message" class="promo-message">
+                    {% if promo_code %}
+                        <div class="text-success">
+                            <i class="fas fa-check-circle"></i> Code promo "{{ promo_code }}" appliqué
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="cart-summary">
-                <div class="price-line total">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Sous-total</span>
+                    <span>{{ subtotal|number_format(2, ',', ' ') }} €</span>
+                </div>
+
+                {% if discount_amount > 0 %}
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Réduction ({{ promo_code }})</span>
+                        <span>-{{ discount_amount|number_format(2, ',', ' ') }} €</span>
+                    </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between cart-total mt-3">
                     <span>Total à payer</span>
                     <span>{{ total|number_format(2, ',', ' ') }} €</span>
                 </div>
 
-                <div class="cart-actions">
-                    <form method="post" action="{{ path('app_cart_clear') }}" style="display: inline;">
-                        <button type="submit" class="btn btn-clear-cart">
-                            <i class="fas fa-trash-alt"></i> Vider le panier
-                        </button>
-                    </form>
-                    <button type="button" class="btn btn-primary" id="payment-button" onclick="handlePayment()">
+                <div class="mt-4">
+                    <button type="button" class="btn btn-primary w-100" id="payment-button">
                         <i class="fas fa-credit-card"></i> Procéder au paiement
                         <span class="spinner" style="display: none;">
-                            <i class="fas fa-spinner"></i>
+                            <i class="fas fa-spinner fa-spin"></i>
                         </span>
                     </button>
                 </div>
             </div>
         {% else %}
-            <div class="empty-cart">
-                <i class="fas fa-shopping-bag"></i>
+            <div class="text-center py-5">
                 <p>Votre panier est vide</p>
-                <a href="{{ path('app_client_service_index') }}" class="btn-continue-shopping">
-                    <i class="fas fa-arrow-left"></i> Découvrir nos services
+                <a href="{{ path('app_client_service_index') }}" class="btn btn-primary">
+                    Découvrir nos services
                 </a>
             </div>
         {% endif %}
     </div>
-{% endblock %} 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const promoForm = document.getElementById('promo-form');
+            const promoInput = document.getElementById('promo-code');
+            const promoMessage = document.getElementById('promo-message');
+
+            promoForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const submitButton = promoForm.querySelector('button[type="submit"]');
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+
+                try {
+                    const response = await fetch('{{ path('app_cart_apply_promo') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            promo_code: promoInput.value
+                        })
+                    });
+
+                    const responseText = await response.text();
+                    console.log('Promo response:', responseText);
+
+                    const result = JSON.parse(responseText);
+                    
+                    if (result.success) {
+                        promoMessage.innerHTML = `
+                            <div class="text-success">
+                                <i class="fas fa-check-circle"></i> ${result.message}
+                                <div class="discount-info">
+                                    Réduction de ${result.discount_value}%
+                                </div>
+                            </div>`;
+                        
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        promoMessage.innerHTML = `
+                            <div class="text-danger">
+                                <i class="fas fa-exclamation-circle"></i> ${result.error}
+                            </div>`;
+                    }
+                } catch (error) {
+                    console.error('Promo error:', error);
+                    promoMessage.innerHTML = `
+                        <div class="text-danger">
+                            <i class="fas fa-exclamation-circle"></i> Une erreur est survenue
+                        </div>`;
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                }
+            });
+
+            const stripe = Stripe('{{ stripe_public_key }}');
+            const paymentButton = document.getElementById('payment-button');
+            
+            paymentButton.addEventListener('click', async () => {
+                const spinner = paymentButton.querySelector('.spinner');
+                
+                paymentButton.disabled = true;
+                spinner.style.display = 'inline-block';
+
+                try {
+                    const response = await fetch('{{ path('payment_checkout') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    const responseText = await response.text();
+                    console.log('Checkout response:', responseText);
+
+                    const session = JSON.parse(responseText);
+
+                    if (session.error) {
+                        throw new Error(session.error);
+                    }
+
+                    const result = await stripe.redirectToCheckout({
+                        sessionId: session.id
+                    });
+
+                    if (result.error) {
+                        throw new Error(result.error.message);
+                    }
+                } catch (error) {
+                    console.error('Checkout error:', error);
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                    alertDiv.role = 'alert';
+                    alertDiv.innerHTML = `
+                        Une erreur est survenue lors du paiement. Veuillez réessayer.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    document.querySelector('.cart-container').insertAdjacentElement('afterbegin', alertDiv);
+                } finally {
+                    paymentButton.disabled = false;
+                    spinner.style.display = 'none';
+                }
+            });
+        });
+
+        function removeFromCart(serviceId) {
+            const cartItem = document.querySelector(`.cart-item[data-service-id="${serviceId}"]`);
+            const button = cartItem.querySelector('.btn-remove');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suppression...';
+
+            fetch(`{{ path('app_cart_remove', {'id': '__ID__'}) }}`.replace('__ID__', serviceId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '{{ csrf_token('cart-remove') }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update cart badge in header
+                    const cartBadge = document.querySelector('.cart-badge');
+                    if (cartBadge) {
+                        cartBadge.textContent = data.cartCount || 0;
+                    }
+
+                    // Show success toast
+                    const toast = document.createElement('div');
+                    toast.className = 'toast-notification';
+                    toast.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>${data.message || 'Service supprimé du panier avec succès!'}</span>
+                    `;
+                    document.body.appendChild(toast);
+
+                    // Remove toast and reload page
+                    setTimeout(() => {
+                        toast.remove();
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || 'Erreur lors de la suppression du service');
+                }
+            })
+            .catch(error => {
+                console.error('Remove from cart error:', error);
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-trash-alt"></i> Supprimer';
+
+                // Show error toast
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.style.background = '#dc3545';
+                toast.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>${error.message || 'Une erreur est survenue. Veuillez réessayer.'}</span>
+                `;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            });
+        }
+    </script>
+{% endblock %}

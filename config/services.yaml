@@ -7,30 +7,35 @@ parameters:
     stripe_secret_key: '%env(STRIPE_SECRET_KEY)%'
 
 services:
+    # Default configuration for services
     _defaults:
         autowire: true
         autoconfigure: true
 
+    # Stripe Service
+    App\Service\StripeService:
+        arguments:
+            $stripeSecretKey: '%stripe_secret_key%'
+
+    # Custom Command
     App\Command\GenerateEntitiesCommand:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # All classes in src/ except specified exclusions
     App\:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-            - '../src/Command/' # Add this to exclude Commands from auto-registration
+            - '../src/Command/'
 
+    # Session Interface Alias
     Symfony\Component\HttpFoundation\Session\SessionInterface:
         alias: 'session'
 
+    # Exchange Rate Service
     App\Service\ExchangeRateService:
         arguments:
             $httpClient: '@http_client'
-
-    App\Service\StripeService:
-        arguments:
-            $params: '@parameter_bag'
-            $serviceRepository: '@App\Repository\ServiceRepository'

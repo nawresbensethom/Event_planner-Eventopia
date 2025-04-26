@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Service;
 
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Repository\ServiceRepository;
 
 class StripeService
@@ -23,44 +23,39 @@ class StripeService
         Stripe::setApiKey($this->params->get('stripe_secret_key'));
     }
 
-    public function createCheckoutSession(array $cart, float $total, string $successUrl, string $cancelUrl): Session
+    public function createCheckoutSession(array $cart, float $total, string $successUrl, string $cancelUrl, ?string $promoCode = null): Session
     {
         if (empty($cart)) {
             throw new \Exception('Le panier est vide');
         }
 
-        $lineItems = [];
-        foreach ($cart as $id => $quantity) {
-            $service = $this->serviceRepository->find($id);
-            if (!$service) {
-                continue;
-            }
-
-            $lineItems[] = [
+        // Create a single line item with the discounted total
+        $lineItems = [
+            [
                 'price_data' => [
                     'currency' => 'eur',
                     'product_data' => [
-                        'name' => $service->getNom(),
-                        'description' => $service->getDescription(),
+                        'name' => 'Achat de services',
                     ],
-                    'unit_amount' => (int)($service->getTarif() * 100), // Convertir en centimes
+                    'unit_amount' => (int)($total * 100), // Convert to centimes
                 ],
-                'quantity' => $quantity,
-            ];
-        }
+                'quantity' => 1,
+            ],
+        ];
 
-        if (empty($lineItems)) {
-            throw new \Exception('Aucun service valide dans le panier');
-        }
-
-        return Session::create([
+        $sessionData = [
             'payment_method_types' => ['card'],
             'line_items' => $lineItems,
             'mode' => 'payment',
             'success_url' => $successUrl,
             'cancel_url' => $cancelUrl,
             'locale' => 'fr',
-            'currency' => 'eur',
-        ]);
+        ];
+
+        try {
+            return Session::create($sessionData);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            throw new \Exception('Erreur Stripe : ' . $e->getMessage());
+        }
     }
 }

@@ -68,7 +68,7 @@
                                     <a class="nav-link {% if app.request.get('_route') starts with 'app_plan_index' %}active{% endif %}" href="{{ path('app_plan_index') }}">Plan</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link position-relative" href="{{ path('app_cart_index') }}" title="Voir mon panier">
+                                    <a class="nav-link position-relative" href="{{ path('app_client_cart_index') }}" title="Voir mon panier">
                                         <i class="fas fa-shopping-bag"></i>
                                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">
                                             {{ app.session.get('cart')|length|default(0) }}

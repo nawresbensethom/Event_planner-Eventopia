@@ -1,20 +1,26 @@
 {% extends 'frontoffice/base.html.twig' %}
 
-{% block title %}Paiement réussi - {{ parent() }}{% endblock %}
+{% block title %}Paiement réussi{% endblock %}
 
 {% block body %}
-<div class="container my-5">
+<div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
-                    <h2 class="mt-4">Paiement réussi !</h2>
-                    <p class="lead">Merci pour votre achat. Votre commande a été traitée avec succès.</p>
-                    <p>Un email de confirmation vous a été envoyé avec les détails de votre commande.</p>
-                    <div class="mt-4">
-                        <a href="{{ path('home') }}" class="btn btn-primary">Retour à l'accueil</a>
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
                     </div>
+                    <h2 class="card-title mb-4">Paiement réussi !</h2>
+                    <p class="card-text lead">
+                        Merci pour votre paiement. Votre transaction a été traitée avec succès.
+                    </p>
+                    <p class="text-muted mb-4">
+                        Vous recevrez bientôt un email de confirmation avec les détails de votre commande.
+                    </p>
+                    <a href="{{ path('app_client_service_index') }}" class="btn btn-primary btn-lg">
+                        Retourner aux services
+                    </a>
                 </div>
             </div>
         </div>
