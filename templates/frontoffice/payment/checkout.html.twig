@@ -1,0 +1,49 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Paiement - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Récapitulatif de votre commande</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Événement</th>
+                                    <th>Prix</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart %}
+                                <tr>
+                                    <td>{{ item.event.name }}</td>
+                                    <td>{{ item.event.price }}€</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td class="font-weight-bold">Total</td>
+                                    <td class="font-weight-bold">{{ total }}€</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <form action="{{ path('payment_checkout') }}" method="POST">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Procéder au paiement
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

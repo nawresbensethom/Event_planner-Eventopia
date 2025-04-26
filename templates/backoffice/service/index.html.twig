@@ -138,6 +138,52 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
         }
+    .currency-converter {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        margin-bottom: 1.5rem;
+    }
+
+    .converter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .converter-group {
+        margin-bottom: 0;
+    }
+
+    .converter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #4e73df;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .converter-group input,
+    .converter-group select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        font-size: 0.9rem;
+    }
+
+    .converter-result {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #4e73df;
+        text-align: center;
+        padding: 1rem;
+        background: #f8f9fc;
+        border-radius: 0.35rem;
+        margin-top: 1rem;
+    }
     </style>
 {% endblock %}
 
@@ -153,6 +199,47 @@
                 <button type="button" class="btn btn-success bg-gradient-success shadow-sm" data-toggle="modal" data-target="#exportModal">
                     <i class="fas fa-file-export fa-sm text-white-50"></i> Exporter
                 </button>
+            </div>
+        </div>
+
+        <div class="currency-converter">
+            <h6 class="mb-3 text-gray-800">
+                <i class="fas fa-exchange-alt text-primary mr-2"></i>
+                Convertisseur de devises
+            </h6>
+            <div class="converter-grid">
+                <div class="converter-group">
+                    <label for="amount">Montant</label>
+                    <input type="number" id="amount" class="form-control" value="1" min="0" step="0.01">
+                </div>
+                <div class="converter-group">
+                    <label for="fromCurrency">De</label>
+                    <select id="fromCurrency" class="form-control">
+                        <option value="EUR">EUR (€)</option>
+                        <option value="USD">USD ($)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="JPY">JPY (¥)</option>
+                        <option value="TND">TND (د.ت)</option>
+                    </select>
+                </div>
+                <div class="converter-group">
+                    <label for="toCurrency">Vers</label>
+                    <select id="toCurrency" class="form-control">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="JPY">JPY (¥)</option>
+                        <option value="TND">TND (د.ت)</option>
+                    </select>
+                </div>
+                <div class="converter-group">
+                    <button type="button" class="btn btn-primary w-100" onclick="convertCurrency()">
+                        <i class="fas fa-exchange-alt"></i> Convertir
+                    </button>
+                </div>
+            </div>
+            <div class="converter-result" id="conversionResult">
+                Résultat de la conversion
             </div>
         </div>
 
@@ -350,5 +437,33 @@
             document.getElementById('category').value = '';
             searchServices();
         }
+
+        async function convertCurrency() {
+            const amount = document.getElementById('amount').value;
+            const fromCurrency = document.getElementById('fromCurrency').value;
+            const toCurrency = document.getElementById('toCurrency').value;
+            const resultDiv = document.getElementById('conversionResult');
+
+            try {
+                const response = await fetch(`/api/convert?amount=${amount}&from=${fromCurrency}&to=${toCurrency}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        ${amount} ${fromCurrency} = ${data.result.toFixed(2)} ${toCurrency}
+                        <br>
+                        <small class="text-muted">Taux de change: 1 ${fromCurrency} = ${data.rate.toFixed(4)} ${toCurrency}</small>
+                    `;
+                } else {
+                    resultDiv.innerHTML = 'Erreur lors de la conversion';
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                resultDiv.innerHTML = 'Erreur lors de la conversion';
+            }
+        }
+
+        // Convertir automatiquement au chargement de la page
+        document.addEventListener('DOMContentLoaded', convertCurrency);
     </script>
 {% endblock %}

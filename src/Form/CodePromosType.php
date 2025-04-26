@@ -40,17 +40,17 @@ class CodePromosType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 5,
-                    'placeholder' => 'Décrivez brièvement loffre promotionnelle...',
+                    'placeholder' => 'Décrivez brièvement l\'offre promotionnelle...',
                 ],
             ])
             ->add('reductionType', ChoiceType::class, [
                 'label' => 'Type de réduction',
                 'choices' => [
-                    'Fixe' => 'fixed',
-                    'Pourcentage' => 'percentage',
+                    '20%' => '20%',
+                    '30%' => '30%',
+                    '50%' => '50%',
                 ],
-                'placeholder' => 'Sélectionnez un type',
-                'required' => false,
+                'placeholder' => 'Sélectionnez un pourcentage de réduction',
                 'attr' => ['class' => 'form-select'],
             ])
             ->add('dateDebut', DateType::class, [
@@ -59,12 +59,12 @@ class CodePromosType extends AbstractType
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('dateExpiration', DateType::class, [
-                'label' => 'Date dexpiration',
+                'label' => 'Date d\'expiration',
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('limiteUtilisation', NumberType::class, [
-                'label' => 'Limite dutilisation',
+                'label' => 'Limite d\'utilisation',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',

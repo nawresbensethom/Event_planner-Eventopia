@@ -1,53 +1,66 @@
 <?php
-
 namespace App\Service;
 
-use App\Entity\Service;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Repository\ServiceRepository;
 
 class StripeService
 {
-    private $router;
     private $params;
-    private $stripeSecretKey;
+    private $serviceRepository;
 
     public function __construct(
-        UrlGeneratorInterface $router,
         ParameterBagInterface $params,
-        string $stripeSecretKey
+        ServiceRepository $serviceRepository
     ) {
-        $this->router = $router;
         $this->params = $params;
-        $this->stripeSecretKey = $stripeSecretKey;
-        
+        $this->serviceRepository = $serviceRepository;
+
         // Initialize Stripe with the secret key
-        Stripe::setApiKey($this->stripeSecretKey);
+        Stripe::setApiKey($this->params->get('stripe_secret_key'));
     }
 
-    public function createCheckoutSession(Service $service): Session
+    public function createCheckoutSession(array $cart, float $total, string $successUrl, string $cancelUrl): Session
     {
-        return Session::create([
-            'payment_method_types' => ['card'],
-            'line_items' => [[
+        if (empty($cart)) {
+            throw new \Exception('Le panier est vide');
+        }
+
+        $lineItems = [];
+        foreach ($cart as $id => $quantity) {
+            $service = $this->serviceRepository->find($id);
+            if (!$service) {
+                continue;
+            }
+
+            $lineItems[] = [
                 'price_data' => [
                     'currency' => 'eur',
-                    'unit_amount' => $service->getTarif() * 100,
                     'product_data' => [
                         'name' => $service->getNom(),
                         'description' => $service->getDescription(),
-                        'images' => [
-                            $service->getPhotos() ? 'uploads/services/' . $service->getPhotos() : null,
-                        ],
                     ],
+                    'unit_amount' => (int)($service->getTarif() * 100), // Convertir en centimes
                 ],
-                'quantity' => 1,
-            ]],
+                'quantity' => $quantity,
+            ];
+        }
+
+        if (empty($lineItems)) {
+            throw new \Exception('Aucun service valide dans le panier');
+        }
+
+        return Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => $lineItems,
             'mode' => 'payment',
-            'success_url' => $this->router->generate('app_payment_success', [], UrlGeneratorInterface::ABSOLUTE_URL),
-            'cancel_url' => $this->router->generate('app_payment_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+            'locale' => 'fr',
+            'currency' => 'eur',
         ]);
     }
-} 
+}

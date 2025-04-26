@@ -2,6 +2,8 @@
 parameters:
     photos_directory: '%kernel.project_dir%/public/uploads/images'
     services_directory: '%kernel.project_dir%/public/uploads/services'
+    app.base_url: 'http://localhost:8000'
+    stripe_public_key: '%env(STRIPE_PUBLIC_KEY)%'
     stripe_secret_key: '%env(STRIPE_SECRET_KEY)%'
 
 services:
@@ -23,9 +25,12 @@ services:
 
     Symfony\Component\HttpFoundation\Session\SessionInterface:
         alias: 'session'
-    
+
+    App\Service\ExchangeRateService:
+        arguments:
+            $httpClient: '@http_client'
+
     App\Service\StripeService:
         arguments:
-            $router: '@router'
             $params: '@parameter_bag'
-            $stripeSecretKey: '%stripe_secret_key%'
+            $serviceRepository: '@App\Repository\ServiceRepository'
