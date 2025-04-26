@@ -575,6 +575,79 @@
             color: #666;
             font-size: 0.9rem;
         }
+
+        /* Nouveaux styles pour la recherche et le tri */
+        .search-filter-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: -2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-filter-section .form-control,
+        .search-filter-section .form-select {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-filter-section .form-control:focus,
+        .search-filter-section .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(194, 130, 130, 0.1);
+        }
+
+        .search-filter-section .btn-primary {
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .search-filter-section .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(194, 130, 130, 0.2);
+        }
+
+        .search-filter-section .input-group {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .search-filter-section .input-group .form-control {
+            border-right: none;
+        }
+
+        .search-filter-section .input-group .btn {
+            border-left: none;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .search-filter-section .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            padding-right: 2.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-filter-section {
+                margin-top: 0;
+            }
+
+            .search-filter-section .col-md-6,
+            .search-filter-section .col-md-3 {
+                margin-bottom: 1rem;
+            }
+        }
     </style>
 {% endblock %}
 
@@ -590,6 +663,54 @@
     </div>
 
     <div class="container">
+        <!-- Section de recherche et tri -->
+        <div class="search-filter-section mb-4">
+            <form action="{{ path('app_client_post_index') }}" method="get" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" 
+                               name="search" 
+                               class="form-control" 
+                               placeholder="Rechercher un post..." 
+                               value="{{ app.request.query.get('search') }}"
+                               aria-label="Rechercher">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i> Rechercher
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="sort" class="form-select" onchange="this.form.submit()">
+                        <option value="newest" {{ app.request.query.get('sort') == 'newest' ? 'selected' : '' }}>
+                            Plus récent
+                        </option>
+                        <option value="oldest" {{ app.request.query.get('sort') == 'oldest' ? 'selected' : '' }}>
+                            Plus ancien
+                        </option>
+                        <option value="most_liked" {{ app.request.query.get('sort') == 'most_liked' ? 'selected' : '' }}>
+                            Plus aimés
+                        </option>
+                        <option value="most_commented" {{ app.request.query.get('sort') == 'most_commented' ? 'selected' : '' }}>
+                            Plus commentés
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="filter" class="form-select" onchange="this.form.submit()">
+                        <option value="all" {{ app.request.query.get('filter') == 'all' ? 'selected' : '' }}>
+                            Tous les posts
+                        </option>
+                        <option value="my_posts" {{ app.request.query.get('filter') == 'my_posts' ? 'selected' : '' }}>
+                            Mes posts
+                        </option>
+                        <option value="liked" {{ app.request.query.get('filter') == 'liked' ? 'selected' : '' }}>
+                            Posts aimés
+                        </option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
         {% if posts|length > 0 %}
             <div class="post-list">
                 {% for post in posts %}
@@ -693,7 +814,12 @@
                     <ul class="pagination">
                         {% if currentPage > 1 %}
                             <li class="page-item">
-                                <a class="page-link" href="{{ path('app_client_post_index', {'page': currentPage - 1}) }}" aria-label="Previous">
+                                <a class="page-link" href="{{ path('app_client_post_index', {
+                                    'page': currentPage - 1,
+                                    'search': search,
+                                    'sort': sort,
+                                    'filter': filter
+                                }) }}" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
@@ -705,13 +831,23 @@
 
                         {% for page in 1..totalPages %}
                             <li class="page-item {{ page == currentPage ? 'active' : '' }}">
-                                <a class="page-link" href="{{ path('app_client_post_index', {'page': page}) }}">{{ page }}</a>
+                                <a class="page-link" href="{{ path('app_client_post_index', {
+                                    'page': page,
+                                    'search': search,
+                                    'sort': sort,
+                                    'filter': filter
+                                }) }}">{{ page }}</a>
                             </li>
                         {% endfor %}
 
                         {% if currentPage < totalPages %}
                             <li class="page-item">
-                                <a class="page-link" href="{{ path('app_client_post_index', {'page': currentPage + 1}) }}" aria-label="Next">
+                                <a class="page-link" href="{{ path('app_client_post_index', {
+                                    'page': currentPage + 1,
+                                    'search': search,
+                                    'sort': sort,
+                                    'filter': filter
+                                }) }}" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -741,6 +877,58 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de la recherche en temps réel
+            const searchInput = document.querySelector('input[name="search"]');
+            const searchForm = document.querySelector('.search-filter-section form');
+            let searchTimeout;
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchForm.submit();
+                }, 500);
+            });
+
+            // Gestion des filtres
+            const filterSelect = document.querySelector('select[name="filter"]');
+            filterSelect.addEventListener('change', function() {
+                // Afficher un indicateur de chargement
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.className = 'loading-indicator';
+                loadingIndicator.innerHTML = '<i class="bi bi-arrow-repeat"></i> Chargement...';
+                document.querySelector('.post-list').prepend(loadingIndicator);
+            });
+
+            // Gestion du tri
+            const sortSelect = document.querySelector('select[name="sort"]');
+            sortSelect.addEventListener('change', function() {
+                // Afficher un indicateur de chargement
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.className = 'loading-indicator';
+                loadingIndicator.innerHTML = '<i class="bi bi-arrow-repeat"></i> Tri en cours...';
+                document.querySelector('.post-list').prepend(loadingIndicator);
+            });
+
+            // Ajouter des styles pour l'indicateur de chargement
+            const style = document.createElement('style');
+            style.textContent = `
+                .loading-indicator {
+                    text-align: center;
+                    padding: 1rem;
+                    color: var(--primary-color);
+                    font-size: 0.9rem;
+                    animation: spin 1s linear infinite;
+                }
+                .loading-indicator i {
+                    margin-right: 0.5rem;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+
             // Gestion des réactions (likes/dislikes)
             function handleReaction(button, url, countElement) {
                 console.log('Sending request to:', url);

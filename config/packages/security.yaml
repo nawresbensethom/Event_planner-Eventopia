@@ -44,7 +44,7 @@ security:
         # Routes utilisateur
         - { path: ^/profile, roles: ROLE_USER }
         
-        # Route racine redirige vers login
+        # Route racine accessible publiquement
         - { path: ^/$, roles: PUBLIC_ACCESS }
         
         # Toutes les autres routes nécessitent une authentification

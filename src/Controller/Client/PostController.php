@@ -31,17 +31,72 @@ final class PostController extends AbstractController
     {
         $postsPerPage = 6;
         $currentPage = $request->query->getInt('page', 1);
+        $search = $request->query->get('search', '');
+        $sort = $request->query->get('sort', 'newest');
+        $filter = $request->query->get('filter', 'all');
         
         $postRepository = $entityManager->getRepository(Post::class);
-        $totalPosts = $postRepository->count([]);
-        $totalPages = ceil($totalPosts / $postsPerPage);
         
-        $posts = $postRepository->findBy(
-            [],
-            ['date_publication' => 'DESC'],
-            $postsPerPage,
-            ($currentPage - 1) * $postsPerPage
-        );
+        // Requête pour compter le nombre total de posts
+        $countQb = $postRepository->createQueryBuilder('p');
+        if ($search) {
+            $countQb->andWhere('p.titre LIKE :search OR p.contenu LIKE :search')
+                   ->setParameter('search', '%' . $search . '%');
+        }
+        $user = $this->getUser();
+        if ($filter === 'my_posts' && $user) {
+            $countQb->andWhere('p.id_utilisateur = :user')
+                   ->setParameter('user', $user);
+        } elseif ($filter === 'liked' && $user) {
+            $countQb->andWhere('p.likeCount > 0');
+        }
+        $totalPosts = $countQb->select('COUNT(p.id_post)')
+                             ->getQuery()
+                             ->getSingleScalarResult();
+
+        $totalPages = ceil($totalPosts / $postsPerPage);
+
+        // Requête pour récupérer les posts paginés
+        $qb = $postRepository->createQueryBuilder('p');
+        
+        // Appliquer le filtre de recherche
+        if ($search) {
+            $qb->andWhere('p.titre LIKE :search OR p.contenu LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Appliquer les filtres
+        if ($filter === 'my_posts' && $user) {
+            $qb->andWhere('p.id_utilisateur = :user')
+               ->setParameter('user', $user);
+        } elseif ($filter === 'liked' && $user) {
+            $qb->andWhere('p.likeCount > 0');
+        }
+
+        // Appliquer le tri
+        switch ($sort) {
+            case 'oldest':
+                $qb->orderBy('p.date_publication', 'ASC');
+                break;
+            case 'most_liked':
+                $qb->orderBy('p.likeCount', 'DESC');
+                break;
+            case 'most_commented':
+                $qb->leftJoin('p.commentaires', 'c2')
+                   ->groupBy('p.id_post')
+                   ->orderBy('COUNT(c2.id_commentaire)', 'DESC');
+                break;
+            default: // 'newest'
+                $qb->orderBy('p.date_publication', 'DESC');
+                break;
+        }
+
+        // Récupérer les posts paginés
+        $posts = $qb->select('p')
+                   ->setFirstResult(($currentPage - 1) * $postsPerPage)
+                   ->setMaxResults($postsPerPage)
+                   ->getQuery()
+                   ->getResult();
 
         return $this->render('frontoffice/post/index.html.twig', [
             'posts' => $posts,
@@ -49,6 +104,9 @@ final class PostController extends AbstractController
             'totalPages' => $totalPages,
             'postsPerPage' => $postsPerPage,
             'totalPosts' => $totalPosts,
+            'search' => $search,
+            'sort' => $sort,
+            'filter' => $filter,
         ]);
     }
 
