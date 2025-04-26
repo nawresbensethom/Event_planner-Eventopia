@@ -175,32 +175,36 @@ class Post
         return $this->likeCount;
     }
 
-    public function setLikeCount(int $likeCount): self
-    {
-        $this->likeCount = $likeCount;
-        return $this;
-    }
-
-    public function incrementLikeCount(): self
-    {
-        $this->likeCount++;
-        return $this;
-    }
-
     public function getDislikeCount(): ?int
     {
         return $this->dislikeCount;
     }
 
-    public function setDislikeCount(int $dislikeCount): self
+    public function toggleLike(): void
     {
-        $this->dislikeCount = $dislikeCount;
-        return $this;
+        $this->likeCount = $this->likeCount > 0 ? 0 : 1;
+        if ($this->likeCount > 0) {
+            $this->dislikeCount = 0;
+        }
     }
 
-    public function incrementDislikeCount(): self
+    public function toggleDislike(): void
     {
-        $this->dislikeCount++;
-        return $this;
+        $this->dislikeCount = $this->dislikeCount > 0 ? 0 : 1;
+        if ($this->dislikeCount > 0) {
+            $this->likeCount = 0;
+        }
+    }
+
+    public function switchToLike(): void
+    {
+        $this->likeCount = 1;
+        $this->dislikeCount = 0;
+    }
+
+    public function switchToDislike(): void
+    {
+        $this->likeCount = 0;
+        $this->dislikeCount = 1;
     }
 }

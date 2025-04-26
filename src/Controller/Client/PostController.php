@@ -249,12 +249,18 @@ final class PostController extends AbstractController
     public function like(Post $post, EntityManagerInterface $entityManager): Response
     {
         try {
-            $post->incrementLikeCount();
+            if ($post->getDislikeCount() > 0) {
+                $post->switchToLike();
+            } else {
+                $post->toggleLike();
+            }
+            
             $entityManager->flush();
 
             return $this->json([
                 'success' => true,
-                'likes' => $post->getLikeCount()
+                'likes' => $post->getLikeCount(),
+                'dislikes' => $post->getDislikeCount()
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Error in like action: ' . $e->getMessage());
@@ -269,11 +275,17 @@ final class PostController extends AbstractController
     public function dislike(Post $post, EntityManagerInterface $entityManager): Response
     {
         try {
-            $post->incrementDislikeCount();
+            if ($post->getLikeCount() > 0) {
+                $post->switchToDislike();
+            } else {
+                $post->toggleDislike();
+            }
+            
             $entityManager->flush();
 
             return $this->json([
                 'success' => true,
+                'likes' => $post->getLikeCount(),
                 'dislikes' => $post->getDislikeCount()
             ]);
         } catch (\Exception $e) {

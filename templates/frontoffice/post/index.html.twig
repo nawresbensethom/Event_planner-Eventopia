@@ -761,12 +761,27 @@
                 .then(data => {
                     console.log('Received data:', data);
                     if (data.success) {
-                        if (data.likes !== undefined) {
-                            countElement.textContent = data.likes;
-                            button.classList.add('liked');
-                        } else if (data.dislikes !== undefined) {
-                            countElement.textContent = data.dislikes;
-                            button.classList.add('disliked');
+                        // Mettre à jour les deux compteurs
+                        const postItem = button.closest('.post-list-item');
+                        const likeCount = postItem.querySelector('.like-count');
+                        const dislikeCount = postItem.querySelector('.dislike-count');
+                        
+                        likeCount.textContent = data.likes;
+                        dislikeCount.textContent = data.dislikes;
+                        
+                        // Mettre à jour les classes des boutons
+                        const likeBtn = postItem.querySelector('.like-btn');
+                        const dislikeBtn = postItem.querySelector('.dislike-btn');
+                        
+                        if (data.likes > 0) {
+                            likeBtn.classList.add('liked');
+                            dislikeBtn.classList.remove('disliked');
+                        } else if (data.dislikes > 0) {
+                            likeBtn.classList.remove('liked');
+                            dislikeBtn.classList.add('disliked');
+                        } else {
+                            likeBtn.classList.remove('liked');
+                            dislikeBtn.classList.remove('disliked');
                         }
                     } else {
                         console.error('Server reported error:', data.error);
