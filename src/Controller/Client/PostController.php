@@ -27,14 +27,28 @@ final class PostController extends AbstractController
     }
 
     #[Route('/', name: 'app_client_post_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $posts = $entityManager
-            ->getRepository(Post::class)
-            ->findBy([], ['date_publication' => 'DESC']);
+        $postsPerPage = 6;
+        $currentPage = $request->query->getInt('page', 1);
+        
+        $postRepository = $entityManager->getRepository(Post::class);
+        $totalPosts = $postRepository->count([]);
+        $totalPages = ceil($totalPosts / $postsPerPage);
+        
+        $posts = $postRepository->findBy(
+            [],
+            ['date_publication' => 'DESC'],
+            $postsPerPage,
+            ($currentPage - 1) * $postsPerPage
+        );
 
         return $this->render('frontoffice/post/index.html.twig', [
             'posts' => $posts,
+            'currentPage' => $currentPage,
+            'totalPages' => $totalPages,
+            'postsPerPage' => $postsPerPage,
+            'totalPosts' => $totalPosts,
         ]);
     }
 
