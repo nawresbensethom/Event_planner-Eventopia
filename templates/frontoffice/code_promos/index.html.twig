@@ -1,0 +1,425 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Gestion des codes promotionnels{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .codes-header {
+            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%);
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .codes-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI2NDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIGQ9Ik0wIDBoMTQ0MHY2NDBIMHoiLz48cGF0aCBkPSJNMCA0NDBsMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUgMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==');
+            opacity: 0.1;
+        }
+
+        .codes-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .codes-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: fadeInUp 0.8s ease-out 0.2s;
+            animation-fill-mode: both;
+        }
+
+        .codes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .code-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            top: 0;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .code-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-header {
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .code-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .code-card:hover .code-header::before {
+            opacity: 1;
+        }
+
+        .code-value {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .code-details {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: #666;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .code-detail:hover {
+            background: rgba(194, 130, 130, 0.05);
+            transform: translateX(5px);
+        }
+
+        .code-detail i {
+            color: #c28282;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .code-detail:hover i {
+            transform: scale(1.1);
+        }
+
+        .code-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .status-valid {
+            background: rgba(45, 206, 137, 0.1);
+            color: #2dce89;
+        }
+
+        .status-expired {
+            background: rgba(245, 54, 92, 0.1);
+            color: #f5365c;
+        }
+
+        .code-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .view-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .view-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .view-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(194, 130, 130, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .view-btn:hover::before {
+            opacity: 1;
+        }
+
+        .view-btn i {
+            font-size: 1.2rem;
+            transition: all 0.4s ease;
+        }
+
+        .view-btn:hover i {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .no-codes {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            grid-column: 1 / -1;
+        }
+
+        .no-codes-icon {
+            font-size: 4rem;
+            color: #c28282;
+            margin-bottom: 1rem;
+        }
+
+        .no-codes-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 2rem 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .pagination .page-item .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 35px;
+            height: 35px;
+            padding: 0 12px;
+            margin: 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #c28282;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .pagination .page-item.active .page-link {
+            color: #fff;
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            border-color: #c28282;
+            box-shadow: 0 4px 6px rgba(194, 130, 130, 0.25);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #a0aec0;
+            pointer-events: none;
+            background-color: #f8f9fa;
+            border-color: #e2e8f0;
+        }
+
+        .pagination .page-link:hover:not(.disabled) {
+            color: #fff;
+            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            border-color: #c28282;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(194, 130, 130, 0.2);
+        }
+
+        .pagination-info {
+            text-align: center;
+            color: #718096;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .codes-title {
+                font-size: 2.5rem;
+            }
+
+            .codes-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .codes-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .code-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <section class="codes-header">
+        <div class="container text-center">
+            <h1 class="codes-title">Codes Promotionnels</h1>
+            <p class="codes-subtitle">
+                Découvrez et utilisez nos codes promotionnels exclusifs
+            </p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="codes-grid">
+            {% for code_promo in code_promos %}
+                <div class="code-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                    <div class="code-header">
+                        <h2 class="code-value">{{ code_promo.code }}</h2>
+                    </div>
+                    <div class="code-content">
+                        <div class="code-details">
+                            <div class="code-detail">
+                                <i class="fas fa-percentage"></i>
+                                <span>Pourcentage:{{ code_promo.reductionType|default('N/A') }}</span>
+                            </div>
+                           
+                            {% if code_promo.service %}
+                                <div class="code-detail">
+                                    <i class="fas fa-tag"></i>
+                                    <span>
+                                        Service : {{ code_promo.service.nom }}
+                                    </span>
+                                </div>
+                            {% else %}
+                                <div class="code-detail">
+                                    <i class="fas fa-tag"></i>
+                                    <span class="text-muted">Aucun service associé</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="code-status {{ code_promo.dateExpiration > date() ? 'status-valid' : 'status-expired' }}">
+                            <i class="fas {{ code_promo.dateExpiration > date() ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
+                            {{ code_promo.dateExpiration > date() ? 'Valide' : 'Expiré' }}
+                        </div>
+                        <div class="code-actions">
+                            <a href="{{ path('app_client_code_promos_show', {'id': code_promo.id}) }}" class="view-btn">
+                                <i class="fas fa-eye"></i> Voir détails
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="no-codes">
+                    <i class="fas fa-tags no-codes-icon"></i>
+                    <p class="no-codes-text">Aucun code promotionnel disponible</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex flex-column align-items-center mt-4">
+            {{ knp_pagination_render(code_promos, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig') }}
+            <div class="pagination-info">
+                Affichage de {{ code_promos.items|length }} codes sur {{ code_promos.getTotalItemCount }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $(".search-input").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("table tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+{% endblock %}
