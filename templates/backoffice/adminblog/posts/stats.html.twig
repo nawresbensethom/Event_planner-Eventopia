@@ -1,0 +1,114 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold mb-2" style="letter-spacing:1px; color:#0d6efd;">
+                Statistiques du Blog
+            </h1>
+            <p class="lead text-secondary">Visualisez les utilisateurs les plus actifs par likes et commentaires</p>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0"><i class="bi bi-hand-thumbs-up me-2"></i>Top 10 Utilisateurs par Likes</h3>
+                </div>
+                <div class="card-body bg-light">
+                    <canvas id="likesChart" style="min-height:350px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0"><i class="bi bi-chat-dots me-2"></i>Top 10 Utilisateurs par Commentaires</h3>
+                </div>
+                <div class="card-body bg-light">
+                    <canvas id="commentsChart" style="min-height:350px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Données pour le graphique des likes
+    const likesData = {
+        labels: {{ topLikes|map(l => l.username)|json_encode|raw }},
+        datasets: [{
+            label: 'Nombre de Likes',
+            data: {{ topLikes|map(l => l.totalLikes)|json_encode|raw }},
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    // Données pour le graphique des commentaires
+    const commentsData = {
+        labels: {{ topComments|map(c => c.username)|json_encode|raw }},
+        datasets: [{
+            label: 'Nombre de Commentaires',
+            data: {{ topComments|map(c => c.totalComments)|json_encode|raw }},
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    // Configuration commune pour les deux graphiques
+    const commonConfig = {
+        type: 'bar',
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#fff',
+                    titleColor: '#333',
+                    bodyColor: '#333',
+                    borderColor: '#0d6efd',
+                    borderWidth: 1
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    };
+
+    // Création du graphique des likes
+    const likesCtx = document.getElementById('likesChart').getContext('2d');
+    new Chart(likesCtx, {
+        ...commonConfig,
+        data: likesData
+    });
+
+    // Création du graphique des commentaires
+    const commentsCtx = document.getElementById('commentsChart').getContext('2d');
+    new Chart(commentsCtx, {
+        ...commonConfig,
+        data: commentsData
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -14,7 +14,15 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/backoffice/adminblog')]
 class AdminBlogController extends AbstractController
 {
-    #[Route('/posts', name: 'admin_blog_index', methods: ['GET'])]
+#[Route('/stats', name: 'admin_blog_stats', methods: ['GET'])]
+public function stats(PostRepository $postRepository): Response
+{
+    return $this->render('backoffice/adminblog/posts/stats.html.twig', [
+        'topLikes' => $postRepository->getTopUsersByLikes(),
+        'topComments' => $postRepository->getTopUsersByComments()
+    ]);
+}
+#[Route('/posts', name: 'admin_blog_index', methods: ['GET'])]
     public function index(PostRepository $postRepository): Response
     {
         $posts = $postRepository->findBy([], ['date_publication' => 'DESC']);
@@ -44,8 +52,7 @@ class AdminBlogController extends AbstractController
             'form' => $form,
         ]);
     }
-
-    #[Route('/posts/{id_post}/change-status', name: 'admin_blog_change_status', methods: ['POST'])]
+#[Route('/posts/{id_post}/change-status', name: 'admin_blog_change_status', methods: ['POST'])]
     public function changeStatus(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
         $data = json_decode($request->getContent(), true);
