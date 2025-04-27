@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
+use Symfony\Component\HttpFoundation\JsonResponse;
 #[Route('/tache')]
 final class TacheController extends AbstractController
 {
@@ -28,6 +28,25 @@ final class TacheController extends AbstractController
             'taches' => $taches,
             'plan' => $plan,
         ]);
+    }
+    #[Route('/{id}/status', name: 'app_tache_update_status', methods: ['POST'])]
+    public function updateStatus(Request $request, Tache $tache, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $newStatus = $data['statut'] ?? null;
+
+        $allowed = ['En cours', 'Terminée', 'Annulée'];
+        if (!in_array($newStatus, $allowed, true)) {
+            return $this->json(
+                ['success' => false, 'message' => 'Statut invalide'],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $tache->setStatut($newStatus);
+        $em->flush();
+
+        return $this->json(['success' => true]);
     }
 
     #[Route('/new/plan/{id}', name: 'app_tache_new', methods: ['GET', 'POST'])]

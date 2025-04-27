@@ -17,6 +17,7 @@ use Knp\Component\Pager\PaginatorInterface;
 #[Route('/plan')]
 final class PlanController extends AbstractController
 {
+    // Pagination:
     #[Route('/', name: 'app_plan_index', methods: ['GET'])]
     public function index(Request $request, PaginatorInterface $paginator,EntityManagerInterface $entityManager): Response
     {
@@ -33,6 +34,7 @@ final class PlanController extends AbstractController
             'pagination' => $pagination,
         ]);
     }
+    // Search
     #[Route('/search', name: 'app_plan_search', methods: ['GET'])]
     public function search(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -59,6 +61,8 @@ final class PlanController extends AbstractController
         }
         return new JsonResponse(['plans' => $data]);
     }
+
+
 
     #[Route('/new', name: 'app_plan_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -108,7 +112,7 @@ final class PlanController extends AbstractController
                 }
             }
 
-            // Statistiques des tâches par statut
+
             $tachesByStatus = [
                 'Annulée' => 0,
                 'En cours' => 0,
@@ -134,6 +138,8 @@ final class PlanController extends AbstractController
             $this->addFlash('error', 'Une erreur s\'est produite lors du chargement du tableau de bord : ' . $e->getMessage());
             return $this->redirectToRoute('app_plan_index', [], Response::HTTP_SEE_OTHER);
         }
+
+        //MAP
     }
     #[Route('/{id}/map', name: 'app_plan_map', methods: ['GET'])]
     public function map(Plan $plan, LocationResolver $resolver): Response
@@ -146,6 +152,9 @@ final class PlanController extends AbstractController
         ]);
     }
 
+
+
+           //CR-CODE
     #[Route('/{id}', name: 'app_plan_show', methods: ['GET'])]
     public function show(?Plan $plan,PlanQrCodeGenerator $qrGenerator): Response
     {
@@ -160,6 +169,8 @@ final class PlanController extends AbstractController
         ]);
     }
 
+
+    
     #[Route('/{id}/edit', name: 'app_plan_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ?Plan $plan, EntityManagerInterface $entityManager): Response
     {

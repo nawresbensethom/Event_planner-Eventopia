@@ -26,11 +26,12 @@ class PlanQrCodeGenerator
         $isFuture = $plan->getDateDebut() > $today;
         $endpoint = $isFuture ? 'forecast.json?days=10' : 'history.json?dt=' . $date;
         $url = sprintf(
-            'http://api.weatherapi.com/v1/%s&key=%s&q=%s',
+                      'http://api.weatherapi.com/v1/%s&key=%s&q=%s',
             $endpoint,
             $this->apiKey,
             urlencode($plan->getLocation())
         );
+
         $response = $this->client->request('GET', $url);
         $data = $response->toArray();
         $dayData = [];
@@ -54,9 +55,12 @@ class PlanQrCodeGenerator
                 $dayData['condition']['text']
             )
             : "Pas de données météo pour le $date.";
+
+
         $qrCode = QrCode::create($content)
             ->setSize(150)
             ->setMargin(1);
+           // Écriture de l'image QR Code 
         $writer = new PngWriter();
         $result = $writer->write($qrCode);
         $uploadDir = $this->projectDir . '/public/uploads/qrcodes';

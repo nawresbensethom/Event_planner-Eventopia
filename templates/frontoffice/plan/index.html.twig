@@ -65,55 +65,48 @@
             }
 
         .create-plan-btn {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            border: 2px solid rgba(255,255,255,0.4);
-            text-decoration: none;
-            animation: fadeInUp 1s ease-out 0.6s;
-            backdrop-filter: blur(5px);
-            position: relative;
-        }
-        .create-plan-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-            border-color: rgba(255,255,255,0.6);
-        }
+  background: #4CAF50;         /* simple solid color */
+  border: none;
+  color: white;
+  padding: 0.6rem 1.2rem;       /* tighter padding */
+  border-radius: 0.5rem;       /* subtle rounding */
+  font-size: 1rem;             /* standard size */
+  font-weight: 500;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.create-plan-btn:hover {
+  background: #45A049;         /* slightly darker on hover */
+  transform: translateY(-2px); /* light lift */
+}
+.create-plan-btn:active {
+  transform: translateY(0);
+}
 
-        /* --- Button Style Changes for the Action Buttons --- */
-        .btn-glossy {
-            background: linear-gradient(135deg,rgb(224, 134, 32),rgb(191, 198, 211)); /* Cool gradient background */
-            border: none;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            font-size: 1rem;
-            border-radius: 50px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .btn-glossy i {
-            margin-right: 0.5rem; /* Space between the icon and text */
-        }
-        .btn-glossy:hover {
-            background: linear-gradient(135deg, #2575fc, #6a11cb); /* Reverse gradient on hover */
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            border-radius: 50px;
-        }
-        .btn-glossy:focus {
-            outline: none;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Add focus outline for accessibility */
-        }
-        .btn-glossy i {
-            font-size: 1.2rem; /* Slightly larger icon size */
-        }
+/* Slim “Glossy” action buttons */
+.btn-glossy {
+  background: transparent;
+  border: 2px solid #4CAF50;   /* matching accent color */
+  color: #4CAF50;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-glossy i {
+  font-size: 1rem;
+}
+.btn-glossy:hover {
+  background:rgb(185, 170, 77);         /* fill on hover */
+  color: white;
+}
+.btn-glossy:focus {
+  outline: 2px solid rgba(76, 175, 80, 0.6);
+  outline-offset: 2px;
+}
 
         /* --- Grid & Cards --- */
         .posts-grid {

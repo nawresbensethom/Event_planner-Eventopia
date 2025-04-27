@@ -1,263 +1,108 @@
+{# templates/frontoffice/tache/index.html.twig #}
 {% extends 'frontoffice/base.html.twig' %}
 
-{% block title %}Tâches du Plan {{ plan.titre }} – EvenTopia{% endblock %}
+{% block title %}Tâches du Plan « {{ plan.titre }} » – EvenTopia{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        /* --- Header Section --- */
-        .plan-header {
-            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%),
-                        url('{{ asset('images/plan-header-bg.jpg') }}') center/cover no-repeat;
-            padding: 6rem 0 4rem;
-            margin-bottom: 2rem;
-            position: relative;
-            text-align: center;
-            color: white;
-        }
-        .plan-header::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0i...') center/cover no-repeat;
-            opacity: 0.1;
-        }
-        .plan-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            animation: fadeInDown 1s ease-out;
-            position: relative;
-        }
-        .plan-subtitle {
-            font-size: 1.4rem;
-            margin-bottom: 2rem;
-            animation: fadeInUp 1s ease-out 0.3s;
-            position: relative;
-        }
-        .create-task-btn {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            border: 2px solid rgba(255,255,255,0.4);
-            text-decoration: none;
-            animation: fadeInUp 1s ease-out 0.6s;
-            backdrop-filter: blur(5px);
-        }
-        .create-task-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-            border-color: rgba(255,255,255,0.6);
-        }
-
-        /* --- Grid & Cards --- */
-        .posts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
-            gap: 2rem;
-            padding: 0 1rem 4rem;
-        }
-        .post-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            animation: fadeIn 0.6s ease-out;
-        }
-        .post-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        .post-content {
-            padding: 1.5rem;
-        }
-        .post-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-        .post-excerpt {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-        .post-meta {
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid #eee;
-            padding: 1rem;
-            font-size: 0.9rem;
-            color: #888;
-        }
-        .post-actions {
-            border-top: 1px solid #eee;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            background: #fff;
-        }
-        .post-actions .btn {
-            font-size: 0.85rem;
-        }
-
-        /* --- Animations --- */
-        @keyframes fadeIn     { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
-        @keyframes fadeInDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
-        @keyframes fadeInUp   { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
-
-        /* --- Responsive --- */
-        @media (max-width: 768px) {
-            .plan-title    { font-size: 2.5rem; }
-            .plan-subtitle { font-size: 1.2rem; }
-            .posts-grid    { grid-template-columns: 1fr; }
-        }
+      .task-columns-container { display:flex; gap:1rem; }
+      .task-column {
+        flex:1; background:#f1f3f5; padding:1rem;
+        border-radius:.5rem; min-height:400px;
+      }
+      .column-header { text-align:center; margin-bottom:.5rem; font-weight:bold; }
+      .task-card { margin-bottom:.75rem; cursor:grab; }
+      .task-card:active { cursor:grabbing; }
     </style>
 {% endblock %}
 
 {% block body %}
-<section class="plan-header">
-  <div class="container">
-    <h1 class="plan-title">Tâches du Plan « {{ plan.titre }} »</h1>
-    <p class="plan-subtitle">Gérez les tâches associées à ce planning</p>
-    <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="create-task-btn">
-      <i class="bi bi-plus-circle me-2"></i> Ajouter une tâche
-    </a>
-  </div>
-</section>
-
-<div class="container mb-4">
-  <div class="row g-2">
-    <div class="col-md-6">
-      <input type="text" id="task-search" class="form-control" placeholder="Rechercher une tâche…" />
+  <section class="plan-header">
+    <div class="container">
+      <h1 class="plan-title">Tâches du Plan « {{ plan.titre }} »</h1>
+      <p class="plan-subtitle">Gérez les tâches associées à ce planning</p>
+      <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="create-task-btn">
+         <i class="bi bi-plus-circle me-2"></i> Ajouter une tâche
+      </a>
     </div>
-    <div class="col-md-6">
-      <select id="task-sort" class="form-control">
-        <option value="id">Trier par ID</option>
-        <option value="titre">Trier par titre</option>
-        <option value="date">Trier par date</option>
-        <option value="dureeEstimee">Trier par durée</option>
-      </select>
+  </section>
+
+  <div class="container my-4">
+    <div class="task-columns-container">
+      {% for statusLabel in ['En cours','Terminée','Annulée'] %}
+        <div class="task-column" data-status="{{ statusLabel }}">
+          <h3 class="column-header">{{ statusLabel }}</h3>
+
+          {# Normal loop + nested if instead of inline filter #}
+          {% for t in taches %}
+            {% if t.statut == statusLabel %}
+              <div class="task-card card" data-id="{{ t.id }}">
+                <div class="card-body">
+                  <h5 class="card-title">{{ t.titre }}</h5>
+                  <p class="card-text">
+                    {{ t.description|striptags|slice(0,80) }}
+                    {% if t.description|length > 80 %}…{% endif %}
+                  </p>
+                  <p class="small">
+                    <i class="bi bi-calendar-event"></i>
+                    {{ t.date ? t.date|date('d/m/Y') : '–' }}
+                    &nbsp;|&nbsp;
+                    <i class="bi bi-clock"></i>
+                    {{ t.dureeEstimee }} h
+                  </p>
+                  <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_tache_show', {'id': t.id}) }}"
+                       class="btn btn-sm btn-outline-primary">Voir</a>
+                    <a href="{{ path('app_tache_edit', {'id': t.id}) }}"
+                       class="btn btn-sm btn-outline-secondary">Modifier</a>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+          
+        </div>
+      {% endfor %}
     </div>
   </div>
-</div>
-
-<div class="container" id="tasks-container">
-  <div class="posts-grid">
-    {% for tache in taches %}
-      <article class="post-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
-        <div class="post-content">
-          <h2 class="post-title">{{ tache.titre }}</h2>
-          <p class="post-excerpt">{{ tache.description|striptags|slice(0,100) }}{% if tache.description|length>100 %}…{% endif %}</p>
-        </div>
-        <div class="post-meta">
-          <span><i class="bi bi-calendar-event"></i> {{ tache.date ? tache.date|date('d/m/Y') : '–' }}</span>
-          <span><i class="bi bi-clock"></i> {{ tache.dureeEstimee }} h</span>
-        </div>
-        <div class="post-actions">
-          <a href="{{ path('app_tache_show', {'id': tache.id}) }}" class="btn btn-outline-dark btn-sm">
-            <i class="bi bi-eye me-1"></i> Voir
-          </a>
-          <a href="{{ path('app_tache_edit', {'id': tache.id}) }}" class="btn btn-outline-dark btn-sm">
-            <i class="bi bi-pencil me-1"></i> Modifier
-          </a>
-          {{ include('frontoffice/tache/_delete_form.html.twig', { 'tache': tache }) }}
-        </div>
-      </article>
-    {% endfor %}
-  </div>
-</div>
 {% endblock %}
 
 {% block javascripts %}
-{{ parent() }}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Build a JS array from Twig taches
-    const tasksData = [
-        {% for t in taches %}
-        {
-            id: {{ t.id }},
-            titre: {{ t.titre|json_encode|raw }},
-            description: {{ t.description|json_encode|raw }},
-            date: {{ t.date ? t.date|date('Y-m-d')|json_encode|raw : '""' }},
-            duree: {{ t.dureeEstimee }}
-        }{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ];
+  {{ parent() }}
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.task-column').forEach(column => {
+        new Sortable(column, {
+          group: 'tasks',
+          animation: 150,
+          onEnd({ item, to }) {
+            const id     = item.dataset.id;
+            const status = to.dataset.status;
 
-    const container = document.getElementById('tasks-container');
-    const searchEl  = document.getElementById('task-search');
-    const sortEl    = document.getElementById('task-sort');
-
-    function render(tasks) {
-        if (!tasks.length) {
-            container.innerHTML = `
-              <div class="text-center py-5">
-                <div class="alert alert-info">
-                  <i class="bi bi-info-circle me-2"></i>
-                  Aucune tâche trouvée.
-                  <a href="{{ path('app_tache_new', {'id': plan.id}) }}" class="alert-link">Ajoutez-en une</a> !
-                </div>
-              </div>`;
-            return;
-        }
-        let html = '<div class="posts-grid">';
-        tasks.forEach((t,i) => {
-            html += `
-            <article class="post-card" style="animation-delay:${i*0.1}s">
-              <div class="post-content">
-                <h2 class="post-title">${t.titre}</h2>
-                <p class="post-excerpt">
-                  ${t.description.slice(0,100)}${t.description.length>100?'…':''}
-                </p>
-              </div>
-              <div class="post-meta">
-                <span><i class="bi bi-calendar-event"></i> ${t.date || '–'}</span>
-                <span><i class="bi bi-clock"></i> ${t.duree} h</span>
-              </div>
-              <div class="post-actions">
-                <a href="/tache/${t.id}" class="btn btn-outline-dark btn-sm">
-                  <i class="bi bi-eye me-1"></i>Voir
-                </a>
-                <a href="/tache/${t.id}/edit" class="btn btn-outline-dark btn-sm">
-                  <i class="bi bi-pencil me-1"></i>Modifier
-                </a>
-              </div>
-            </article>`;
+            fetch('/update_tache_status.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept':       'application/json'
+              },
+              body: JSON.stringify({ id: id, statut: status })
+            })
+            .then(r => r.json())
+            .then(json => {
+              if (!json.success) {
+                throw new Error(json.message || 'Échec de la mise à jour');
+              }
+            })
+            .catch(err => {
+              console.error('Erreur update:', err);
+              alert('Impossible de mettre à jour le statut : ' + err.message);
+              window.location.reload();
+            });
+          }
         });
-        html += '</div>';
-        container.innerHTML = html;
-    }
-
-    function filterAndSort() {
-        const term = (searchEl.value||'').trim().toLowerCase();
-        let filtered = tasksData.filter(t => {
-            return t.titre.toLowerCase().includes(term)
-                || t.description.toLowerCase().includes(term);
-        });
-
-        const key = sortEl.value;
-        filtered.sort((a,b) => {
-            if (key==='id')           return a.id - b.id;
-            if (key==='titre')        return a.titre.localeCompare(b.titre);
-            if (key==='date')         return new Date(a.date) - new Date(b.date);
-            if (key==='dureeEstimee') return a.duree - b.duree;
-            return 0;
-        });
-
-        render(filtered);
-    }
-
-    searchEl.addEventListener('input', filterAndSort);
-    sortEl.addEventListener('change', filterAndSort);
-    render(tasksData);
-});
-</script>
+      });
+    });
+  </script>
 {% endblock %}
