@@ -1,0 +1,88 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Liste des Plans{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Plans</h1>
+
+    <style>
+        .table {
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+        .table th {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+        }
+        .table td {
+            background-color: #f8f9fa;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .btn {
+            margin: 0 5px;
+        }
+        .container {
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Priorité</th>
+                <th>Lieu</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in plans %}
+                <tr>
+                    <td>{{ plan.id }}</td>
+                    <td>{{ plan.titre }}</td>
+                    <td>{{ plan.description|slice(0, 50) ~ '…' }}</td>
+                    <td>{{ plan.dateDebut ? plan.dateDebut|date('Y-m-d') }}</td>
+                    <td>{{ plan.dateFin ? plan.dateFin|date('Y-m-d') }}</td>
+                    <td>{{ plan.priorite|capitalize }}</td>
+                    <td>{{ plan.location }}</td>
+                    <td>
+                        <a href="{{ path('backoffice_plan_show', {id: plan.id}) }}" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye me-1"></i>Voir
+                        </a>
+                        <a href="{{ path('backoffice_plan_edit', {id: plan.id}) }}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil me-1"></i>Modifier
+                        </a>
+                        <form method="post" action="{{ path('backoffice_plan_delete', {id: plan.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer ce plan ?');" class="d-inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ plan.id) }}">
+                            <button class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i>Supprimer
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">Aucun plan trouvé</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('backoffice_plan_new') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle me-1"></i>Créer un Plan
+    </a>
+</div>
+{% endblock %}

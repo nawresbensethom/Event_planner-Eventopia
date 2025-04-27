@@ -37,6 +37,7 @@ security:
         - { path: ^/images, roles: PUBLIC_ACCESS }
         - { path: ^/assets, roles: PUBLIC_ACCESS }
         
+        
         # Routes administrateur
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/dashboard, roles: ROLE_ADMIN }

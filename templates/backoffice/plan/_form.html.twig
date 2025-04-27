@@ -1,0 +1,92 @@
+{# templates/backoffice/plan/_form.html.twig #}
+<div class="form-container bg-light p-4 rounded shadow-sm">
+    {{ form_start(form, {'attr': {'novalidate':'novalidate'}}) }}
+        {{ form_errors(form) }}
+
+        <div class="row g-3">
+            {# Titre #}
+            <div class="col-12">
+                <div class="mb-3">
+                    {{ form_label(form.titre, 'Titre', { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.titre, {
+                        attr: {
+                            class: 'form-control' ~ (form.titre.vars.valid ? '' : ' is-invalid'),
+                            placeholder: 'Entrez le titre du plan'
+                        }
+                    }) }}
+                    {{ form_errors(form.titre) }}
+                </div>
+            </div>
+
+            {# Description #}
+            <div class="col-12">
+                <div class="mb-3">
+                    {{ form_label(form.description, 'Description', { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.description, {
+                        attr: {
+                            class: 'form-control description-field' ~ (form.description.vars.valid ? '' : ' is-invalid'),
+                            placeholder: 'Décrivez le plan',
+                            rows: 4
+                        }
+                    }) }}
+                    {{ form_errors(form.description) }}
+                </div>
+            </div>
+
+            {# Dates côte à côte #}
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.dateDebut, 'Date de début', { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.dateDebut, {
+                        attr: {
+                            class: 'form-control' ~ (form.dateDebut.vars.valid ? '' : ' is-invalid')
+                        }
+                    }) }}
+                    {{ form_errors(form.dateDebut) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.dateFin, 'Date de fin', { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.dateFin, {
+                        attr: {
+                            class: 'form-control' ~ (form.dateFin.vars.valid ? '' : ' is-invalid')
+                        }
+                    }) }}
+                    {{ form_errors(form.dateFin) }}
+                </div>
+            </div>
+
+            {# Priorité et Lieu côte à côte #}
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.priorite, 'Priorité', { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.priorite, {
+                        attr: {
+                            class: 'form-select' ~ (form.priorite.vars.valid ? '' : ' is-invalid')
+                        }
+                    }) }}
+                    {{ form_errors(form.priorite) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.location, 'Lieu', { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.location, {
+                        attr: {
+                            class: 'form-control' ~ (form.location.vars.valid ? '' : ' is-invalid'),
+                            placeholder: 'Entrez la localisation'
+                        }
+                    }) }}
+                    {{ form_errors(form.location) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-1"></i> {{ button_label|default('Enregistrer') }}
+            </button>
+        </div>
+    {{ form_end(form) }}
+</div>
