@@ -5,6 +5,7 @@ namespace App\Controller\Backoffice;
 use App\Entity\Service;
 use App\Form\ServiceType;
 use App\Repository\ServiceRepository;
+use App\Service\ExchangeRateService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -196,5 +197,29 @@ class ServiceController extends AbstractController
         }
 
         return $this->redirectToRoute('app_backoffice_service_index');
+    }
+
+    #[Route('/api/convert', name: 'app_backoffice_service_convert', methods: ['GET'])]
+    public function convertCurrency(Request $request, ExchangeRateService $exchangeRateService): JsonResponse
+    {
+        try {
+            $amount = $request->query->get('amount', 1);
+            $from = $request->query->get('from', 'EUR');
+            $to = $request->query->get('to', 'USD');
+
+            $result = $exchangeRateService->convert((float)$amount, $from, $to);
+            $rates = $exchangeRateService->getExchangeRates($from);
+
+            return new JsonResponse([
+                'success' => true,
+                'result' => $result,
+                'rate' => $rates['rates'][$to] ?? 1
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 } 

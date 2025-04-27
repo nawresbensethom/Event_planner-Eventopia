@@ -445,7 +445,7 @@
             const resultDiv = document.getElementById('conversionResult');
 
             try {
-                const response = await fetch(`/api/convert?amount=${amount}&from=${fromCurrency}&to=${toCurrency}`);
+                const response = await fetch(`/backoffice/service/api/convert?amount=${amount}&from=${fromCurrency}&to=${toCurrency}`);
                 const data = await response.json();
 
                 if (data.success) {

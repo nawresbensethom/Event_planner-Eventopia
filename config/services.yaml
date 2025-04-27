@@ -39,3 +39,4 @@ services:
     App\Service\ExchangeRateService:
         arguments:
             $httpClient: '@http_client'
+
