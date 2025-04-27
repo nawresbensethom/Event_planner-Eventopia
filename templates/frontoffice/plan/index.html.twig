@@ -152,6 +152,23 @@
             font-size: 0.9rem;
             color: #888;
         }
+        .dashboard-btn {
+  background: #0288D1;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.3rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.dashboard-btn:hover {
+  background: #0277BD;
+  transform: translateY(-1px);
+}
+.dashboard-btn:active {
+  transform: translateY(0);
+}
         
         /* --- Animations --- */
         @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
@@ -182,6 +199,11 @@
 </section>
  
 <div class="container mb-4">
+  <div class="d-flex justify-content-end mb-3">
+    <a href="{{ path('app_plan_dashboard') }}" class="dashboard-btn">
+      <i class="bi bi-speedometer2 me-1"></i> Dashboard
+    </a>
+  </div>
   <div class="row">
     <div class="col-md-6">
       <input type="text" id="search" class="form-control" placeholder="Search plans..." />
