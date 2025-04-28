@@ -2,230 +2,88 @@
 
 {% block stylesheets %}
     <style>
-        /* Layout */
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
         }
 
-        /* Typography */
-        h1 {
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            text-align: center;
-            position: relative;
-            padding-bottom: 15px;
+        .mb-4 {
+            margin-bottom: 30px;
         }
 
-        h1:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: #ffd1dc;
+        .card {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .card-header {
+            background-color:rgb(255, 187, 0);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .card-body {
+            padding: 15px;
         }
 
         .card-title {
             font-size: 1.25rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 1rem;
+            font-weight: bold;
         }
 
-        .card-text {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Cards */
-        .card {
-            margin-bottom: 25px;
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            background-color: #fff;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-header {
-            background: #ffe4e8;
-            color: #333;
-            font-weight: 600;
-            border-radius: 15px 15px 0 0 !important;
-            padding: 15px 20px;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        /* Buttons */
         .btn {
-            font-weight: 500;
+            font-weight: 400;
             text-align: center;
             vertical-align: middle;
             cursor: pointer;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn i {
-            font-size: 0.9rem;
+            border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         .btn-primary {
-            background: #ffe4e8;
-            border: 1px solid #ffd1dc;
-            color: #333;
+            background-color:rgb(255, 145, 0);
+            border-color:rgb(168, 95, 6);
+            color: white;
         }
 
         .btn-primary:hover {
-            background: #ffd1dc;
-            border-color: #ffbfcf;
-            color: #333;
-            transform: translateY(-2px);
+            background-color:rgb(215, 178, 9);
+            border-color:rgb(145, 100, 4);
         }
 
         .btn-warning {
-            background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
-            border: none;
-            color: #000;
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: black;
         }
 
         .btn-warning:hover {
-            background: linear-gradient(135deg, #dda20a 0%, #c69500 100%);
-            transform: translateY(-2px);
+            background-color: #e0a800;
+            border-color: #d39e00;
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
-            border: none;
+            background-color: #28a745;
+            border-color: #28a745;
             color: white;
         }
 
         .btn-success:hover {
-            background: linear-gradient(135deg, #13855c 0%, #0e6a47 100%);
-            transform: translateY(-2px);
-        }
-
-        .btn-info {
-            background: #ffe4e8;
-            border: 1px solid #ffd1dc;
-            color: #333;
-        }
-
-        .btn-info:hover {
-            background: #ffd1dc;
-            border-color: #ffbfcf;
-            color: #333;
-            transform: translateY(-2px);
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .action-buttons .btn {
-            flex: 1;
-            justify-content: center;
-        }
-
-        /* Alert */
-        .alert {
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin: 20px 0;
-            border: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            background-color: #ffe4e8;
-            color: #333;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-
-            .card {
-                margin-bottom: 20px;
-            }
-
-            .btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Grid */
-        .row {
-            margin: 0 -15px;
-        }
-
-        .col-md-4 {
-            padding: 0 15px;
-        }
-
-        /* Badges */
-        .badge {
-            padding: 0.5em 1em;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-
-        .badge-warning {
-            background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
-            color: #000;
-        }
-
-        .badge-success {
-            background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
-            color: white;
-        }
-
-        .badge-danger {
-            background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
-            color: white;
-        }
-
-        .badge-secondary {
-            background: linear-gradient(135deg, #858796 0%, #60616f 100%);
-            color: white;
+            background-color: #218838;
+            border-color: #1e7e34;
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container mt-5">
-        <h1>Offres d'Emploi</h1>
+        <h1 class="mb-4">Offre Emploi Index</h1>
 
-        <div class="mb-4 text-end">
-            <a href="{{ path('client_candidature_index') }}" class="btn btn-info me-2">
-                <i class="fas fa-list"></i> Liste des Candidatures
-            </a>
-            <a href="{{ path('client_offreemploi_new') }}" class="btn btn-success">
-                <i class="fas fa-plus"></i> Créer une Nouvelle Offre
-            </a>
+        <div class="mb-3 text-end">
+            <a href="{{ path('client_offreemploi_new') }}" class="btn btn-success">Create New Offer</a>
         </div>
 
         <div class="row">
@@ -233,30 +91,22 @@
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-header">
-                            Offre #{{ offreemploi.idOffre }}
+                            Offre ID: {{ offreemploi.idOffre }}
                         </div>
                         <div class="card-body">
                             <h5 class="card-title">{{ offreemploi.titrePoste }}</h5>
                             <p class="card-text">{{ offreemploi.description }}</p>
                             <p class="card-text"><strong>Type de Contrat:</strong> {{ offreemploi.typeContrat }}</p>
                             <p class="card-text"><strong>Lieu:</strong> {{ offreemploi.lieu }}</p>
-                            <p class="card-text"><strong>Salaire:</strong> {{ offreemploi.salaire }} €</p>
-                            <p class="card-text"><strong>Date Limite:</strong> {{ offreemploi.dateLimite ? offreemploi.dateLimite|date('d/m/Y') : 'Non spécifiée' }}</p>
-                            <div class="action-buttons">
-                                <a href="{{ path('client_offreemploi_show', {'id_offre': offreemploi.idOffre}) }}" class="btn btn-primary">
-                                    <i class="fas fa-eye"></i> Voir
-                                </a>
-                               
-                            </div>
+                            <p class="card-text"><strong>Salaire:</strong> {{ offreemploi.salaire }}</p>
+                            <p class="card-text"><strong>Date Limite:</strong> {{ offreemploi.dateLimite ? offreemploi.dateLimite|date('Y-m-d H:i:s') : 'N/A' }}</p>
+                            <a href="{{ path('client_offreemploi_show', {'id_offre': offreemploi.idOffre}) }}" class="btn btn-primary btn-sm">Show</a>
                         </div>
                     </div>
                 </div>
             {% else %}
                 <div class="col-12">
-                    <div class="alert alert-info text-center">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Aucune offre d'emploi trouvée.
-                    </div>
+                    <p class="text-center">No records found</p>
                 </div>
             {% endfor %}
         </div>
