@@ -5,6 +5,7 @@ namespace App\Controller\Backoffice;
 use App\Entity\Code_promos;
 use App\Form\CodePromosType;
 use App\Repository\Code_promosRepository;
+use App\Service\BrevoService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +36,7 @@ class CodePromosController extends AbstractController
     }
 
     #[Route('/new', name: 'app_backoffice_code_promos_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, BrevoService $brevoService): Response
     {
         $codePromo = new Code_promos();
         $form = $this->createForm(CodePromosType::class, $codePromo);
@@ -44,6 +45,35 @@ class CodePromosController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($codePromo);
             $entityManager->flush();
+
+            // Envoi de l'email de notification
+            try {
+                $htmlContent = sprintf(
+                    '<h1>Nouveau code promo créé !</h1>
+                    <p>Un nouveau code promotionnel a été créé avec les détails suivants :</p>
+                    <ul>
+                        <li><strong>Code :</strong> %s</li>
+                        <li><strong>Réduction :</strong> %s</li>
+                        <li><strong>Date de début :</strong> %s</li>
+                        <li><strong>Date d\'expiration :</strong> %s</li>
+                        <li><strong>Description :</strong> %s</li>
+                    </ul>
+                    <p>Vous pouvez le gérer depuis votre espace d\'administration.</p>',
+                    $codePromo->getCode(),
+                    $codePromo->getReductionType(),
+                    $codePromo->getDateDebut()->format('d/m/Y'),
+                    $codePromo->getDateExpiration()->format('d/m/Y'),
+                    $codePromo->getDescription() ?? 'Aucune description'
+                );
+
+                $brevoService->sendEmail(
+                    'oumaimahouimel4@gmail.com', // Remplacez par l'email de l'administrateur
+                    'Nouveau code promo créé - ' . $codePromo->getCode(),
+                    $htmlContent
+                );
+            } catch (\Exception $e) {
+                $this->addFlash('warning', 'Le code promo a été créé mais l\'email de notification n\'a pas pu être envoyé : ' . $e->getMessage());
+            }
 
             $this->addFlash('success', 'Code promotionnel créé avec succès.');
             return $this->redirectToRoute('app_backoffice_code_promos_index');

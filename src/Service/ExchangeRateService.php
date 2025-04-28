@@ -7,35 +7,48 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class ExchangeRateService
 {
     private $httpClient;
-    private $baseUrl = 'https://api.exchangerate.host';
+    private $apiKey;
+    private $baseUrl = 'http://api.exchangeratesapi.io/v1';
 
-    public function __construct(HttpClientInterface $httpClient)
+    public function __construct(HttpClientInterface $httpClient, string $apiKey)
     {
         $this->httpClient = $httpClient;
+        $this->apiKey = $apiKey;
     }
 
-    public function getExchangeRates(string $base = 'EUR'): array
+    public function getLatestRates(string $base = 'EUR'): array
     {
         $response = $this->httpClient->request('GET', $this->baseUrl . '/latest', [
             'query' => [
-                'base' => $base
+                'access_key' => $this->apiKey,
+                'base' => $base,
+                'symbols' => 'USD,GBP,JPY,AUD,CAD,CHF,CNY,TND'
             ]
         ]);
 
-        return json_decode($response->getContent(), true);
+        $data = $response->toArray();
+        
+        // Ajout du dinar tunisien avec un taux fixe (à ajuster selon vos besoins)
+        $data['rates']['TND'] = 3.25; // Taux approximatif 1 EUR = 3.25 TND
+        
+        return $data;
     }
 
-    public function convert(float $amount, string $from, string $to): float
+    public function getHistoricalRates(string $date, string $base = 'EUR'): array
     {
-        $response = $this->httpClient->request('GET', $this->baseUrl . '/convert', [
+        $response = $this->httpClient->request('GET', $this->baseUrl . '/' . $date, [
             'query' => [
-                'from' => $from,
-                'to' => $to,
-                'amount' => $amount
+                'access_key' => $this->apiKey,
+                'base' => $base,
+                'symbols' => 'USD,GBP,JPY,AUD,CAD,CHF,CNY,TND'
             ]
         ]);
 
-        $data = json_decode($response->getContent(), true);
-        return $data['result'] ?? $amount;
+        $data = $response->toArray();
+        
+        // Ajout du dinar tunisien avec un taux fixe pour les données historiques
+        $data['rates']['TND'] = 3.25;
+        
+        return $data;
     }
-} 
+}

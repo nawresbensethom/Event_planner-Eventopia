@@ -5,6 +5,7 @@ parameters:
     app.base_url: 'http://localhost:8000'
     stripe_public_key: '%env(STRIPE_PUBLIC_KEY)%'
     stripe_secret_key: '%env(STRIPE_SECRET_KEY)%'
+    app.brevo_api_key: '%env(BREVO_API_KEY)%'
 
 services:
     # Default configuration for services
@@ -12,10 +13,7 @@ services:
         autowire: true
         autoconfigure: true
 
-    # Stripe Service
-    App\Service\StripeService:
-        arguments:
-            $stripeSecretKey: '%stripe_secret_key%'
+    
 
     # Custom Command
     App\Command\GenerateEntitiesCommand:
@@ -35,8 +33,12 @@ services:
     Symfony\Component\HttpFoundation\Session\SessionInterface:
         alias: 'session'
 
-    # Exchange Rate Service
+    App\Service\BrevoService:
+        arguments:
+            $params: '@parameter_bag'
+        tags: ['controller.service_arguments']
+
     App\Service\ExchangeRateService:
         arguments:
-            $httpClient: '@http_client'
+            $apiKey: '%env(EXCHANGE_RATES_API_KEY)%'
 

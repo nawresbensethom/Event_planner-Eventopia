@@ -5,7 +5,6 @@ namespace App\Controller\Backoffice;
 use App\Entity\Service;
 use App\Form\ServiceType;
 use App\Repository\ServiceRepository;
-use App\Service\ExchangeRateService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\ExchangeRateService;
 
 #[Route('/backoffice/service')]
 class ServiceController extends AbstractController
@@ -30,7 +30,7 @@ class ServiceController extends AbstractController
         $services = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            3 // Nombre d'éléments par page
+            3
         );
 
         return $this->render('backoffice/service/index.html.twig', [
@@ -90,8 +90,7 @@ class ServiceController extends AbstractController
         } catch (\Exception $e) {
             return new JsonResponse([
                 'error' => true,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'message' => $e->getMessage()
             ], 500);
         }
     }
@@ -111,7 +110,6 @@ class ServiceController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion de l'upload de fichier
             $photoFile = $form->get('photos')->getData();
             if ($photoFile) {
                 $newFilename = uniqid().'.'.$photoFile->guessExtension();
@@ -153,10 +151,8 @@ class ServiceController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion de l'upload de fichier
             $photoFile = $form->get('photos')->getData();
             if ($photoFile) {
-                // Suppression de l'ancienne photo si elle existe
                 $oldFilename = $service->getPhotos();
                 if ($oldFilename) {
                     $oldFilePath = $this->getParameter('services_directory').'/'.$oldFilename;
@@ -199,27 +195,4 @@ class ServiceController extends AbstractController
         return $this->redirectToRoute('app_backoffice_service_index');
     }
 
-    #[Route('/api/convert', name: 'app_backoffice_service_convert', methods: ['GET'])]
-    public function convertCurrency(Request $request, ExchangeRateService $exchangeRateService): JsonResponse
-    {
-        try {
-            $amount = $request->query->get('amount', 1);
-            $from = $request->query->get('from', 'EUR');
-            $to = $request->query->get('to', 'USD');
-
-            $result = $exchangeRateService->convert((float)$amount, $from, $to);
-            $rates = $exchangeRateService->getExchangeRates($from);
-
-            return new JsonResponse([
-                'success' => true,
-                'result' => $result,
-                'rate' => $rates['rates'][$to] ?? 1
-            ]);
-        } catch (\Exception $e) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
 } 
