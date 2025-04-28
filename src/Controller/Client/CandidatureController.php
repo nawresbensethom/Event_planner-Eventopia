@@ -14,6 +14,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Twilio\Rest\Client as TwilioClient;
 
 #[Route('/client/candidature')]
 class CandidatureController extends AbstractController
@@ -115,18 +116,38 @@ class CandidatureController extends AbstractController
         $entityManager->flush();
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-        $email = $user->getEmail();
+        $mail = $user->getEmail();
 
         // Envoi de l'e-mail uniquement si acceptée
-        if ($statut === 'acceptée') {
-            $email = (new Email())
-                ->from('contact@eventopia.com')
-                ->to($email) 
-                ->subject('Votre candidature a été acceptée')
-                ->html('<p>Félicitations ! Votre candidature a été acceptée. Nous vous contacterons prochainement pour la suite du processus.</p>');
 
-            $mailer->send($email);
+        $email = (new Email())
+            ->from('yesmineblh@gmail.com')
+            ->to($mail)
+            ->subject('Votre candidature a été acceptée')
+            ->html('Votre candidature a été acceptée. Nous vous contacterons prochainement pour la suite du processus.');
+
+        $mailer->send($email);
+
+        // Envoyer un SMS avec Twilio
+        $twilioSid = $_ENV['TWILIO_SID'];
+        $twilioToken = $_ENV['TWILIO_AUTH_TOKEN'];
+        $twilioNumber = $_ENV['TWILIO_PHONE_NUMBER'];
+
+        $twilio = new TwilioClient($twilioSid, $twilioToken);
+
+        // Récupérer le numéro de téléphone du user (attention faut qu'il existe)
+        $phoneNumber = ('+21621412258'); // suppose que tu as un champ téléphone dans User
+
+        if ($phoneNumber) {
+            $twilio->messages->create(
+                $phoneNumber,
+                [
+                    'from' => $twilioNumber,
+                    'body' => 'Votre candidature liée à l\'email ' . $mail . ' a été acceptée. Félicitations !'
+                ]
+            );
         }
+
 
         return $this->redirectToRoute('client_candidature_dashboard');
     }
