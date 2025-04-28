@@ -69,6 +69,28 @@
             transform: translateY(-2px);
         }
 
+        .chatbot-btn {
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color);
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .chatbot-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -434,7 +456,6 @@
 
         .report-button:hover {
             background-color: #dc3545;
-
             color: white;
         }
 
@@ -514,7 +535,8 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
+            from { opacity:  Extensions: .twig, .html.twig
+0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -659,6 +681,9 @@
             <a href="{{ path('app_client_post_new') }}" class="create-post-btn">
                 <i class="bi bi-plus-circle"></i> Créer un nouveau post
             </a>
+            <a href="{{ path('post_generate_idea') }}" class="chatbot-btn">
+    <i class="bi bi-robot"></i> Accéder au Chatbot IA
+</a>
         </div>
     </div>
 
@@ -720,7 +745,7 @@
                             <i class="bi bi-flag"></i>
                         </a>
                         {% if post.photos %}
-                            <img src="{{ asset('uploads/images/' ~ post.photos|json_decode|first) }}" alt="{{ post.titre }}" class="post-thumbnail">
+                            <img src="{{ asset('Uploads/images/' ~ post.photos|json_decode|first) }}" alt="{{ post.titre }}" class="post-thumbnail">
                         {% else %}
                             <img src="{{ asset('images/default-post.jpg') }}" alt="Default post image" class="post-thumbnail">
                         {% endif %}
@@ -820,12 +845,12 @@
                                     'sort': sort,
                                     'filter': filter
                                 }) }}" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
+                                    <span aria-hidden="true">«</span>
                                 </a>
                             </li>
                         {% else %}
                             <li class="page-item disabled">
-                                <span class="page-link" aria-hidden="true">&laquo;</span>
+                                <span class="page-link" aria-hidden="true">«</span>
                             </li>
                         {% endif %}
 
@@ -848,12 +873,12 @@
                                     'sort': sort,
                                     'filter': filter
                                 }) }}" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
+                                    <span aria-hidden="true">»</span>
                                 </a>
                             </li>
                         {% else %}
                             <li class="page-item disabled">
-                                <span class="page-link" aria-hidden="true">&raquo;</span>
+                                <span class="page-link" aria-hidden="true">»</span>
                             </li>
                         {% endif %}
                     </ul>

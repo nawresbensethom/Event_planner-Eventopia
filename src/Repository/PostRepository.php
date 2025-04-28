@@ -40,4 +40,11 @@ public function getTopUsersByComments(): array
         ->getQuery()
         ->getResult();
 }
+public function findAllTitles(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.titre') 
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
 }

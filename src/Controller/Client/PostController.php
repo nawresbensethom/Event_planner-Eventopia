@@ -15,6 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Psr\Log\LoggerInterface;
+use App\Repository\PostRepository;
+use App\Service\GeminiApiService;
 
 #[Route('/frontoffice/post')]
 final class PostController extends AbstractController
@@ -209,6 +211,33 @@ final class PostController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    #[Route('/post/generate-idea', name: 'post_generate_idea', methods: ['GET', 'POST'])]
+public function generateIdea(
+    Request $request, 
+    GeminiApiService $geminiService,
+    PostRepository $postRepository
+): Response {
+    $idea = null;
+    
+    if ($request->isMethod('POST')) {
+        $theme = $request->request->get('theme');
+        $audience = $request->request->get('audience', 'générale');
+        
+        // Récupère les titres existants pour éviter les doublons
+        $existingTitles = $postRepository->findAllTitles();
+        
+        $idea = $geminiService->generatePostIdea(
+            $theme,
+            $existingTitles,
+            $audience
+        );
+    }
+    
+    return $this->render('frontoffice/post/generate_idea.html.twig', [
+        'idea' => $idea,
+        'audiences' => ['générale', 'jeunes', 'professionnels'] // Pour le select
+    ]);
+}
 
     #[Route('/{id_post}', name: 'app_client_post_show', methods: ['GET'])]
     public function show(Post $post): Response
