@@ -2,6 +2,8 @@
 parameters:
     photos_directory: '%kernel.project_dir%/public/uploads/images'
     services_directory: '%kernel.project_dir%/public/uploads/services'
+    cvs_directory: '%kernel.project_dir%/public/uploads/cvs'
+
 
 services:
     _defaults:

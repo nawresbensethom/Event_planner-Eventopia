@@ -39,6 +39,9 @@
                                     <a class="nav-link {% if app.request.get('_route') starts with 'app_emploi' %}active{% endif %}" href="{{ path('client_offreemploi_index') }}">Emplois</a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link {% if app.request.get('_route') starts with 'client_candidature' %}active{% endif %}" href="{{ path('client_candidature_index') }}">Candidatures</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link {% if app.request.get('_route') starts with 'app_plan_index' %}active{% endif %}" href="{{ path('app_plan_index') }}">Plan</a>
                                 </li>
                                 <li class="nav-item">
@@ -97,6 +100,8 @@
                                 <li><a href="{{ path('app_client_service_index') }}">Services</a></li>
                                 <li><a href="{{ path('app_client_post_index') }}">Blog</a></li>
                                 <li><a href="{{ path('client_offreemploi_index') }}">Offres d'emploi</a></li>
+                                                                <li><a href="{{ path('client_candidature_index') }}">Mes candidatures</a></li>
+
                             {% else %}
                                 <li><a href="{{ path('app_login') }}">Connexion</a></li>
                                 <li><a href="{{ path('app_register') }}">Inscription</a></li>
