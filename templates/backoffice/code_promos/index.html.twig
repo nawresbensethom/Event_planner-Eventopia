@@ -169,7 +169,7 @@
                 <div class="stat-card bg-gradient-primary">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="stat-value">{{ code_promos|length }}</div>
+                            <div class="stat-value">{{ code_promos.getTotalItemCount }}</div>
                             <div class="stat-label">Total des codes</div>
                         </div>
                         <i class="fas fa-tags stat-icon"></i>
@@ -180,7 +180,13 @@
                 <div class="stat-card bg-gradient-success">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="stat-value">{{ code_promos|filter(c => c.dateExpiration > date())|length }}</div>
+                            {% set activeCount = 0 %}
+                            {% for code in code_promos %}
+                                {% if code.dateExpiration > date() %}
+                                    {% set activeCount = activeCount + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            <div class="stat-value">{{ activeCount }}</div>
                             <div class="stat-label">Codes actifs</div>
                         </div>
                         <i class="fas fa-check-circle stat-icon"></i>
@@ -191,7 +197,13 @@
                 <div class="stat-card bg-gradient-danger">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="stat-value">{{ code_promos|filter(c => c.dateExpiration < date())|length }}</div>
+                            {% set expiredCount = 0 %}
+                            {% for code in code_promos %}
+                                {% if code.dateExpiration < date() %}
+                                    {% set expiredCount = expiredCount + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            <div class="stat-value">{{ expiredCount }}</div>
                             <div class="stat-label">Codes expirés</div>
                         </div>
                         <i class="fas fa-times-circle stat-icon"></i>
@@ -202,8 +214,15 @@
                 <div class="stat-card bg-gradient-warning">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="stat-value">{{ (code_promos|filter(c => c.limiteUtilisation > 0)|map(c => c.limiteUtilisation)|reduce((sum, val) => sum + val, 0) / code_promos|length)|round(1) }}%</div>
-                            <div class="stat-label">Taux d'utilisation</div>
+                            {% set activeCodesCount = 0 %}
+                            {% for code in code_promos %}
+                                {% if code.dateExpiration > date() %}
+                                    {% set activeCodesCount = activeCodesCount + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {% set usageRate = (activeCodesCount / code_promos.getTotalItemCount * 100)|round(1) %}
+                            <div class="stat-value">{{ usageRate }}%</div>
+                            <div class="stat-label">Taux d'activation</div>
                         </div>
                         <i class="fas fa-chart-line stat-icon"></i>
                     </div>
