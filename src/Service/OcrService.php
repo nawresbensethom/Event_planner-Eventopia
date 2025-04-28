@@ -11,10 +11,11 @@ class OcrService
     }
 
     public function extractSkillsSection(string $text): ?string
-    {
-        if (preg_match('/skills[:\s]*(.*)/i', $text, $matches)) {
-            return trim($matches[1]);
-        }
-        return null;
+{
+    if (preg_match('/skills[:\s]*(.+)/is', $text, $matches)) {
+        return trim($matches[1]);
     }
+    return null;
+}
+
 }

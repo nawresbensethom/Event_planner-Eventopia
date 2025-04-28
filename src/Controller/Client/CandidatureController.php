@@ -113,12 +113,15 @@ class CandidatureController extends AbstractController
 
         $candidature->setStatut($statut);
         $entityManager->flush();
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $email = $user->getEmail();
 
         // Envoi de l'e-mail uniquement si acceptée
         if ($statut === 'acceptée') {
             $email = (new Email())
                 ->from('contact@eventopia.com')
-                ->to('fida.hamza@esprit.tn') 
+                ->to($email) 
                 ->subject('Votre candidature a été acceptée')
                 ->html('<p>Félicitations ! Votre candidature a été acceptée. Nous vous contacterons prochainement pour la suite du processus.</p>');
 
