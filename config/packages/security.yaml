@@ -34,6 +34,7 @@ security:
         # Public access routes
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register$, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/forgot-password$, roles: PUBLIC_ACCESS }
         - { path: ^/css, roles: PUBLIC_ACCESS }
         - { path: ^/js, roles: PUBLIC_ACCESS }

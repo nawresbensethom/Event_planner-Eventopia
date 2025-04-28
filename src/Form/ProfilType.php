@@ -9,6 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Form\CallbackTransformer;
 
 class ProfilType extends AbstractType
@@ -22,8 +23,18 @@ class ProfilType extends AbstractType
             ->add('rating')
             ->add('photo', FileType::class, [
                 'required' => false,
-                'mapped' => false, // Set to false to handle manually
+                'mapped' => false,
                 'label' => 'Photo de profil',
+                'constraints' => [
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                        ],
+                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPG ou PNG)',
+                    ])
+                ],
             ])
             ->add('remove_photo', CheckboxType::class, [
                 'mapped' => false,

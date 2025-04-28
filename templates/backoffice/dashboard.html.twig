@@ -41,7 +41,9 @@
 <div class="app-content-header">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-6"><h3 class="mb-0">Dashboard</h3></div>
+            <div class="col-sm-6">
+                <h3 class="mb-0">Dashboard</h3>
+            </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -55,9 +57,75 @@
 <div class="app-content">
     <div class="container-fluid">
         <div class="row">
-            <!-- Posts Card -->
+            <!-- Users Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3>{% if users is defined %}{{ users|length }}{% else %}0{% endif %}</h3>
+                        <p>Utilisateurs</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <a href="{{ path('admin_dashboard') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Events Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{% if events is defined %}{{ events|length }}{% else %}0{% endif %}</h3>
+                        <p>Événements</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <a href="{{ path('app_evenement_index_back') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Reservations Card -->
             <div class="col-lg-3 col-6">
                 <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{% if reservations is defined %}{{ reservations|length }}{% else %}0{% endif %}</h3>
+                        <p>Réservations</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-bookmark-check"></i>
+                    </div>
+                    <a href="{{ path('app_reservation_index_back') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Services Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{% if services is defined %}{{ services|length }}{% else %}0{% endif %}</h3>
+                        <p>Services</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <a href="{{ path('app_backoffice_service_index') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <!-- Posts Card -->
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-secondary">
                     <div class="inner">
                         <h3>{% if posts is defined %}{{ posts|length }}{% else %}0{% endif %}</h3>
                         <p>Posts</p>
@@ -71,25 +139,9 @@
                 </div>
             </div>
 
-            <!-- Services Card -->
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>{% if services is defined %}{{ services|length }}{% else %}0{% endif %}</h3>
-                        <p>Services</p>
-                    </div>
-                    <div class="icon">
-                        <i class="bi bi-briefcase"></i>
-                    </div>
-                    <a href="{{ path('app_backoffice_service_index') }}" class="small-box-footer">
-                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
-                    </a>
-                </div>
-            </div>
-
             <!-- Signalements Card -->
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-warning">
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-danger">
                     <div class="inner">
                         <h3>{% if signalements is defined %}{{ signalements|length }}{% else %}0{% endif %}</h3>
                         <p>Signalements</p>
@@ -104,8 +156,8 @@
             </div>
 
             <!-- Codes Promos Card -->
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-danger">
+            <div class="col-lg-4 col-6">
+                <div class="small-box" style="background-color: #6f42c1; color: white;">
                     <div class="inner">
                         <h3>{% if code_promos is defined %}{{ code_promos|length }}{% else %}0{% endif %}</h3>
                         <p>Codes Promos</p>

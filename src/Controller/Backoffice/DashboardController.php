@@ -6,15 +6,18 @@ use App\Entity\Post;
 use App\Entity\Service;
 use App\Entity\SignalementPost;
 use App\Entity\CodePromo;
+use App\Entity\Utilisateur;
+use App\Entity\Evenement;
+use App\Entity\Reservation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 
-#[Route('/backoffice')]
+#[Route('/admin')]
 class DashboardController extends AbstractController
 {
-    #[Route('/', name: 'dashboard')]
+    #[Route('/dashboard', name: 'admin_dashboard')]
     public function index(EntityManagerInterface $entityManager): Response
     {
         // Fetch all required data
@@ -22,12 +25,19 @@ class DashboardController extends AbstractController
         $services = $entityManager->getRepository(Service::class)->findAll();
         $signalements = $entityManager->getRepository(SignalementPost::class)->findAll();
         $code_promos = $entityManager->getRepository(CodePromo::class)->findAll();
+        $users = $entityManager->getRepository(Utilisateur::class)->findAll();
+        $events = $entityManager->getRepository(Evenement::class)->findAll();
+        $reservations = $entityManager->getRepository(Reservation::class)->findAll();
 
         return $this->render('backoffice/dashboard.html.twig', [
             'posts' => $posts,
             'services' => $services,
             'signalements' => $signalements,
-            'code_promos' => $code_promos
+            'code_promos' => $code_promos,
+            'users' => $users,
+            'events' => $events,
+            'reservations' => $reservations,
+            'controller_name' => 'DashboardController'
         ]);
     }
 } 

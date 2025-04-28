@@ -25,6 +25,12 @@ class Profil
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $adresse = null;
 
+    #[ORM\Column(type: "float", nullable: true)]
+    private ?float $latitude = null;
+
+    #[ORM\Column(type: "float", nullable: true)]
+    private ?float $longitude = null;
+
     #[ORM\Column(type: "string", length: 20, nullable: true)]
     private ?string $telephone = null;
 
@@ -73,6 +79,28 @@ class Profil
     public function setAdresse(?string $adresse): self
     {
         $this->adresse = $adresse;
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
         return $this;
     }
 

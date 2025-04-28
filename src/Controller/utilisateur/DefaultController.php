@@ -11,15 +11,17 @@ class DefaultController extends AbstractController
     #[Route('/', name: 'app_index')]
     public function index(): Response
     {
-        // Always redirect to login page for the root URL
+        // If user is not authenticated, redirect to login
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
         }
         
-        // If somehow a user is already authenticated, redirect appropriately
+        // If user is authenticated, redirect based on role
         if ($this->isGranted('ROLE_ADMIN')) {
-            return $this->redirectToRoute('dashboard');
+            return $this->redirectToRoute('admin_dashboard');
         }
+        
+        // Default redirect for other authenticated users
         return $this->redirectToRoute('app_home2');
     }
 } 

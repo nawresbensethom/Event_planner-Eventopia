@@ -32,17 +32,70 @@
                 display: none;
             }
             .profile-image {
-                border: 3px solid #ffffff;
+                width: 45px;
+                height: 45px;
+                border: 2px solid #ffffff;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
                 transition: transform 0.2s ease;
                 object-fit: cover;
+                border-radius: 50%;
+                background-color: #fff;
             }
             .profile-image:hover {
-                transform: scale(1.1);
-                border-color: #ffffff;
+                transform: scale(1.05);
+                border-color: #1E90FF;
             }
             .dropdown-divider {
                 margin: 0.5rem 0;
+            }
+
+            /* Style pour le header utilisateur */
+            .user-header {
+                background: linear-gradient(135deg, #4169E1, #1E90FF);
+                color: white;
+                padding: 2rem;
+                border-radius: 0 0 15px 15px;
+                margin-bottom: 2rem;
+                position: relative;
+            }
+
+            .user-header h1 {
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+            }
+
+            .user-header p {
+                font-size: 1.1rem;
+                opacity: 0.9;
+                margin-bottom: 0;
+            }
+
+            .profile-image-container {
+                position: absolute;
+                right: 2rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            @media (max-width: 768px) {
+                .profile-image {
+                    width: 80px;
+                    height: 80px;
+                }
+                
+                .user-header {
+                    text-align: center;
+                    padding: 1.5rem;
+                }
+
+                .profile-image-container {
+                    position: relative;
+                    right: auto;
+                    top: auto;
+                    transform: none;
+                    margin: 1rem auto;
+                }
             }
         </style>
         {% endblock %}
