@@ -33,7 +33,7 @@ class BrevoService
             'to' => [['email' => $to]],
             'htmlContent' => $htmlContent,
             'subject' => $subject,
-            'sender' => ['email' => $from ?? 'noreply@yourdomain.com', 'name' => 'Your App Name']
+            'sender' => ['email' => $from ?? 'oumaimahouimel4@gmail.com', 'name' => 'EvenTopia']
         ]);
 
         try {

@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
 ###> doctrine/doctrine-bundle ###
   database:
@@ -5,14 +7,15 @@ services:
       - "5432"
 ###< doctrine/doctrine-bundle ###
 
-###> symfony/mailer ###
-  mailer:
-    image: axllent/mailpit
-    ports:
-      - "1025"
-      - "8025"
-    environment:
-      MP_SMTP_AUTH_ACCEPT_ANY: 1
-      MP_SMTP_AUTH_ALLOW_INSECURE: 1
-###< symfony/mailer ###
+    mailhog:
+        image: mailhog/mailhog
+        ports:
+            - "1025:1025"  # SMTP
+            - "8025:8025"  # Web interface
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
 

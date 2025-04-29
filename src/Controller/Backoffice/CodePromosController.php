@@ -67,7 +67,7 @@ class CodePromosController extends AbstractController
                 );
 
                 $brevoService->sendEmail(
-                    'oumaimahouimel4@gmail.com', // Remplacez par l'email de l'administrateur
+                    'oumaimahouimel41@yahoo.fr', // Remplacez par l'email de l'administrateur
                     'Nouveau code promo créé - ' . $codePromo->getCode(),
                     $htmlContent
                 );

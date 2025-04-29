@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "997c43298eccc95369ddf1468e7fd6a1",
+    "content-hash": "0624f899ddf7d41ee98395bda28a5ba9",
     "packages": [
         {
             "name": "composer/semver",
@@ -3276,6 +3276,140 @@
                 "source": "https://github.com/stripe/stripe-php/tree/v17.1.1"
             },
             "time": "2025-04-05T00:09:14+00:00"
+        },
+        {
+            "name": "sylius-labs/polyfill-symfony-event-dispatcher",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SyliusLabs/PolyfillSymfonyEventDispatcher.git",
+                "reference": "d55984be2edb9c2289e5bd8e575c0a3c905a6be2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SyliusLabs/PolyfillSymfonyEventDispatcher/zipball/d55984be2edb9c2289e5bd8e575c0a3c905a6be2",
+                "reference": "d55984be2edb9c2289e5bd8e575c0a3c905a6be2",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "symfony/event-dispatcher": "^5.4 || ^6.4 || ^7.0",
+                "symfony/event-dispatcher-contracts": "^1.1 || ^2.0 || ^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SyliusLabs\\Polyfill\\Symfony\\EventDispatcher\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Grzegorz Sadowski",
+                    "email": "sadowskigp@gmail.com"
+                }
+            ],
+            "description": "Symfony EventDispatcher Polyfill",
+            "support": {
+                "issues": "https://github.com/SyliusLabs/PolyfillSymfonyEventDispatcher/issues",
+                "source": "https://github.com/SyliusLabs/PolyfillSymfonyEventDispatcher/tree/v1.2.0"
+            },
+            "time": "2024-03-04T12:52:51+00:00"
+        },
+        {
+            "name": "sylius/mailer-bundle",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sylius/SyliusMailerBundle.git",
+                "reference": "629baa6c90b6d49d3635f6ab328b335b4732a364"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sylius/SyliusMailerBundle/zipball/629baa6c90b6d49d3635f6ab328b335b4732a364",
+                "reference": "629baa6c90b6d49d3635f6ab328b335b4732a364",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "sylius-labs/polyfill-symfony-event-dispatcher": "^1.0",
+                "symfony/config": "^5.4 || ^6.4 || ^7.0",
+                "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
+                "symfony/deprecation-contracts": "^2.1 || ^3.0",
+                "symfony/framework-bundle": "^5.4 || ^6.4 || ^7.0",
+                "symfony/http-kernel": "^5.4 || ^6.4 || ^7.0",
+                "twig/twig": "^2.12 || ^3.3",
+                "webmozart/assert": "^1.9"
+            },
+            "replace": {
+                "sylius/mailer": "self.version"
+            },
+            "require-dev": {
+                "matthiasnoback/symfony-dependency-injection-test": "^5.0",
+                "phpspec/phpspec": "^7.0",
+                "phpstan/phpstan": "1.12.5",
+                "phpstan/phpstan-phpunit": "1.4.0",
+                "phpstan/phpstan-webmozart-assert": "1.2.11",
+                "phpunit/phpunit": "^10.5",
+                "rector/rector": "^0.13.6",
+                "sylius-labs/coding-standard": "^4.0",
+                "symfony/console": "^5.4 || ^6.4 || ^7.0",
+                "symfony/dotenv": "^5.4 || ^6.4 || ^7.0",
+                "symfony/event-dispatcher": "^5.4 || ^6.4 || ^7.0",
+                "symfony/mailer": "^5.4 || ^6.4 || ^7.0",
+                "symfony/twig-bundle": "^5.4 || ^6.4 || ^7.0"
+            },
+            "suggest": {
+                "symfony/translation": "To use the translation features for testing purposes"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Sylius\\Component\\Mailer\\": "src/Component/",
+                    "Sylius\\Bundle\\MailerBundle\\": "src/Bundle/"
+                },
+                "exclude-from-classmap": [
+                    "src/Bundle/test/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Paweł Jędrzejewski",
+                    "homepage": "https://pjedrzejewski.com"
+                },
+                {
+                    "name": "Sylius project",
+                    "homepage": "https://sylius.com"
+                },
+                {
+                    "name": "Community contributions",
+                    "homepage": "https://github.com/Sylius/Sylius/contributors"
+                }
+            ],
+            "description": "Mailers and e-mail template management for Symfony projects.",
+            "homepage": "https://sylius.com",
+            "keywords": [
+                "email",
+                "mailer",
+                "symfony"
+            ],
+            "support": {
+                "issues": "https://github.com/Sylius/SyliusMailerBundle/issues",
+                "source": "https://github.com/Sylius/SyliusMailerBundle/tree/v2.1.0"
+            },
+            "time": "2024-10-01T10:49:25+00:00"
         },
         {
             "name": "symfony/asset",
@@ -8982,6 +9116,59 @@
                 }
             ],
             "time": "2025-02-13T08:34:43+00:00"
+        },
+        {
+            "name": "twilio/sdk",
+            "version": "8.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twilio/twilio-php.git",
+                "reference": "a68a13ed8ddc720d5adb580cbc22b4fd80dc6b38"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/a68a13ed8ddc720d5adb580cbc22b4fd80dc6b38",
+                "reference": "a68a13ed8ddc720d5adb580cbc22b4fd80dc6b38",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^6.3 || ^7.0",
+                "phpunit/phpunit": ">=7.0 < 10"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "An HTTP client to execute the API requests"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Twilio\\": "src/Twilio/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Twilio API Team",
+                    "email": "api@twilio.com"
+                }
+            ],
+            "description": "A PHP wrapper for Twilio's API",
+            "homepage": "https://github.com/twilio/twilio-php",
+            "keywords": [
+                "api",
+                "sms",
+                "twilio"
+            ],
+            "support": {
+                "issues": "https://github.com/twilio/twilio-php/issues",
+                "source": "https://github.com/twilio/twilio-php/tree/8.5.0"
+            },
+            "time": "2025-04-07T15:34:07+00:00"
         },
         {
             "name": "webmozart/assert",

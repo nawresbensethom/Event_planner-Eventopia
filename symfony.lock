@@ -55,6 +55,9 @@
             "./tests/bootstrap.php"
         ]
     },
+    "sylius/mailer-bundle": {
+        "version": "v2.1.0"
+    },
     "symfony/asset-mapper": {
         "version": "6.4",
         "recipe": {
