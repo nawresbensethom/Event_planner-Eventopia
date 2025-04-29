@@ -144,7 +144,7 @@
       <!-- Main Sidebar Container -->
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a href="{{ path('admin_dashboard') }}" class="brand-link">
+        <a href="{{ path('admin_backoffice_dashboard') }}" class="brand-link">
           <img src="{{ asset('assets/img/loogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
           <span class="brand-text font-weight-light">EvenTopia</span>
         </a>
@@ -155,33 +155,16 @@
           <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
               <li class="nav-item">
-                <a href="{{ path('admin_dashboard') }}" class="nav-link {% if app.request.get('_route') == 'admin_dashboard' %}active{% endif %}">
+                <a href="{{ path('admin_backoffice_dashboard') }}" class="nav-link {% if app.request.get('_route') == 'admin_backoffice_dashboard' %}active{% endif %}">
                   <i class="nav-icon fas fa-tachometer-alt"></i>
                   <p>Dashboard</p>
                 </a>
               </li>
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
+              <li class="nav-item">
+                <a href="{{ path('admin_dashboard') }}" class="nav-link {% if app.request.get('_route') == 'admin_dashboard' %}active{% endif %}">
                   <i class="nav-icon bi bi-people-fill"></i>
-                  <p>
-                    Utilisateurs
-                    <i class="right fas fa-angle-left"></i>
-                  </p>
+                  <p>Utilisateurs</p>
                 </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a href="{{ path('admin_dashboard') }}#organisateurs" class="nav-link">
-                            <i class="nav-icon bi bi-person-lines-fill"></i>
-                            <p>Organisateurs et prestataires</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('admin_profils_index') }}" class="nav-link">
-                            <i class="nav-icon bi bi-person-vcard-fill"></i>
-                            <p>Profils utilisateurs</p>
-                        </a>
-                    </li>
-                </ul>
               </li>
               <li class="nav-item">
                 <a href="{{ path('app_evenement_index_back') }}" class="nav-link">
