@@ -7,35 +7,54 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+        <!-- Bootstrap Icons CDN -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
         {% block stylesheets %}
         <style>
+            /* Shopping cart styles */
             .cart-badge {
                 font-size: 0.65rem;
                 transform: translate(-50%, -25%);
                 background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
                 border: 2px solid white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                padding: 0.25rem 0.5rem;
             }
             
             .nav-link .fa-shopping-bag {
                 font-size: 1.2rem;
-                transition: transform 0.2s ease;
+                transition: all 0.2s ease;
                 color: #2c3e50;
+                padding: 10px;
+                border-radius: 50%;
+                background-color: #f8f9fa;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+                width: 38px;
+                height: 38px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             
             .nav-link:hover .fa-shopping-bag {
                 transform: scale(1.1);
                 color: #c28282;
+                background-color: #fff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             }
-        </style>
-        {% endblock %}
-
-        <!-- Bootstrap Icons CDN -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-        {% block stylesheets %}{% endblock %}
-
-        {% block stylesheets %}
-        <style>
+            
+            .nav-item .nav-link.cart-link {
+                display: flex;
+                align-items: center;
+                padding: 0.5rem;
+                border-radius: 50%;
+            }
+            
+            .nav-item .nav-link.cart-link:hover {
+                background-color: rgba(0, 0, 0, 0.03);
+            }
+            
             /* Styles pour le menu profil */
             .dropdown-menu {
                 min-width: 200px;
@@ -169,6 +188,18 @@
                                 <li class="nav-item">
                                     <a class="nav-link {% if app.request.get('_route') starts with 'app_plan_index' %}active{% endif %}" href="{{ path('app_plan_index') }}">Plan</a>
                                 </li>
+                                <li class="nav-item ms-2">
+                                    <a class="nav-link position-relative cart-link" href="{{ path('app_client_cart_index') }}" title="Mon Panier">
+                                        <i class="fas fa-shopping-bag"></i>
+                                        {% set cart = app.session.get('cart', {}) %}
+                                        {% set cart_count = cart|reduce((sum, quantity) => sum + quantity, 0) %}
+                                        {% if cart_count > 0 %}
+                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">
+                                                {{ cart_count }}
+                                            </span>
+                                        {% endif %}
+                                    </a>
+                                </li>
                                 <li class="nav-item dropdown ms-2">
                                     <a class="nav-link dropdown-toggle p-0" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         {% if app.user and app.user.profil and app.user.profil.photo %}
@@ -177,9 +208,9 @@
                                                  class="rounded-circle profile-image" 
                                                  width="40" 
                                                  height="40"
-                                                 onerror="this.src='{{ asset('FrontOffice/img/default-profile.png') }}'">
+                                                 onerror="this.src='{{ asset('assets/BackOffice/img/default-profile.png') }}'">
                                         {% else %}
-                                            <img src="{{ asset('FrontOffice/img/default-profile.png') }}" 
+                                            <img src="{{ asset('assets/BackOffice/img/default-profile.png') }}" 
                                                  alt="Profile" 
                                                  class="rounded-circle profile-image" 
                                                  width="40" 
@@ -282,5 +313,41 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="{{ asset('js/main.js') }}"></script>
         {% block javascripts %}{% endblock %}
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Function to update cart badge count
+                window.updateCartBadge = function(count) {
+                    const cartBadge = document.querySelector('.cart-badge');
+                    if (count > 0) {
+                        if (cartBadge) {
+                            cartBadge.textContent = count;
+                        } else {
+                            const cartIcon = document.querySelector('.fa-shopping-bag');
+                            if (cartIcon) {
+                                const badge = document.createElement('span');
+                                badge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge';
+                                badge.textContent = count;
+                                cartIcon.parentElement.appendChild(badge);
+                            }
+                        }
+                    } else {
+                        if (cartBadge) {
+                            cartBadge.remove();
+                        }
+                    }
+                };
+
+                // Check cart count on page load
+                fetch('{{ path('app_cart_count') }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.cartCount > 0) {
+                            updateCartBadge(data.cartCount);
+                        }
+                    })
+                    .catch(error => console.error('Error fetching cart count:', error));
+            });
+        </script>
     </body>
 </html>

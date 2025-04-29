@@ -29,7 +29,7 @@ class AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterf
         
         // Determine redirect based on role
         if (in_array('ROLE_ADMIN', $roles)) {
-            return new RedirectResponse($this->urlGenerator->generate('dashboard'));
+            return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
         } 
         
         // For both ROLE_PRESTATAIRE and ROLE_ORGANISATEUR, redirect to app_home2

@@ -143,16 +143,6 @@
             font-size: 18px;
             padding: 0 10px;
         }
-        
-        .no-export {
-            display: table-cell;
-        }
-        
-        @media print {
-            .no-export {
-                display: none;
-            }
-        }
     </style>
 {% endblock %}
 
@@ -167,7 +157,7 @@
                 <a href="{{ path('app_backoffice_code_promos_new') }}" class="btn btn-primary bg-gradient-primary shadow-sm">
                     <i class="fas fa-plus fa-sm text-white-50"></i> Nouveau code
                 </a>
-                <button type="button" id="exportPdfBtn" class="btn btn-success bg-gradient-success shadow-sm">
+                <button type="button" class="btn btn-success bg-gradient-success shadow-sm">
                     <i class="fas fa-file-export fa-sm text-white-50"></i> Exporter
                 </button>
             </div>
@@ -254,24 +244,21 @@
             </div>
         </div>
 
-        <div class="card promo-card mb-4">
+        <div class="card promo-card">
             <div class="card-header py-3 bg-gradient-primary text-white">
-                <h6 class="m-0 font-weight-bold">
-                    <i class="fas fa-list mr-2"></i>
-                    Liste des codes promotionnels
-                </h6>
+                <h6 class="m-0 font-weight-bold">Liste des codes promotionnels</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered promo-table" id="codesPromosTable">
-                        <thead>
+                    <table class="table table-hover">
+                        <thead class="bg-light">
                             <tr>
                                 <th>Code</th>
                                 <th>Type de réduction</th>
                                 <th>Date de début</th>
                                 <th>Date d'expiration</th>
                                 <th>Statut</th>
-                                <th class="no-export">Actions</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -337,33 +324,13 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // PDF Export button functionality
-            const exportPdfBtn = document.getElementById('exportPdfBtn');
-            if (exportPdfBtn) {
-                exportPdfBtn.addEventListener('click', function() {
-                    window.location.href = '{{ path('app_backoffice_code_promos_export_pdf') }}';
+        $(document).ready(function() {
+            $(".search-input").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("table tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
                 });
-            }
-
-            // Search functionality
-            const searchInput = document.querySelector('.search-input');
-            const tableRows = document.querySelectorAll('.promo-table tbody tr');
-            
-            if (searchInput && tableRows.length > 0) {
-                searchInput.addEventListener('keyup', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    
-                    tableRows.forEach(row => {
-                        const text = row.textContent.toLowerCase();
-                        if (text.includes(searchTerm)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-                });
-            }
+            });
         });
     </script>
 {% endblock %}

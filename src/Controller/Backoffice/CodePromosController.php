@@ -6,6 +6,7 @@ use App\Entity\Code_promos;
 use App\Form\CodePromosType;
 use App\Repository\Code_promosRepository;
 use App\Service\BrevoService;
+use App\Service\PdfService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,7 @@ use Knp\Component\Pager\PaginatorInterface;
 class CodePromosController extends AbstractController
 {
     #[Route('/', name: 'app_backoffice_code_promos_index', methods: ['GET'])]
-    public function index(Request $request, Code_promosRepository $codePromosRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, Code_promosRepository $codePromosRepository, PaginatorInterface $paginator, PdfService $pdfService): Response
     {
         $query = $codePromosRepository->createQueryBuilder('c')
             ->orderBy('c.id', 'DESC')
@@ -27,12 +28,26 @@ class CodePromosController extends AbstractController
         $code_promos = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-         3
+            3
         );
 
         return $this->render('backoffice/code_promos/index.html.twig', [
             'code_promos' => $code_promos,
         ]);
+    }
+
+    #[Route('/export-pdf', name: 'app_backoffice_code_promos_export_pdf', methods: ['GET'])]
+    public function exportPdf(Code_promosRepository $codePromosRepository, PdfService $pdfService): Response
+    {
+        $code_promos = $codePromosRepository->findBy([], ['id' => 'DESC']);
+        
+        $html = $this->renderView('backoffice/code_promos/pdf_export.html.twig', [
+            'code_promos' => $code_promos,
+        ]);
+        
+        $filename = 'codes_promotionnels_' . date('Y-m-d') . '.pdf';
+        
+        return $pdfService->generatePdfResponse($html, $filename);
     }
 
     #[Route('/new', name: 'app_backoffice_code_promos_new', methods: ['GET', 'POST'])]

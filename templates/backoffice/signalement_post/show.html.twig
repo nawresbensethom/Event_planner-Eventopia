@@ -86,13 +86,18 @@
     <div class="container-fluid">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Détails du Signalement</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-transparent mb-0">
-                    <li class="breadcrumb-item"><a href="{{ path('dashboard') }}"><i class="fas fa-home"></i></a></li>
-                    <li class="breadcrumb-item"><a href="{{ path('app_backoffice_signalement_post_index') }}">Signalements</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Détails</li>
-                </ol>
-            </nav>
+            <div class="d-flex align-items-center">
+                <nav aria-label="breadcrumb" class="mr-3">
+                    <ol class="breadcrumb bg-transparent mb-0">
+                        <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}"><i class="fas fa-home"></i></a></li>
+                        <li class="breadcrumb-item"><a href="{{ path('app_backoffice_signalement_post_index') }}">Signalements</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Détails</li>
+                    </ol>
+                </nav>
+                <button id="exportPdfBtn" class="btn btn-success d-flex align-items-center">
+                    <i class="fas fa-file-pdf mr-2"></i> Exporter PDF
+                </button>
+            </div>
         </div>
 
         {% for label, messages in app.flashes %}
@@ -176,4 +181,19 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // PDF Export button functionality
+            const exportPdfBtn = document.getElementById('exportPdfBtn');
+            if (exportPdfBtn) {
+                exportPdfBtn.addEventListener('click', function() {
+                    window.location.href = '{{ path('app_backoffice_signalement_post_export_pdf', {'id': signalement_post.idSignalementPost}) }}';
+                });
+            }
+        });
+    </script>
 {% endblock %} 

@@ -1,0 +1,220 @@
+/* Promotional Code Page Styles */
+
+/* Main container styling */
+.promo-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Page header */
+.promo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.promo-header h1 {
+    font-size: 28px;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.promo-header h1 .add-icon {
+    color: #fff;
+    background-color: #0d6efd;
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    margin-right: 15px;
+    font-size: 20px;
+}
+
+.promo-header .return-btn {
+    background-color: #6c757d;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+}
+
+.promo-header .return-btn:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form container */
+.form-container {
+    background-color: #f8f9fe;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.form-title {
+    background-color: #6c5ce7;
+    color: white;
+    padding: 15px;
+    margin: -25px -25px 25px -25px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.form-title i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+/* Form fields styling */
+.form-field {
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.form-field.focused {
+    transform: translateY(-2px);
+}
+
+.form-field label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-field label i {
+    margin-right: 10px;
+    color: #6c5ce7;
+    font-size: 18px;
+    width: 22px;
+    text-align: center;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    transition: all 0.3s;
+    font-size: 16px;
+    background-color: white;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    border-color: #6c5ce7;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+.date-field {
+    position: relative;
+}
+
+.date-field .calendar-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c5ce7;
+    pointer-events: none;
+}
+
+.form-field textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Action buttons */
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px;
+    gap: 15px;
+}
+
+.action-buttons button,
+.action-buttons a {
+    padding: 12px 25px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-save {
+    background-color: #6c5ce7;
+    color: white;
+}
+
+.btn-save:hover {
+    background-color: #5b4ecc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
+}
+
+.btn-cancel {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.btn-cancel:hover {
+    background-color: #d0d0d0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .promo-container {
+        padding: 20px;
+    }
+    
+    .promo-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .promo-header .return-btn {
+        align-self: flex-start;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons button,
+    .action-buttons a {
+        width: 100%;
+    }
+} 

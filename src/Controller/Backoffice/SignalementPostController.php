@@ -6,6 +6,7 @@ use App\Entity\SignalementPost;
 use App\Form\SignalementPostType;
 use App\Form\SignalementPostAdminType;
 use App\Repository\SignalementPostRepository;
+use App\Service\PdfService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,6 +50,18 @@ class SignalementPostController extends AbstractController
         return $this->render('backoffice/signalement_post/show.html.twig', [
             'signalement_post' => $signalementPost,
         ]);
+    }
+
+    #[Route('/{id}/export-pdf', name: 'app_backoffice_signalement_post_export_pdf', methods: ['GET'])]
+    public function exportPdf(SignalementPost $signalementPost, PdfService $pdfService): Response
+    {
+        $html = $this->renderView('backoffice/signalement_post/pdf_export.html.twig', [
+            'signalement_post' => $signalementPost,
+        ]);
+        
+        $filename = 'signalement_' . $signalementPost->getIdSignalementPost() . '_' . date('Y-m-d') . '.pdf';
+        
+        return $pdfService->generatePdfResponse($html, $filename);
     }
 
     #[Route('/{id}/edit', name: 'app_backoffice_signalement_post_edit', methods: ['GET', 'POST'])]
