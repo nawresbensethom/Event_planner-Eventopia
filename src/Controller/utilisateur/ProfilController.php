@@ -92,6 +92,14 @@ class ProfilController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Handle photo removal if requested
+            if ($form->has('remove_photo') && $form->get('remove_photo')->getData()) {
+                if ($oldPhoto && file_exists($this->getParameter('kernel.project_dir').'/public/'.$oldPhoto)) {
+                    unlink($this->getParameter('kernel.project_dir').'/public/'.$oldPhoto);
+                    $profil->setPhoto(null);
+                }
+            }
+            
             // Gestion de l'upload de la photo
             $photoFile = $form->get('photo')->getData();
             if ($photoFile) {

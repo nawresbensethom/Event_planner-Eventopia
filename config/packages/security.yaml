@@ -16,37 +16,37 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            user_checker: App\Security\UserChecker
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
                 success_handler: App\Security\AuthenticationSuccessHandler
-                default_target_path: app_home
+                default_target_path: app_home2
                 always_use_default_target_path: false
             logout:
                 path: app_logout
                 target: app_login
+                invalidate_session: true
+                clear_site_data: true
 
     access_control:
-        # Pages publiques
+        # Public access routes
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register$, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/forgot-password$, roles: PUBLIC_ACCESS }
         - { path: ^/css, roles: PUBLIC_ACCESS }
         - { path: ^/js, roles: PUBLIC_ACCESS }
         - { path: ^/images, roles: PUBLIC_ACCESS }
         - { path: ^/assets, roles: PUBLIC_ACCESS }
         
-        
-        # Routes administrateur
+        # Admin routes (more specific routes first)
+        - { path: ^/admin/dashboard, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/dashboard, roles: ROLE_ADMIN }
         
-        # Routes utilisateur
-        - { path: ^/profile, roles: ROLE_USER }
+        # Home page access
+        - { path: ^/home, roles: [ROLE_ADMIN, ROLE_PRESTATAIRE, ROLE_ORGANISATEUR] }
         
-        # Route racine accessible publiquement
-        - { path: ^/$, roles: PUBLIC_ACCESS }
-        
-        # Toutes les autres routes nécessitent une authentification
+        # All routes require authentication by default
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

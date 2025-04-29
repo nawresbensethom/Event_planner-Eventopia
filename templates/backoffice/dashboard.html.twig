@@ -93,6 +93,121 @@
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                     </ol>
+<style>
+    .small-box {
+        position: relative;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        color: white;
+    }
+    .small-box .inner {
+        padding: 10px;
+    }
+    .small-box .icon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 50px;
+        opacity: 0.3;
+    }
+    .small-box .small-box-footer {
+        position: relative;
+        text-align: center;
+        padding: 3px 0;
+        color: white;
+        display: block;
+        text-decoration: none;
+        background: rgba(0,0,0,0.1);
+    }
+    .bg-info { background-color: #17a2b8!important; }
+    .bg-success { background-color: #28a745!important; }
+    .bg-warning { background-color: #ffc107!important; }
+    .bg-danger { background-color: #dc3545!important; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">Dashboard</h3>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Users Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3>{% if users is defined %}{{ users|length }}{% else %}0{% endif %}</h3>
+                        <p>Utilisateurs</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <a href="{{ path('admin_dashboard') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Events Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{% if events is defined %}{{ events|length }}{% else %}0{% endif %}</h3>
+                        <p>Événements</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <a href="{{ path('app_evenement_index_back') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Reservations Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{% if reservations is defined %}{{ reservations|length }}{% else %}0{% endif %}</h3>
+                        <p>Réservations</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-bookmark-check"></i>
+                    </div>
+                    <a href="{{ path('app_reservation_index_back') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Services Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{% if services is defined %}{{ services|length }}{% else %}0{% endif %}</h3>
+                        <p>Services</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <a href="{{ path('app_backoffice_service_index') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
                 </div>
             </div>
         </div>

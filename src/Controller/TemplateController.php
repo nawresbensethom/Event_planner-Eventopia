@@ -15,7 +15,7 @@ use App\Entity\Offreemploi;
 
 class TemplateController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
+    #[Route('/template', name: 'app_template')]
     public function index(): Response
     {
         return $this->render('frontoffice/base.html.twig');

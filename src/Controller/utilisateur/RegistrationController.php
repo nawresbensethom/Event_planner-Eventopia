@@ -4,6 +4,7 @@ namespace App\Controller\utilisateur;
 use App\Entity\Utilisateur;
 use App\Entity\Profil;
 use App\Form\RegistrationFormType;
+use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,9 +15,19 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
+use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
+    private EmailVerifier $emailVerifier;
+
+    public function __construct(EmailVerifier $emailVerifier)
+    {
+        $this->emailVerifier = $emailVerifier;
+    }
+
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -25,7 +36,7 @@ class RegistrationController extends AbstractController
             if ($this->isGranted('ROLE_ADMIN')) {
                 return $this->redirectToRoute('admin_dashboard');
             }
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_home2');
         }
 
         // Get the login error if there is one
@@ -47,8 +58,6 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager,
         LoggerInterface $logger
     ): Response {
-        
-
         $user = new Utilisateur();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -71,6 +80,9 @@ class RegistrationController extends AbstractController
                     throw new \InvalidArgumentException('Rôle invalide');
                 }
                 $user->setRole($role);
+
+                // Set initial status as inactive until email verification
+                $user->setStatut('inactive');
 
                 // Set role-specific fields
                 match ($role) {
@@ -95,7 +107,16 @@ class RegistrationController extends AbstractController
                 $entityManager->persist($profil);
                 $entityManager->flush();
 
-                $this->addFlash('success', 'Compte créé avec succès !');
+                // Generate a signed URL and email it to the user
+                $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+                    (new TemplatedEmail())
+                        ->from(new Address('eventopia@example.com', 'Eventopia Bot'))
+                        ->to($user->getEmail())
+                        ->subject('Please Confirm your Email')
+                        ->htmlTemplate('frontoffice/registration/confirmation_email.html.twig')
+                );
+
+                $this->addFlash('success', 'Un email de confirmation vous a été envoyé. Veuillez vérifier votre boîte de réception.');
                 return $this->redirectToRoute('app_login');
 
             } catch (\Exception $e) {
@@ -118,6 +139,25 @@ class RegistrationController extends AbstractController
                 'ROLE_ORGANISATEUR' => 'Organisateur d\'événements'
             ]
         ]);
+    }
+
+    #[Route('/verify/email', name: 'app_verify_email')]
+    public function verifyUserEmail(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        // validate email confirmation link, sets User::isVerified=true and persists
+        try {
+            $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
+        } catch (VerifyEmailExceptionInterface $exception) {
+            $this->addFlash('verify_email_error', $exception->getReason());
+
+            return $this->redirectToRoute('app_register');
+        }
+
+        $this->addFlash('success', 'Your email address has been verified.');
+
+        return $this->redirectToRoute('app_home2');
     }
 
     #[Route('/forgot-password', name: 'app_forgot_password_request')]
@@ -155,28 +195,5 @@ class RegistrationController extends AbstractController
         // Le logout est géré automatiquement par Symfony Security
         // Cette méthode ne sera jamais exécutée
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
-    }
-
-    #[Route("/dashboard", name: "admin_dashboard")]
-    public function dashboard(EntityManagerInterface $entityManager): Response
-    {
-        // Check if the user has the admin role
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            $this->addFlash('error', 'Vous n\'avez pas la permission d\'accéder à cette page.');
-            return $this->redirectToRoute('app_home');
-        }
-
-        // Récupérer les organisateurs
-        $organisateurs = $entityManager->getRepository(Utilisateur::class)
-            ->findBy(['role' => 'ROLE_ORGANISATEUR']);
-
-        // Récupérer les prestataires
-        $prestataires = $entityManager->getRepository(Utilisateur::class)
-            ->findBy(['role' => 'ROLE_PRESTATAIRE']);
-
-        return $this->render('backoffice/admin/dashboard.html.twig', [
-            'organisateurs' => $organisateurs,
-            'prestataires' => $prestataires
-        ]);
     }
 }

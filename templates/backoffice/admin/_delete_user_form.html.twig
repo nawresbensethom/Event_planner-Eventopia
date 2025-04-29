@@ -1,0 +1,81 @@
+<div class="delete-form-container">
+    <form method="post" 
+          action="{{ path('admin_delete_user', {'id': user.id}) }}" 
+          class="delete-form">
+        
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+        
+        <button type="button" 
+                class="btn btn-danger btn-sm"
+                data-toggle="modal" 
+                data-target="#deleteUserModal{{ user.id }}">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+
+        {# Modal de confirmation #}
+        <div class="modal fade" 
+             id="deleteUserModal{{ user.id }}" 
+             tabindex="-1" 
+             role="dialog"
+             aria-labelledby="deleteUserModalLabel{{ user.id }}" 
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteUserModalLabel{{ user.id }}">Confirmer la suppression</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+.delete-form-container {
+    display: inline-block;
+}
+
+.delete-form .btn-danger {
+    transition: all 0.2s ease;
+}
+
+.delete-form .btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+.modal-content {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.alert-warning {
+    border-left: 4px solid #e67e22;
+}
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+</style> 
