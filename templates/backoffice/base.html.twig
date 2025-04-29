@@ -388,16 +388,22 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{ path('admin_blog_index') }}" class="nav-link">
-                            <i class="nav-icon bi bi-circle"></i>
-                            <p>Gestion des Posts</p>
-                        </a>
-                    </li>
-                      <li class="nav-item">
+        <a href="{{ path('admin_blog_index') }}" class="nav-link">
+            <i class="nav-icon bi bi-circle"></i>
+            <p>Gestion des Posts</p>
+        </a>
+    </li>
+    <li class="nav-item">
         <a href="{{ path('app_backoffice_signalement_post_index') }}" class="nav-link">
             <i class="nav-icon bi bi-circle"></i>
             <p>Signalements</p>
         </a>
+    </li>
+    <li class="nav-item">
+        <a href="{{ path('admin_blog_stats') }}" class="nav-link"> {# Utilisez le nom de la route #}
+        <i class="nav-icon bi bi-bar-chart-line"></i>
+        <p>Statistiques</p>
+    </a>
     </li>
                 </ul>
               </li>
@@ -490,11 +496,7 @@
     <!--end::OverlayScrollbars Configure-->
     <!-- OPTIONAL SCRIPTS -->
     <!-- sortablejs -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"
-      integrity="sha256-+ipiJrswvAR4VAx/th+6zWsdeYmVae0iJuiR+6OqHJHQ="
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <!-- sortablejs -->
     <script>
       const connectedSortables = document.querySelectorAll('.connectedSortable');

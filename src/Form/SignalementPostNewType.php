@@ -25,9 +25,26 @@ class SignalementPostNewType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'class' => 'form-control'
-                ]
+                ],
+                'disabled' => $options['post_prefilled'] ?? false
             ])
-            ->add('idUtilisateur', EntityType::class, [
+            ->add('raison', TextareaType::class, [
+                'label' => 'Motif du signalement',
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(['min' => 10, 'max' => 500])
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 4,
+                    'placeholder' => 'Décrivez la raison de votre signalement (10-500 caractères)'
+                ]
+            ]);
+
+        // On n'ajoute le champ utilisateur que si on n'est pas connecté
+        if (!$options['user_prefilled'] ?? false) {
+            $builder->add('idUtilisateur', EntityType::class, [
                 'class' => Utilisateur::class,
                 'choice_label' => 'nom',
                 'label' => 'Utilisateur concerné',
@@ -35,35 +52,16 @@ class SignalementPostNewType extends AbstractType
                 'attr' => [
                     'class' => 'form-control'
                 ]
-            ])
-            ->add('raison', TextareaType::class, [
-                'label' => 'Motif du signalement',
-                'required' => true,
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez saisir le motif du signalement',
-                    ]),
-                    new Length([
-                        'min' => 10,
-                        'minMessage' => 'Le motif du signalement doit contenir au moins {{ limit }} caractères',
-                        'max' => 1000,
-                        'maxMessage' => 'Le motif du signalement ne peut pas dépasser {{ limit }} caractères',
-                    ]),
-                ],
-                'attr' => [
-                    'class' => 'form-control',
-                    'rows' => 4,
-                    'placeholder' => 'Décrivez la raison de votre signalement...'
-                ]
-            ])
-        ;
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => SignalementPost::class,
-            'csrf_protection' => true,
+            'post_prefilled' => false,
+            'user_prefilled' => false
         ]);
     }
 } 

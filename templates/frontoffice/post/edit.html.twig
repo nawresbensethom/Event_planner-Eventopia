@@ -191,25 +191,11 @@
                 <div class="form-container">
                     {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                         <div class="mb-4">
-                            {{ form_label(form.id_utilisateur, 'User ID', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.id_utilisateur, {
-                                'attr': {
-                                    'class': 'form-control',
-                                    'placeholder': 'Enter your user ID',
-                                    'min': '1',
-                                    'required': 'required'
-                                }
-                            }) }}
-                            <div class="form-text">Enter your valid user ID to update the post</div>
-                            {{ form_errors(form.id_utilisateur, {'attr': {'class': 'invalid-feedback'}}) }}
-                        </div>
-
-                        <div class="mb-4">
                             {{ form_label(form.titre, 'Title', {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.titre, {
                                 'attr': {
                                     'class': 'form-control form-control-lg',
-                                    'placeholder': 'Enter a catchy title for your post',
+                                    'placeholder': 'Enter a catchy title',
                                     'minlength': '5',
                                     'maxlength': '100',
                                     'required': 'required'
@@ -238,62 +224,70 @@
                         <div class="mb-4">
                             {{ form_label(form.photos, 'Photos', {'label_attr': {'class': 'form-label'}}) }}
                             <div class="image-upload-container" id="dropZone">
-                                <i class="bi bi-cloud-upload upload-icon"></i>
-                                <p class="mb-2">Drag and drop your images here</p>
-                                <p class="text-muted small mb-0">or click to select files</p>
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <p class="upload-text">Drag and drop your photos here</p>
+                                <p class="upload-subtext">or click to select files</p>
                                 {{ form_widget(form.photos, {
                                     'attr': {
                                         'class': 'd-none',
+                                        'id': 'file-input',
                                         'accept': 'image/*',
-                                        'multiple': 'multiple',
-                                        'data-max-size': '5242880'
+                                        'multiple': 'multiple'
                                     }
                                 }) }}
                             </div>
-                            <div class="form-text">Supported formats: JPG, PNG, GIF (max 5MB each)</div>
-                            {% if post.photos %}
-                                <div class="mt-3">
-                                    <p class="mb-2">Current Photo:</p>
-                                    <div class="preview-item">
-                                        <img src="{{ asset('uploads/images/' ~ post.photos) }}" alt="Current photo">
-                                    </div>
-                                </div>
-                            {% endif %}
-                            <div id="imagePreview" class="image-preview mt-3"></div>
+                            <div id="imagePreview" class="image-preview"></div>
                             {{ form_errors(form.photos, {'attr': {'class': 'invalid-feedback'}}) }}
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg btn-submit">
-                                <i class="bi bi-save"></i> Update Post
+                            <button type="submit" class="btn btn-submit">
+                                <i class="fas fa-save me-2"></i>Save Changes
                             </button>
                         </div>
                     {{ form_end(form) }}
                 </div>
-
-                <div class="text-center">
-                    <a href="{{ path('app_client_post_index') }}" class="action-btn back">
-                        <i class="bi bi-arrow-left"></i> Back to Posts
-                    </a>
-                </div>
             </div>
         </div>
     </div>
+{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const dropZone = document.getElementById('dropZone');
-            const imageInput = document.querySelector('input[type="file"]');
+            const fileInput = document.getElementById('file-input');
             const imagePreview = document.getElementById('imagePreview');
-            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            let files = [];
 
-            // Prevent default drag behaviors
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, preventDefaults, false);
-                document.body.addEventListener(eventName, preventDefaults, false);
+            // Make sure dropZone and fileInput exist
+            if (!dropZone || !fileInput) {
+                console.error('Required elements not found');
+                return;
+            }
+
+            // Click handling
+            dropZone.addEventListener('click', function(e) {
+                e.preventDefault();
+                fileInput.click();
             });
 
-            // Highlight drop zone when item is dragged over it
+            // File input change handling
+            fileInput.addEventListener('change', function(e) {
+                handleFiles(Array.from(this.files));
+            });
+
+            // Drag and drop handling
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
             ['dragenter', 'dragover'].forEach(eventName => {
                 dropZone.addEventListener(eventName, highlight, false);
             });
@@ -302,72 +296,73 @@
                 dropZone.addEventListener(eventName, unhighlight, false);
             });
 
-            // Handle dropped files
-            dropZone.addEventListener('drop', handleDrop, false);
-            
-            // Handle clicked files
-            dropZone.addEventListener('click', () => {
-                imageInput.click();
-            });
-
-            imageInput.addEventListener('change', (e) => {
-                handleFiles(e.target.files);
-            });
-
-            function preventDefaults (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
             function highlight(e) {
-                dropZone.classList.add('bg-light');
+                dropZone.classList.add('dragover');
             }
 
             function unhighlight(e) {
-                dropZone.classList.remove('bg-light');
+                dropZone.classList.remove('dragover');
             }
 
-            function handleDrop(e) {
+            dropZone.addEventListener('drop', function(e) {
                 const dt = e.dataTransfer;
-                const files = dt.files;
-                handleFiles(files);
-            }
+                const droppedFiles = Array.from(dt.files);
+                handleFiles(droppedFiles);
+            });
 
-            function handleFiles(files) {
-                const validFiles = [...files].filter(file => {
+            function handleFiles(newFiles) {
+                const validFiles = newFiles.filter(file => {
                     if (!file.type.startsWith('image/')) {
-                        alert(`File ${file.name} is not an image.`);
+                        alert('Please upload only image files.');
                         return false;
                     }
-                    if (file.size > maxFileSize) {
-                        alert(`File ${file.name} is too large (max 5MB).`);
+                    if (file.size > 5 * 1024 * 1024) { // 5MB
+                        alert('File too large. Maximum size is 5MB.');
                         return false;
                     }
                     return true;
                 });
 
-                validFiles.forEach(previewFile);
-            }
+                if (validFiles.length === 0) return;
 
-            function previewFile(file) {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onloadend = function() {
-                    const div = document.createElement('div');
-                    div.className = 'preview-item';
-                    div.innerHTML = `
-                        <img src="${reader.result}" alt="Preview">
-                        <button type="button" class="remove-image">
-                            <i class="bi bi-x"></i>
-                        </button>
-                    `;
-                    
-                    div.querySelector('.remove-image').addEventListener('click', function() {
-                        div.remove();
-                    });
-                    
-                    imagePreview.appendChild(div);
-                }
+                // Clear previous files
+                files = validFiles;
+                imagePreview.innerHTML = '';
+
+                // Update FileList on the input
+                const dataTransfer = new DataTransfer();
+                files.forEach(file => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
+
+                // Show previews
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'preview-item';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview">
+                            <button type="button" class="remove-image" data-filename="${file.name}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        imagePreview.appendChild(div);
+
+                        // Add remove functionality
+                        div.querySelector('.remove-image').addEventListener('click', function() {
+                            const filename = this.dataset.filename;
+                            files = files.filter(f => f.name !== filename);
+                            
+                            // Update the file input
+                            const dt = new DataTransfer();
+                            files.forEach(f => dt.items.add(f));
+                            fileInput.files = dt.files;
+                            
+                            div.remove();
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
         });
     </script>

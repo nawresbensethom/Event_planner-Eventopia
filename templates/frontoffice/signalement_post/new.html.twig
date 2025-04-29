@@ -63,57 +63,75 @@
         }
 
         .btn-submit {
-            background-color: var(--primary-color);
+            background-color: #ff6b4a;
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 1rem 2rem;
             border: none;
-            border-radius: 4px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
-            display: block;
-            width: 100%;
-            margin-top: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: auto;
+            min-width: 200px;
+            margin: 2rem auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .btn-submit:hover {
-            background-color: #ff6b4a;
+            background-color: #ff8265;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-submit i {
+            font-size: 1.2rem;
+        }
+
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
         }
 
         .btn-back {
-            display: inline-block;
-            margin-top: 1rem;
-            color: var(--dark-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
             text-decoration: none;
-            transition: color 0.3s;
+            margin-top: 1rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
 
         .btn-back:hover {
             color: var(--primary-color);
         }
 
-        .alert-danger {
+        .alert {
             padding: 1rem;
             margin-bottom: 1rem;
             border-radius: 4px;
+        }
+
+        .alert-danger {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
-        }
-
-        .actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            align-items: center;
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="header-section">
-        <h1 class="header-title">Nouveau signalement</h1>
-        <p class="header-subtitle">Signalez un contenu inapproprié pour maintenir la qualité de notre communauté</p>
+        <h1 class="header-title">Signaler un post</h1>
+        <p class="header-subtitle">Aidez-nous à maintenir la qualité de notre communauté</p>
     </div>
 
     <div class="form-container">
@@ -124,17 +142,21 @@
         {% endfor %}
 
         {{ form_start(form, {'attr': {'class': 'form'}}) }}
+            {% if form.idPost is defined %}
             <div class="form-group">
                 {{ form_label(form.idPost, 'Publication concernée', {'label_attr': {'class': 'form-label'}}) }}
                 {{ form_widget(form.idPost, {'attr': {'class': 'form-control'}}) }}
                 {{ form_errors(form.idPost) }}
             </div>
+            {% endif %}
 
+            {% if form.idUtilisateur is defined %}
             <div class="form-group">
-                {{ form_label(form.idUtilisateur, 'Utilisateur concerné', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_label(form.idUtilisateur, 'Utilisateur', {'label_attr': {'class': 'form-label'}}) }}
                 {{ form_widget(form.idUtilisateur, {'attr': {'class': 'form-control'}}) }}
                 {{ form_errors(form.idUtilisateur) }}
             </div>
+            {% endif %}
 
             <div class="form-group">
                 {{ form_label(form.raison, 'Motif du signalement', {'label_attr': {'class': 'form-label'}}) }}
@@ -142,15 +164,15 @@
                 {{ form_errors(form.raison) }}
             </div>
 
-            <button type="submit" class="btn-submit">
-                <i class="bi bi-check-circle"></i> Envoyer le signalement
-            </button>
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-check-circle"></i> Envoyer le signalement
+                </button>
+                
+                <a href="{{ path('app_client_signalement_post_index') }}" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
         {{ form_end(form) }}
-
-        <div class="actions">
-            <a href="{{ path('app_client_signalement_post_index') }}" class="btn-back">
-                <i class="fas fa-arrow-left"></i> Retour à la liste
-            </a>
-        </div>
     </div>
 {% endblock %}
