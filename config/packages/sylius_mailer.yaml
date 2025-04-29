@@ -1,0 +1,13 @@
+sylius_mailer:
+    sender:
+        name: "%env(MAILER_SENDER_NAME)%"
+        address: "%env(MAILER_SENDER_ADDRESS)%"
+    emails:
+        # Vous pouvez ajouter vos templates d'emails ici
+        # Exemple:
+        # welcome:
+        #     subject: "Bienvenue sur notre plateforme"
+        #     template: "emails/welcome.html.twig"
+        welcome:
+            subject: "Bienvenue sur Eventopia"
+            template: "backoffice/emails/welcome.html.twig" 

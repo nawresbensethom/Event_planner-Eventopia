@@ -1,0 +1,409 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Mon Panier - Eventopia{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .cart-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 1rem;
+            background: white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .cart-item-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 1.5rem;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+        }
+
+        .cart-item-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-price {
+            font-size: 1.1rem;
+            color: #c28282;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-quantity {
+            color: #6c757d;
+        }
+
+        .promo-code {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .promo-message {
+            margin-top: 0.5rem;
+        }
+
+        .cart-summary {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .cart-total {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .discount-info {
+            color: #28a745;
+            margin: 0.5rem 0;
+        }
+
+        .btn-apply-promo {
+            background-color: #c28282;
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-apply-promo:hover {
+            background-color: #b27272;
+            transform: translateY(-1px);
+        }
+
+        .btn-remove {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-remove:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-remove:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="cart-container">
+        <h1 class="mb-4">Mon Panier</h1>
+
+        {% if items|length > 0 %}
+            <div class="cart-items">
+                {% for item in items %}
+                    <div class="cart-item" data-service-id="{{ item.service.idService }}">
+                        <img src="{{ asset('Uploads/services/' ~ item.service.photos) }}" 
+                             alt="{{ item.service.nom }}" 
+                             class="cart-item-image">
+                        <div class="cart-item-details">
+                            <h5 class="card-item-title">{{ item.service.nom }}</h5>
+                            <p class="cart-item-price">{{ item.service.tarif|number_format(2, ',', ' ') }} €</p>
+                            <div class="cart-item-quantity">
+                                Quantité: {{ item.quantity }}
+                            </div>
+                        </div>
+                        <button class="btn-remove" onclick="removeFromCart({{ item.service.idService }})">
+                            <i class="fas fa-trash-alt"></i> Supprimer
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="promo-code">
+                <form id="promo-form" class="d-flex gap-2">
+                    <div class="flex-grow-1">
+                        <input type="text" 
+                               class="form-control" 
+                               id="promo-code" 
+                               placeholder="Avez-vous un code promo ?"
+                               value="{{ promo_code|default('') }}">
+                    </div>
+                    <button type="submit" class="btn btn-apply-promo">
+                        <i class="fas fa-ticket-alt"></i> Appliquer
+                    </button>
+                </form>
+                <div id="promo-message" class="promo-message">
+                    {% if promo_code %}
+                        <div class="text-success">
+                            <i class="fas fa-check-circle"></i> Code promo "{{ promo_code }}" appliqué
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Sous-total</span>
+                    <span>{{ subtotal|number_format(2, ',', ' ') }} €</span>
+                </div>
+
+                {% if discount_amount > 0 %}
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Réduction ({{ promo_code }})</span>
+                        <span>-{{ discount_amount|number_format(2, ',', ' ') }} €</span>
+                    </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between cart-total mt-3">
+                    <span>Total à payer</span>
+                    <span>{{ total|number_format(2, ',', ' ') }} €</span>
+                </div>
+
+                <div class="mt-4">
+                    <button type="button" class="btn btn-primary w-100" id="payment-button">
+                        <i class="fas fa-credit-card"></i> Procéder au paiement
+                        <span class="spinner" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <p>Votre panier est vide</p>
+                <a href="{{ path('app_client_service_index') }}" class="btn btn-primary">
+                    Découvrir nos services
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const promoForm = document.getElementById('promo-form');
+            const promoInput = document.getElementById('promo-code');
+            const promoMessage = document.getElementById('promo-message');
+
+            promoForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const submitButton = promoForm.querySelector('button[type="submit"]');
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification...';
+
+                try {
+                    const response = await fetch('{{ path('app_cart_apply_promo') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            promo_code: promoInput.value
+                        })
+                    });
+
+                    const responseText = await response.text();
+                    console.log('Promo response:', responseText);
+
+                    const result = JSON.parse(responseText);
+                    
+                    if (result.success) {
+                        promoMessage.innerHTML = `
+                            <div class="text-success">
+                                <i class="fas fa-check-circle"></i> ${result.message}
+                                <div class="discount-info">
+                                    Réduction de ${result.discount_value}%
+                                </div>
+                            </div>`;
+                        
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        promoMessage.innerHTML = `
+                            <div class="text-danger">
+                                <i class="fas fa-exclamation-circle"></i> ${result.error}
+                            </div>`;
+                    }
+                } catch (error) {
+                    console.error('Promo error:', error);
+                    promoMessage.innerHTML = `
+                        <div class="text-danger">
+                            <i class="fas fa-exclamation-circle"></i> Une erreur est survenue
+                        </div>`;
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                }
+            });
+
+            const stripe = Stripe('{{ stripe_public_key }}');
+            const paymentButton = document.getElementById('payment-button');
+            
+            paymentButton.addEventListener('click', async () => {
+                const spinner = paymentButton.querySelector('.spinner');
+                
+                paymentButton.disabled = true;
+                spinner.style.display = 'inline-block';
+
+                try {
+                    const response = await fetch('{{ path('payment_checkout') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    const responseText = await response.text();
+                    console.log('Checkout response:', responseText);
+
+                    const session = JSON.parse(responseText);
+
+                    if (session.error) {
+                        throw new Error(session.error);
+                    }
+
+                    const result = await stripe.redirectToCheckout({
+                        sessionId: session.id
+                    });
+
+                    if (result.error) {
+                        throw new Error(result.error.message);
+                    }
+                } catch (error) {
+                    console.error('Checkout error:', error);
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                    alertDiv.role = 'alert';
+                    alertDiv.innerHTML = `
+                        Une erreur est survenue lors du paiement. Veuillez réessayer.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    document.querySelector('.cart-container').insertAdjacentElement('afterbegin', alertDiv);
+                } finally {
+                    paymentButton.disabled = false;
+                    spinner.style.display = 'none';
+                }
+            });
+        });
+
+        function removeFromCart(serviceId) {
+            const cartItem = document.querySelector(`.cart-item[data-service-id="${serviceId}"]`);
+            const button = cartItem.querySelector('.btn-remove');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suppression...';
+
+            fetch(`{{ path('app_cart_remove', {'id': '__ID__'}) }}`.replace('__ID__', serviceId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '{{ csrf_token('cart-remove') }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update cart badge in header
+                    const cartBadge = document.querySelector('.cart-badge');
+                    if (cartBadge) {
+                        cartBadge.textContent = data.cartCount || 0;
+                    }
+
+                    // Show success toast
+                    const toast = document.createElement('div');
+                    toast.className = 'toast-notification';
+                    toast.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>${data.message || 'Service supprimé du panier avec succès!'}</span>
+                    `;
+                    document.body.appendChild(toast);
+
+                    // Remove toast and reload page
+                    setTimeout(() => {
+                        toast.remove();
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || 'Erreur lors de la suppression du service');
+                }
+            })
+            .catch(error => {
+                console.error('Remove from cart error:', error);
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-trash-alt"></i> Supprimer';
+
+                // Show error toast
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.style.background = '#dc3545';
+                toast.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>${error.message || 'Une erreur est survenue. Veuillez réessayer.'}</span>
+                `;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            });
+        }
+    </script>
+{% endblock %}

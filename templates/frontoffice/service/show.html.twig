@@ -5,12 +5,23 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        :root {
+            --primary-color: #c28282;
+            --secondary-color: #f6d682;
+            --text-color: #2c3e50;
+            --bg-light: #f8f9fa;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
         .service-header {
-            background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             padding: 4rem 0;
             position: relative;
-            overflow: hidden;
             color: white;
+            margin-bottom: 2rem;
         }
 
         .service-header::before {
@@ -20,183 +31,243 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI2NDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIGQ9Ik0wIDBoMTQ0MHY2NDBIMHoiLz48cGF0aCBkPSJNMCA0NDBsMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUgMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==');
-            opacity: 0.1;
+            background: linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+                        linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.05) 75%),
+                        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.05) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            opacity: 0.3;
         }
 
         .service-title {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            animation: fadeInDown 0.8s ease-out;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .service-meta {
             display: flex;
             align-items: center;
-            gap: 2rem;
+            gap: 1.5rem;
             margin-bottom: 2rem;
-            animation: fadeInUp 0.8s ease-out 0.2s;
-            animation-fill-mode: both;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .meta-item {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
+            color: white;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+            transition: var(--transition);
+        }
+
+        .meta-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .service-content-wrapper {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            margin-top: -3rem;
-            position: relative;
-            z-index: 2;
-            animation: slideUp 1s ease-out;
-            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            margin: 0 auto 3rem;
+            max-width: 1000px;
+            overflow: hidden;
         }
 
         .service-image {
             width: 100%;
             height: 400px;
             object-fit: cover;
-            border-radius: 20px 20px 0 0;
+            transition: var(--transition);
         }
 
         .service-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
             padding: 2rem;
-            background: #f8f9fa;
-            border-radius: 20px 20px 0 0;
+            background: var(--bg-light);
         }
 
         .info-box {
             background: white;
             padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border-left: 4px solid #c28282;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            border-left: 3px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .info-box:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
         }
 
         .info-label {
-            color: #666;
+            color: #6c757d;
             font-size: 0.875rem;
             margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .info-value {
-            color: #333;
+            color: var(--text-color);
             font-weight: 600;
             font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-value i {
+            color: var(--primary-color);
         }
 
         .service-description {
             padding: 2rem;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #444;
-        }
-
-        .service-actions-container {
-            position: relative;
-            margin-bottom: 4rem;
-            z-index: 3;
-            padding: 0 1rem;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-color);
+            background: white;
         }
 
         .service-actions {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 1.5rem 2rem;
             display: flex;
             justify-content: center;
-            gap: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            border-radius: 20px;
-            margin: 0 auto;
-            max-width: 900px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .service-actions::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(194, 130, 130, 0.2) 20%, 
-                rgba(194, 130, 130, 0.2) 80%, 
-                transparent 100%
-            );
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--bg-light);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .btn-action {
-            padding: 1rem 2.2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            display: flex;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
             align-items: center;
-            gap: 0.8rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            min-width: 160px;
-            justify-content: center;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
+            gap: 0.5rem;
             text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-action::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, 
-                rgba(255, 255, 255, 0.1) 0%, 
-                rgba(255, 255, 255, 0.2) 50%, 
-                rgba(255, 255, 255, 0.1) 100%
-            );
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .btn-action:hover::before {
-            opacity: 1;
+            letter-spacing: 0.5px;
+            border: none;
         }
 
         .btn-back {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            background: #6c757d;
             color: white;
         }
 
         .btn-edit {
-            background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+            background: var(--primary-color);
             color: white;
         }
 
         .btn-delete {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            background: #dc3545;
             color: white;
         }
 
-        @keyframes fadeInDown {
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            opacity: 0.9;
+        }
+
+        .service-buttons {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            background: white;
+        }
+
+        #add-to-cart-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-md);
+        }
+
+        #add-to-cart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        #add-to-cart-button:active {
+            transform: translateY(0);
+        }
+
+        #add-to-cart-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        @media (max-width: 768px) {
+            .service-title {
+                font-size: 2rem;
+            }
+
+            .service-meta {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .meta-item {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .service-image {
+                height: 250px;
+            }
+
+            .service-actions {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .service-content-wrapper {
+                margin: 0 1rem 2rem;
+            }
+
+            #add-to-cart-button {
+                width: 100%;
+            }
+        }
+
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
@@ -204,28 +275,120 @@
             }
         }
 
-        @keyframes fadeInUp {
+        .service-content-wrapper {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
             from {
+                transform: translateX(100%);
                 opacity: 0;
-                transform: translateY(20px);
             }
             to {
+                transform: translateX(0);
                 opacity: 1;
-                transform: translateY(0);
             }
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        #add-to-cart-button.success {
+            background: #4CAF50;
         }
     </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function addToCart(serviceId) {
+            const button = document.getElementById('add-to-cart-button');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout en cours...';
+
+            fetch(`{{ path('app_cart_add', {'id': '__ID__'}) }}`.replace('__ID__', serviceId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '{{ csrf_token('cart-add') }}' // Updated token ID
+                }
+            })
+            .then(async response => {
+                const responseText = await response.text();
+                console.log('Add to cart response:', responseText); // Debug 404 response
+                if (!response.ok) {
+                    throw new Error('Erreur réseau: ' + response.status);
+                }
+                return JSON.parse(responseText);
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update cart badge
+                    const cartBadge = document.querySelector('.cart-badge');
+                    if (cartBadge) {
+                        cartBadge.textContent = data.cartCount || 0;
+                    }
+
+                    // Success animation
+                    button.innerHTML = '<i class="fas fa-check"></i> Ajouté au panier';
+                    button.classList.add('success');
+
+                    // Show toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'toast-notification';
+                    toast.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>${data.message || 'Service ajouté au panier avec succès!'}</span>
+                    `;
+                    document.body.appendChild(toast);
+                    
+                    // Remove toast and reset button
+                    setTimeout(() => {
+                        toast.remove();
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-shopping-cart"></i> Ajouter au panier';
+                        button.classList.remove('success');
+                    }, 3000);
+                } else {
+                    throw new Error(data.error || 'Erreur lors de l\'ajout au panier');
+                }
+            })
+            .catch(error => {
+                console.error('Add to cart error:', error);
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-shopping-cart"></i> Ajouter au panier';
+                
+                // Show error toast
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.style.background = '#dc3545';
+                toast.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>${error.message || 'Une erreur est survenue. Veuillez réessayer.'}</span>
+                `;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            });
+        }
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -252,7 +415,7 @@
     <div class="container">
         <div class="service-content-wrapper">
             {% if service.photos %}
-                <img src="{{ asset('uploads/services/' ~ service.photos) }}" 
+                <img src="{{ asset('Uploads/services/' ~ service.photos) }}" 
                      alt="{{ service.nom }}" 
                      class="service-image">
             {% endif %}
@@ -287,7 +450,11 @@
             <div class="service-description">
                 {{ service.description|nl2br }}
             </div>
-
+            <div class="service-buttons">
+                <button id="add-to-cart-button" class="btn btn-primary btn-lg" onclick="addToCart({{ service.idService }})">
+                    <i class="fas fa-shopping-cart"></i> Ajouter au panier
+                </button>
+            </div>
             <div class="service-actions">
                 <a href="{{ path('app_client_service_index') }}" class="btn-action btn-back">
                     <i class="fas fa-arrow-left"></i>
@@ -311,4 +478,4 @@
             </div>
         </div>
     </div>
-{% endblock %} 
+{% endblock %}

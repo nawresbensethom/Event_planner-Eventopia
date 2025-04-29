@@ -7,9 +7,33 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+
+        {% block stylesheets %}
+        <style>
+            .cart-badge {
+                font-size: 0.65rem;
+                transform: translate(-50%, -25%);
+                background: linear-gradient(135deg, #c28282 0%, #f6d682 100%);
+                border: 2px solid white;
+            }
+            
+            .nav-link .fa-shopping-bag {
+                font-size: 1.2rem;
+                transition: transform 0.2s ease;
+                color: #2c3e50;
+            }
+            
+            .nav-link:hover .fa-shopping-bag {
+                transform: scale(1.1);
+                color: #c28282;
+            }
+        </style>
+        {% endblock %}
+
         <!-- Bootstrap Icons CDN -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         {% block stylesheets %}{% endblock %}
+
     </head>
     <body>
         <header>
@@ -31,8 +55,15 @@
                                 <li class="nav-item">
                                     <a class="nav-link {% if app.request.get('_route') starts with 'app_evenement' %}active{% endif %}" href="{{ path('app_evenement_index') }}">Événements</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {% if app.request.get('_route') starts with 'app_service' %}active{% endif %}" href="{{ path('app_client_service_index') }}">Services</a>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Services
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+                                        <li><a class="dropdown-item" href="{{ path('app_client_service_index') }}">Les Services</a></li>
+                                        <li><a class="dropdown-item" href="{{ path('app_client_service_favorites') }}">Les services favoris</a></li>
+                                        <li><a class="dropdown-item" href="{{ path('app_client_code_promos_index') }}">Les codes promos</a></li>
+                                    </ul>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link {% if app.request.get('_route') starts with 'app_blog' %}active{% endif %}" href="{{ path('app_client_post_index') }}">Blog</a>
@@ -45,6 +76,14 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link {% if app.request.get('_route') starts with 'app_plan_index' %}active{% endif %}" href="{{ path('app_plan_index') }}">Plan</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link position-relative" href="{{ path('app_client_cart_index') }}" title="Voir mon panier">
+                                        <i class="fas fa-shopping-bag"></i>
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">
+                                            {{ app.session.get('cart')|length|default(0) }}
+                                        </span>
+                                    </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link btn btn-outline-danger btn-sm ms-2" href="{{ path('app_logout') }}">Déconnexion</a>
@@ -67,14 +106,7 @@
             {% block hero %}{% endblock %}
             
             <div class="container py-5">
-                {% for label, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-                {% endfor %}
+             
                 
                 {% block body %}{% endblock %}
             </div>

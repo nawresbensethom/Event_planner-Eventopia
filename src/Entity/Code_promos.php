@@ -40,8 +40,8 @@ class Code_promos
 
     #[ORM\Column(name: "reduction_type", type: "string", length: 100, nullable: true)]
     #[Assert\Choice(
-        choices: ["fixed", "percentage"],
-        message: "Le type de réduction doit être soit 'fixed' soit 'percentage'"
+        choices: ["20%", "30%","50%"],
+        message: "Le type de réduction doit être soit '20%' soit '30%' soit '50%'"
     )]
     private ?string $reductionType = null;
 

@@ -1,0 +1,91 @@
+{% if pageCount > 1 %}
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 2rem;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .pagination .page-item {
+            margin: 0 2px;
+        }
+
+        .pagination .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #5e72e4;
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .pagination .page-item.active .page-link {
+            color: #fff;
+            background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%);
+            border-color: #5e72e4;
+            box-shadow: 0 4px 6px rgba(94, 114, 228, 0.25);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #a0aec0;
+            pointer-events: none;
+            background-color: #f8f9fa;
+            border-color: #e2e8f0;
+        }
+
+        .pagination .page-link:hover:not(.disabled) {
+            color: #fff;
+            background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%);
+            border-color: #5e72e4;
+            box-shadow: 0 4px 6px rgba(94, 114, 228, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .pagination .page-link i {
+            font-size: 0.85rem;
+        }
+    </style>
+
+    <nav aria-label="Navigation des pages">
+        <ul class="pagination">
+            {% if first is defined and current != first %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): first})) }}" title="Première page">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if previous is defined %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): previous})) }}" title="Page précédente">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page in pagesInRange %}
+                <li class="page-item {{ page == current ? 'active' : '' }}">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): page})) }}">
+                        {{ page }}
+                    </a>
+                </li>
+            {% endfor %}
+
+          
+
+        </ul>
+    </nav>
+{% endif %} 

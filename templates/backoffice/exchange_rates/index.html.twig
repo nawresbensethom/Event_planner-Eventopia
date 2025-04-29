@@ -1,0 +1,395 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Taux de change{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .currency-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .currency-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .conversion-result {
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        .conversion-result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .converter-input {
+            font-size: 1.5rem;
+            font-weight: 500;
+            padding: 1rem;
+            border: 2px solid #e3e6f0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .converter-input:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        .currency-select {
+            font-size: 1.2rem;
+            padding: 0.8rem;
+            border: 2px solid #e3e6f0;
+            border-radius: 10px;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+        .currency-select:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        .swap-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4e73df, #224abe);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem auto;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(78, 115, 223, 0.1);
+        }
+        .swap-button:hover {
+            transform: rotate(180deg);
+            background: linear-gradient(45deg, #224abe, #4e73df);
+        }
+        .convert-button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #4e73df, #224abe);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(78, 115, 223, 0.1);
+        }
+        .convert-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(78, 115, 223, 0.2);
+        }
+        .rates-table {
+            margin: 0;
+        }
+        .rates-table th {
+            background-color: #f8f9fc;
+            border-top: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: #4e73df;
+        }
+        .rates-table td {
+            font-size: 1.1rem;
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        .currency-flag {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .rate-value {
+            font-weight: 600;
+            color: #2e59d9;
+        }
+        .currency-code {
+            font-weight: 600;
+            color: #5a5c69;
+        }
+        .date-picker {
+            font-size: 1.1rem;
+            padding: 0.8rem;
+            border: 2px solid #e3e6f0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .date-picker:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        .result-card {
+            background: linear-gradient(45deg, #4e73df, #224abe);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(78, 115, 223, 0.1);
+        }
+        .result-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        .result-rate {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-exchange-alt text-primary mr-2"></i>
+                Convertisseur de devises
+            </h1>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="card shadow mb-4 currency-card">
+                    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-calculator mr-2"></i>
+                            Convertisseur
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="text-primary font-weight-bold mb-2">Montant</label>
+                                <input type="number" class="form-control converter-input" id="amount" 
+                                       placeholder="Entrez le montant à convertir" step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-md-5">
+                                <label class="text-primary font-weight-bold mb-2">De</label>
+                                <select class="form-control currency-select" id="fromCurrency">
+                                    {% for currency, rate in rates.rates %}
+                                        <option value="{{ currency }}">
+                                            {{ currency }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <button class="swap-button" onclick="swapCurrencies()">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="text-primary font-weight-bold mb-2">Vers</label>
+                                <select class="form-control currency-select" id="toCurrency">
+                                    {% for currency, rate in rates.rates %}
+                                        <option value="{{ currency }}">
+                                            {{ currency }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <button class="convert-button btn-block" onclick="convertCurrency()">
+                                    <i class="fas fa-arrow-right mr-2"></i>
+                                    Convertir
+                                </button>
+                            </div>
+                        </div>
+                        <div id="conversionResult" class="conversion-result">
+                            <!-- Le résultat sera inséré ici -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4 currency-card">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            Taux actuels
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table rates-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Devise</th>
+                                        <th class="text-right">Taux</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for currency, rate in rates.rates %}
+                                        <tr>
+                                            <td>
+                                                <span class="currency-code">{{ currency }}</span>
+                                            </td>
+                                            <td class="text-right">
+                                                <span class="rate-value">{{ rate|number_format(4) }}</span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4 currency-card">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-history mr-2"></i>
+                    Taux historiques
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label class="text-primary font-weight-bold mb-2">Date</label>
+                        <input type="date" class="form-control date-picker" id="date">
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-primary btn-block py-3" onclick="getHistoricalRates()">
+                            <i class="fas fa-search mr-2"></i>
+                            Voir les taux
+                        </button>
+                    </div>
+                </div>
+                <div id="historicalRates" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        const rates = {{ rates.rates|json_encode|raw }};
+        const baseCurrency = '{{ rates.base }}';
+
+        function swapCurrencies() {
+            const fromCurrency = document.getElementById('fromCurrency');
+            const toCurrency = document.getElementById('toCurrency');
+            const temp = fromCurrency.value;
+            fromCurrency.value = toCurrency.value;
+            toCurrency.value = temp;
+            if (document.getElementById('amount').value) {
+                convertCurrency();
+            }
+        }
+
+        function convertCurrency() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const fromCurrency = document.getElementById('fromCurrency').value;
+            const toCurrency = document.getElementById('toCurrency').value;
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('Veuillez entrer un montant valide');
+                return;
+            }
+
+            let result;
+            if (fromCurrency === baseCurrency) {
+                result = amount * rates[toCurrency];
+            } else if (toCurrency === baseCurrency) {
+                result = amount / rates[fromCurrency];
+            } else {
+                result = (amount / rates[fromCurrency]) * rates[toCurrency];
+            }
+
+            const resultDiv = document.getElementById('conversionResult');
+            resultDiv.innerHTML = `
+                <div class="result-card">
+                    <p class="result-amount">
+                        ${amount.toFixed(2)} ${fromCurrency} = ${result.toFixed(2)} ${toCurrency}
+                    </p>
+                    <p class="result-rate">
+                        1 ${fromCurrency} = ${(result/amount).toFixed(4)} ${toCurrency}
+                    </p>
+                </div>
+            `;
+            resultDiv.classList.add('show');
+        }
+
+        function getHistoricalRates() {
+            const date = document.getElementById('date').value;
+            if (!date) {
+                alert('Veuillez sélectionner une date');
+                return;
+            }
+
+            fetch(`/backoffice/exchange-rates/historical/${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = `
+                        <div class="table-responsive">
+                            <table class="table rates-table">
+                                <thead>
+                                    <tr>
+                                        <th>Devise</th>
+                                        <th class="text-right">Taux</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    for (const [currency, rate] of Object.entries(data.rates)) {
+                        html += `
+                            <tr>
+                                <td>
+                                    <span class="currency-code">${currency}</span>
+                                </td>
+                                <td class="text-right">
+                                    <span class="rate-value">${rate.toFixed(4)}</span>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    document.getElementById('historicalRates').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('historicalRates').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            Une erreur est survenue lors de la récupération des taux historiques
+                        </div>
+                    `;
+                });
+        }
+
+        // Initialiser la date à aujourd'hui
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Initialiser le premier toCurrency différent de fromCurrency
+        window.addEventListener('load', function() {
+            const fromCurrency = document.getElementById('fromCurrency');
+            const toCurrency = document.getElementById('toCurrency');
+            if (fromCurrency.value === toCurrency.value) {
+                for (let i = 0; i < toCurrency.options.length; i++) {
+                    if (toCurrency.options[i].value !== fromCurrency.value) {
+                        toCurrency.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %} 
