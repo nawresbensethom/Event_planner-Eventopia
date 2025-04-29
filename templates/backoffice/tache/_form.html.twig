@@ -1,0 +1,95 @@
+{# templates/backoffice/tache/_form.html.twig #}
+<div class="form-container bg-light p-4 rounded shadow-sm">
+    {{ form_start(form, {'attr': {'novalidate':'novalidate'}}) }}
+        {{ form_errors(form) }}
+
+        <div class="row g-3">
+            {# Titre #}
+            <div class="col-12">
+                {{ form_label(form.titre, 'Titre', { label_attr: { class: 'form-label' } }) }}
+                {{ form_widget(form.titre, {
+                    attr: {
+                        class: 'form-control' ~ (form.titre.vars.valid ? '' : ' is-invalid'),
+                        placeholder: 'Entrez le titre'
+                    }
+                }) }}
+                {{ form_errors(form.titre) }}
+            </div>
+
+            {# Description #}
+            <div class="col-12">
+                {{ form_label(form.description, 'Description', { label_attr: { class: 'form-label' } }) }}
+                {{ form_widget(form.description, {
+                    attr: {
+                        class: 'form-control' ~ (form.description.vars.valid ? '' : ' is-invalid'),
+                        placeholder: 'Décrivez la tâche',
+                        rows: 4
+                    }
+                }) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            {# Date #}
+            <div class="col-md-4">
+                {{ form_label(form.date, 'Date', { label_attr: { class: 'form-label' } }) }}
+                {{ form_widget(form.date, {
+                    attr: {
+                        class: 'form-control' ~ (form.date.vars.valid ? '' : ' is-invalid')
+                    }
+                }) }}
+                {{ form_errors(form.date) }}
+            </div>
+
+            {# Durée estimée (en heures) #}
+            <div class="col-md-4">
+                {{ form_label(form.duree_estimee, 'Durée estimée (h)', { label_attr: { class: 'form-label' } }) }}
+                {{ form_widget(form.duree_estimee, {
+                    attr: {
+                        class: 'form-control' ~ (form.duree_estimee.vars.valid ? '' : ' is-invalid'),
+                        placeholder: 'Ex. 2'
+                    }
+                }) }}
+                {{ form_errors(form.duree_estimee) }}
+            </div>
+
+            {# Catégorie #}
+            <div class="col-md-4">
+                {{ form_label(form.categorie, 'Catégorie', { label_attr: { class: 'form-label' } }) }}
+                {{ form_widget(form.categorie, {
+                    attr: {
+                        class: 'form-select' ~ (form.categorie.vars.valid ? '' : ' is-invalid')
+                    }
+                }) }}
+                {{ form_errors(form.categorie) }}
+            </div>
+
+            {# Statut #}
+            <div class="col-md-6">
+                {{ form_label(form.statut, 'Statut', { label_attr: { class: 'form-label' } }) }}
+                {{ form_widget(form.statut, {
+                    attr: {
+                        class: 'form-select' ~ (form.statut.vars.valid ? '' : ' is-invalid')
+                    }
+                }) }}
+                {{ form_errors(form.statut) }}
+            </div>
+
+            {# Plan associé #}
+            <div class="col-md-6">
+                {{ form_label(form.plan, 'Plan associé', { label_attr: { class: 'form-label' } }) }}
+                {{ form_widget(form.plan, {
+                    attr: {
+                        class: 'form-select' ~ (form.plan.vars.valid ? '' : ' is-invalid')
+                    }
+                }) }}
+                {{ form_errors(form.plan) }}
+            </div>
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-1"></i> {{ button_label|default('Enregistrer') }}
+            </button>
+        </div>
+    {{ form_end(form) }}
+</div>

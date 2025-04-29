@@ -54,7 +54,7 @@ class SignalementPostController extends AbstractController
     #[Route('/{id}/edit', name: 'app_backoffice_signalement_post_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, SignalementPost $signalementPost, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(SignalementPostType::class, $signalementPost);
+        $form = $this->createForm(SignalementPostAdminType::class, $signalementPost);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

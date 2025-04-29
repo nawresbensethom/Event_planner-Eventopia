@@ -11,9 +11,14 @@
         "doctrine/doctrine-bundle": "^2.14",
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
+
         "google/apiclient": "*",
         "guzzlehttp/guzzle": "^7.9",
+
+        "endroid/qr-code": "^5.1",
+
         "knplabs/knp-paginator-bundle": "^6.8",
+        "nelmio/cors-bundle": "^2.5",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.1",
         "sendinblue/api-v3-sdk": "^8.4",
@@ -50,6 +55,7 @@
         "symfony/validator": "6.4.*",
         "symfony/web-link": "6.4.*",
         "symfony/yaml": "6.4.*",
+        "thiagoalessio/tesseract_ocr": "^2.13",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/string-extra": "^3.20",
         "twig/twig": "^2.12|^3.0",

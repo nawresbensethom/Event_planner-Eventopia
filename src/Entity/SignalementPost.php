@@ -22,7 +22,7 @@ class SignalementPost
 
     #[ORM\ManyToOne(targetEntity: Post::class, inversedBy: "signalements")]
     #[ORM\JoinColumn(name: "id_post", referencedColumnName: "id_post", onDelete: "CASCADE", nullable: false)]
-    private ?Post $idPost = null;
+    private ?Post $id_post = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: "signalementsPosts")]
     #[ORM\JoinColumn(name: "id_utilisateur", referencedColumnName: "id", onDelete: "CASCADE", nullable: false)]
@@ -54,23 +54,23 @@ class SignalementPost
 
     public function getIdPost(): ?Post
     {
-        return $this->idPost;
+        return $this->id_post;
     }
 
-    public function setIdPost(?Post $idPost): self
+    public function setIdPost(?Post $id_post): self
     {
-        $this->idPost = $idPost;
+        $this->id_post = $id_post;
         return $this;
     }
 
     public function getId_post(): ?Post
     {
-        return $this->idPost;
+        return $this->id_post;
     }
 
-    public function setId_post(?Post $idPost): self
+    public function setId_post(?Post $id_post): self
     {
-        $this->idPost = $idPost;
+        $this->id_post = $id_post;
         return $this;
     }
 

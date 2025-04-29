@@ -1,0 +1,241 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Dashboard - Job Offers{% endblock %}
+
+{% block stylesheet %}
+    <style>
+        /* Dashboard container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Heading styles */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        /* Flash messages */
+        .alert {
+            margin-top: 20px;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Button styling */
+        .btn {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Pagination */
+        .pagination {
+            margin-top: 30px;
+        }
+
+        .pagination .page-item .page-link {
+            font-size: 1rem;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        /* Search form */
+        .form-row {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            padding: 10px 15px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="mt-4">Dashboard - Job Offers</h1>
+
+        {% if app.session.flashbag.has('success') %}
+            <div class="alert alert-success">
+                {% for message in app.session.flashbag.get('success') %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Statistics -->
+        <div class="mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="alert alert-info">
+                        <strong>Total Job Offers:</strong> {{ totalOffers }}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="alert alert-success">
+                        <strong>Active Job Offers:</strong> {{ activeOffers }}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="alert alert-warning">
+                        <strong>Expired Job Offers:</strong> {{ expiredOffers }}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="alert alert-primary">
+                        <strong>Average Salary:</strong> {{ averageSalary }} TND
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Offers by Location -->
+        <div class="mb-4">
+            <h4>Offers by Location</h4>
+            <ul>
+                {% for location in offersByLocation %}
+                    <li>{{ location.lieu }}: {{ location.offer_count }} Offers</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Offers by Job Title -->
+        <div class="mb-4">
+            <h4>Offers by Job Title</h4>
+            <ul>
+                {% for job in offersByJobTitle %}
+                    <li>{{ job.titre_poste }}: {{ job.offer_count }} Offers</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Offers by Salary Range -->
+        
+        <!-- Search form -->
+        <div class="mb-4">
+            <form method="get" action="{{ path('client_offre_emploi_dashboard') }}">
+                <div class="form-row">
+                    <div class="col">
+                        <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="Search job offers">
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Job offers table -->
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Location</th>
+                    <th>Salary</th>
+                    <th>Deadline</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for offreemploi in offreemplois %}
+                    <tr>
+                        <td>{{ offreemploi.titrePoste }}</td>
+                        <td>{{ offreemploi.lieu }}</td>
+                        <td>{{ offreemploi.salaire }} TND</td>
+                        <td>{{ offreemploi.dateLimite ? offreemploi.dateLimite|date('Y-m-d') : 'N/A' }}</td>
+                        <td>
+                            <a href="{{ path('client_offreemploi_edit', {'id_offre': offreemploi.idOffre}) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form action="{{ path('client_offreemploi_delete', {'id_offre': offreemploi.idOffre}) }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ offreemploi.idOffre) }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No job offers available</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item {% if currentPage == 1 %}disabled{% endif %}">
+                        <a class="page-link" href="{{ path('client_offre_emploi_dashboard', { 'page': currentPage - 1, 'search': search }) }}">Previous</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ path('client_offre_emploi_dashboard', { 'page': currentPage + 1, 'search': search }) }}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock %}

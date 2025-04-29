@@ -1,0 +1,24 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Modifier la Tâche – {{ tache.titre }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+  <div class="card shadow">
+    <div class="card-header bg-warning text-dark">
+      <h2 class="h4 mb-0">Modifier Tâche</h2>
+    </div>
+    <div class="card-body bg-light">
+      {{ include('backoffice/tache/_form.html.twig', {
+          form: form,
+          button_label: 'Mettre à jour'
+      }) }}
+    </div>
+    <div class="card-footer bg-light text-end">
+      <a href="{{ path('backoffice_tache_show', {id: tache.id}) }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-circle me-1"></i>Annuler
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -15,7 +15,6 @@
                         <th>CV</th>
                         <th>Lettre de Motivation</th>
                         <th>Statut</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,11 +44,7 @@
                                     {{ candidature.getStatut() }}
                                 </span>
                             </td>
-                            <td>
-                                <a href="{{ path('client_candidature_new') }}" class="btn btn-sm btn-success">
-                                    <i class="fas fa-plus"></i> Nouvelle candidature
-                                </a>
-                            </td>
+                           
                         </tr>
                     {% else %}
                         <tr>

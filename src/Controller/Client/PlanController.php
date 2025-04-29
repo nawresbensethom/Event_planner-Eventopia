@@ -10,19 +10,59 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
+use App\Service\PlanQrCodeGenerator;
+use App\Service\LocationResolver;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Knp\Component\Pager\PaginatorInterface;
 #[Route('/plan')]
 final class PlanController extends AbstractController
 {
+    // Pagination:
     #[Route('/', name: 'app_plan_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(Request $request, PaginatorInterface $paginator,EntityManagerInterface $entityManager): Response
     {
-        $plans = $entityManager->getRepository(Plan::class)->findAll();
+        $qb = $entityManager->getRepository(Plan::class)
+             ->createQueryBuilder('p')
+             ->orderBy('p.id', 'DESC');
+             $pagination = $paginator->paginate(
+                $qb,
+                $request->query->getInt('page',1),
+                2
+             );  
 
         return $this->render('frontoffice/plan/index.html.twig', [
-            'plans' => $plans,
+            'pagination' => $pagination,
         ]);
     }
+    // Search
+    #[Route('/search', name: 'app_plan_search', methods: ['GET'])]
+    public function search(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $q = $request->query->get('search', '');
+        $sort = $request->query->get('sortBy', 'id');
+        $qb = $entityManager->getRepository(Plan::class)->createQueryBuilder('p');
+        if ($q !== '') {
+            $qb->andWhere('p.titre LIKE :q OR p.description LIKE :q OR p.location LIKE :q')
+               ->setParameter('q', '%' . $q . '%');
+        }
+        $qb->orderBy('p.' . $sort, 'ASC');
+        $plans = $qb->getQuery()->getResult();
+        $data = [];
+        foreach ($plans as $plan) {
+            $data[] = [
+                'id' => $plan->getId(),
+                'titre' => $plan->getTitre(),
+                'description' => $plan->getDescription(),
+                'dateDebut' => $plan->getDateDebut()?->format('Y-m-d') ?: '',
+                'dateFin' => $plan->getDateFin()?->format('Y-m-d') ?: '',
+                'priorite' => $plan->getPriorite(),
+                'location' => $plan->getLocation(),
+            ];
+        }
+        return new JsonResponse(['plans' => $data]);
+    }
+
+
 
     #[Route('/new', name: 'app_plan_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -72,7 +112,7 @@ final class PlanController extends AbstractController
                 }
             }
 
-            // Statistiques des tâches par statut
+
             $tachesByStatus = [
                 'Annulée' => 0,
                 'En cours' => 0,
@@ -98,21 +138,39 @@ final class PlanController extends AbstractController
             $this->addFlash('error', 'Une erreur s\'est produite lors du chargement du tableau de bord : ' . $e->getMessage());
             return $this->redirectToRoute('app_plan_index', [], Response::HTTP_SEE_OTHER);
         }
+
+        //MAP
+    }
+    #[Route('/{id}/map', name: 'app_plan_map', methods: ['GET'])]
+    public function map(Plan $plan, LocationResolver $resolver): Response
+    {
+        $coords = $resolver->getCoordinates($plan->getLocation());
+
+        return $this->render('frontoffice/plan/map.html.twig', [
+            'plan'   => $plan,
+            'coords' => $coords,
+        ]);
     }
 
+
+
+           //CR-CODE
     #[Route('/{id}', name: 'app_plan_show', methods: ['GET'])]
-    public function show(?Plan $plan): Response
+    public function show(?Plan $plan,PlanQrCodeGenerator $qrGenerator): Response
     {
         if (!$plan) {
             $this->addFlash('error', 'Le plan demandé n\'existe pas.');
             return $this->redirectToRoute('app_plan_index', [], Response::HTTP_SEE_OTHER);
         }
-
+        $qrCodePath=$qrGenerator->generate($plan);
         return $this->render('frontoffice/plan/show.html.twig', [
             'plan' => $plan,
+            'qrCodePath'=>$qrCodePath,
         ]);
     }
 
+
+    
     #[Route('/{id}/edit', name: 'app_plan_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ?Plan $plan, EntityManagerInterface $entityManager): Response
     {

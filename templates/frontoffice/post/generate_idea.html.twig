@@ -1,0 +1,54 @@
+{% extends 'frontoffice/base.html.twig' %}
+
+{% block title %}Générer une idée d'article{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Générer une idée d'article avec IA</h2>
+                </div>
+                
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="theme" class="form-label">Thème principal</label>
+                            <input type="text" id="theme" name="theme" class="form-control" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="audience" class="form-label">Public cible</label>
+                            <select id="audience" name="audience" class="form-select">
+                                {% for audience in audiences %}
+                                    <option value="{{ audience }}">{{ audience|capitalize }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-lightbulb"></i> Générer une idée optimisée
+                        </button>
+                    </form>
+
+                    {% if idea %}
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <h4>Idée générée :</h4>
+                            <p>{{ idea|nl2br }}</p>
+                            
+                            <a href="{{ path('app_client_post_new') }}" class="btn btn-success mt-3">
+                                <i class="fas fa-plus"></i> Créer cet article
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <a href="{{ path('app_client_post_index') }}" class="btn btn-secondary mt-3">
+                <i class="fas fa-arrow-left"></i> Retour aux articles
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

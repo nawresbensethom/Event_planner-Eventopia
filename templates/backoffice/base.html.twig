@@ -325,17 +325,30 @@
                 </ul>
               </li>
               <li class="nav-item">
-                <a href="{{ path('app_evenement_index_back') }}" class="nav-link">
-                  <i class="nav-icon bi bi-calendar-event"></i>
-                  <p>Evenements</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{ path('app_reservation_index_back') }}" class="nav-link">
-                  <i class="nav-icon bi bi-calendar-event"></i>
-                  <p>Reservations</p>
-                </a>
-              </li>
+              <a href="{{ path('app_evenement_index_back') }}" class="nav-link">
+                <i class="nav-icon bi bi-calendar-event"></i>
+                <p>Événements</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ path('backoffice_plan_index') }}" class="nav-link">
+                <i class="nav-icon bi bi-calendar4-week"></i>
+                <p>Plans</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ path('backoffice_tache_index') }}" class="nav-link">
+                <i class="nav-icon bi bi-list-check"></i>
+                <p>Tâches</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ path('app_reservation_index_back') }}" class="nav-link">
+                <i class="nav-icon bi bi-ticket-perforated"></i>
+                <p>Réservations</p>
+              </a>
+            </li>
+
                <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="nav-icon bi bi-gift"></i>
@@ -375,24 +388,38 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{ path('admin_blog_index') }}" class="nav-link">
-                            <i class="nav-icon bi bi-circle"></i>
-                            <p>Gestion des Posts</p>
-                        </a>
-                    </li>
-                      <li class="nav-item">
+        <a href="{{ path('admin_blog_index') }}" class="nav-link">
+            <i class="nav-icon bi bi-circle"></i>
+            <p>Gestion des Posts</p>
+        </a>
+    </li>
+    <li class="nav-item">
         <a href="{{ path('app_backoffice_signalement_post_index') }}" class="nav-link">
             <i class="nav-icon bi bi-circle"></i>
             <p>Signalements</p>
         </a>
     </li>
+    <li class="nav-item">
+        <a href="{{ path('admin_blog_stats') }}" class="nav-link"> {# Utilisez le nom de la route #}
+        <i class="nav-icon bi bi-bar-chart-line"></i>
+        <p>Statistiques</p>
+    </a>
+    </li>
                 </ul>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ path('client_offre_emploi_dashboard') }}" class="nav-link">
                   <i class="nav-icon bi bi-briefcase-fill"></i>
                   <p>Offre de travail</p>
                 </a>
+
+              </li>
+              <li class="nav-item">
+                <a href="{{ path('client_candidature_dashboard') }}" class="nav-link">
+                  <i class="nav-icon bi bi-briefcase-fill"></i>
+                  <p>Candidatures</p>
+                </a>
+                
               </li>
             </ul>
             <!end::Sidebar Menu-->
@@ -469,11 +496,7 @@
     <!--end::OverlayScrollbars Configure-->
     <!-- OPTIONAL SCRIPTS -->
     <!-- sortablejs -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"
-      integrity="sha256-+ipiJrswvAR4VAx/th+6zWsdeYmVae0iJuiR+6OqHJHQ="
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <!-- sortablejs -->
     <script>
       const connectedSortables = document.querySelectorAll('.connectedSortable');

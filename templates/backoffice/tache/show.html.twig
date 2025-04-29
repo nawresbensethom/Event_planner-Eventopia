@@ -1,0 +1,43 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Détails de la Tâche – {{ tache.titre }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="h4 mb-0">{{ tache.titre }}</h2>
+            <span class="badge bg-{{ tache.statut == 'Terminée' ? 'success' : (tache.statut == 'En cours' ? 'warning' : 'secondary') }}">
+                {{ tache.statut|capitalize }}
+            </span>
+        </div>
+        <div class="card-body bg-light">
+            <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item"><strong>Date :</strong> {{ tache.date|date('d/m/Y') }}</li>
+                <li class="list-group-item"><strong>Durée :</strong> {{ tache.dureeEstimee }} h</li>
+                <li class="list-group-item"><strong>Catégorie :</strong> {{ tache.categorie }}</li>
+                <li class="list-group-item"><strong>Plan :</strong> {{ tache.plan ? tache.plan.titre : '—' }}</li>
+            </ul>
+            <h5>Description</h5>
+            <p>{{ tache.description }}</p>
+        </div>
+        <div class="card-footer bg-light text-end">
+            <a href="{{ path('backoffice_tache_index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left-circle me-1"></i>Retour
+            </a>
+            <a href="{{ path('backoffice_tache_edit', {id: tache.id}) }}" class="btn btn-primary">
+                <i class="bi bi-pencil me-1"></i>Modifier
+            </a>
+            <form method="post"
+                  action="{{ path('backoffice_tache_delete', {id: tache.id}) }}"
+                  onsubmit="return confirm('Voulez-vous vraiment supprimer cette tâche ?');"
+                  class="d-inline">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tache.id) }}">
+                <button class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i>Supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
