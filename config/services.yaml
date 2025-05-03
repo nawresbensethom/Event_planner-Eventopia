@@ -2,7 +2,7 @@
 parameters:
     photos_directory: '%kernel.project_dir%/public/uploads/images'
     services_directory: '%kernel.project_dir%/public/uploads/services'
-
+    google_maps_api_key: 'AIzaSyD8Pz52O1TeGXsksJ7Pzbd-ayomxkR-IF0'
 services:
     _defaults:
         autowire: true
