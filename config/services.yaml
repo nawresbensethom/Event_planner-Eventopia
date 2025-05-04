@@ -4,10 +4,12 @@ parameters:
     services_directory: '%kernel.project_dir%/public/uploads/services'
     google_maps_api_key: 'AIzaSyD8Pz52O1TeGXsksJ7Pzbd-ayomxkR-IF0'
 services:
+
     _defaults:
         autowire: true
         autoconfigure: true
-
+    Psr\Log\LoggerInterface:
+        alias: monolog.logger
     App\Command\GenerateEntitiesCommand:
         arguments:
             $projectDir: '%kernel.project_dir%'

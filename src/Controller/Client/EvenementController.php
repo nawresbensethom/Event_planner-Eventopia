@@ -4,6 +4,7 @@ namespace App\Controller\Client;
 
 use App\Entity\Evenement;
 use App\Form\EvenementType;
+use App\Repository\ServiceRepository;
 use App\Repository\EvenementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -38,6 +39,13 @@ class EvenementController extends AbstractController
             'categories' => ['concert', 'conférence', 'atelier', 'exposition', 'autre'],
             'searchTerm' => $searchTerm,
             'selectedCategory' => $category,
+        ]);
+    }
+    #[Route('/invitation/{id}', name: 'app_evenement_invitation', methods: ['GET'])]
+    public function invitation(Evenement $evenement): Response
+    {
+        return $this->render('frontoffice/reservation/invitation.html.twig', [
+            'evenement' => $evenement,
         ]);
     }
 
@@ -90,10 +98,11 @@ class EvenementController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_evenement_show', methods: ['GET'])]
-    public function show(Evenement $evenement): Response
+    public function show(Evenement $evenement, ServiceRepository $serviceRepository): Response
     {
         return $this->render('frontoffice/evenement/show.html.twig', [
             'evenement' => $evenement,
+            'services' => $serviceRepository->findAll(),
         ]);
     }
 

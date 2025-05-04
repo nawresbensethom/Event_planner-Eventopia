@@ -106,7 +106,11 @@ class Reservation
     {
         $total = 0.00;
         foreach ($this->services as $service) {
-            $total += (float) $service->getTarif();
+            $tarif = $service->getTarif();
+            if ($tarif === null) {
+                throw new \RuntimeException(sprintf('Le tarif du service "%s" (ID: %d) ne peut pas être null.', $service->getNom(), $service->getIdService()));
+            }
+            $total += (float) $tarif;
         }
         $this->montantTotal = number_format($total, 2, '.', '');
         return $this;
