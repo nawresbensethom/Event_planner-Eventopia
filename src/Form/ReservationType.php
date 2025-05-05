@@ -5,53 +5,53 @@ namespace App\Form;
 use App\Entity\Evenement;
 use App\Entity\Reservation;
 use App\Entity\Service;
-use App\Entity\Utilisateur;
+use App\Entity\Code_promos;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Positive;
-use Symfony\Component\Validator\Constraints\Choice;
 
 class ReservationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('montant_total', null, [
-                'constraints' => [
-                    new Positive(),
-                ],
-            ])
-            ->add('statut', null, [
-                'constraints' => [
-                    new Choice([
-                        'choices' => ['planifie', 'confirme', 'annule', 'termine'],
-                        'message' => 'Choisissez un statut valide.',
-                    ]),
-                ],
-            ])
             ->add('evenement', EntityType::class, [
                 'class' => Evenement::class,
-                'choice_label' => 'nom', // Afficher le nom plutôt que l'ID
+                'choice_label' => 'description',
+                'label' => 'Événement',
+                'required' => true,
+                'disabled' => true, // Désactivé car pré-rempli via l'URL
             ])
-            ->add('client', EntityType::class, [
-                'class' => Utilisateur::class,
-                'choice_label' => 'email', // Afficher l'email plutôt que l'ID
-            ])
-            ->add('serviceIds', EntityType::class, [
+            ->add('services', EntityType::class, [
                 'class' => Service::class,
-                'choice_label' => 'nom', // Afficher le nom du service
+                'choice_label' => function (Service $service) {
+                    return sprintf('%s (€%s)', $service->getNom(), $service->getTarif());
+                },
                 'multiple' => true,
-                'mapped' => true,
-                'required' => false,
+                'expanded' => true,
                 'label' => 'Services',
-                'attr' => [
-                    'class' => 'select2' // Si vous utilisez Select2
-                ]
+                'required' => true,
+                'choice_attr' => function (Service $service) {
+                    return ['data-tarif' => $service->getTarif()];
+                },
             ])
-        ;
+            ->add('codePromos', EntityType::class, [
+                'class' => Code_promos::class,
+                'choice_label' => 'code',
+                'label' => 'Code promotionnel',
+                'required' => false,
+                'placeholder' => 'Aucun code promotionnel',
+            ])
+            ->add('statut', ChoiceType::class, [
+                'label' => 'Statut',
+                'choices' => [
+                    'Payé' => 'paye',
+                    'Non payé' => 'non paye',
+                ],
+                'required' => true,
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

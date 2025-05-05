@@ -3,79 +3,81 @@
 namespace App\Controller\Backoffice;
 
 use App\Entity\Reservation;
-use App\Form\ReservationType;
 use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/backoffice/reservation')]
-final class ReservationController extends AbstractController
+class ReservationController extends AbstractController
 {
-    #[Route('/',name: 'app_reservation_index_back', methods: ['GET'])]
-    public function index(ReservationRepository $reservationRepository): Response
+    #[Route('/', name: 'app_reservation_index_back', methods: ['GET'])]
+    public function index(Request $request, ReservationRepository $reservationRepository, PaginatorInterface $paginator): Response
     {
+        $search = $request->query->get('search', '');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'asc');
+
+        $queryBuilder = $reservationRepository->createQueryBuilder('r')
+            ->leftJoin('r.evenement', 'e')
+            ->addSelect('e');
+
+        if ($search) {
+            $queryBuilder->andWhere('e.nom_evenement LIKE :search')
+                         ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Définition des champs de tri valides avec leurs alias de jointure
+        $validSortFields = [
+            'montant_total' => 'r.montantTotal',
+            'statut' => 'r.statut',
+        ];
+
+        $validDirections = ['asc', 'desc'];
+        
+        if (isset($validSortFields[$sort]) && in_array($direction, $validDirections)) {
+            $queryBuilder->orderBy($validSortFields[$sort], strtoupper($direction));
+        } else {
+            $queryBuilder->orderBy('r.id', 'ASC');
+        }
+
+        $reservations = $paginator->paginate(
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            10
+        );
+
+        if ($request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
+            return $this->render('backoffice/reservation/index.html.twig', [
+                'reservations' => $reservations,
+                'search' => $search,
+                'sort' => $sort,
+                'direction' => $direction,
+            ], null);
+        }
+
         return $this->render('backoffice/reservation/index.html.twig', [
-            'reservations' => $reservationRepository->findAll(),
+            'reservations' => $reservations,
+            'search' => $search,
+            'sort' => $sort,
+            'direction' => $direction,
         ]);
     }
 
-    #[Route('/new', name: 'app_reservation_new_back', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $reservation = new Reservation();
-        $form = $this->createForm(ReservationType::class, $reservation);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($reservation);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('backoffice/reservation/new.html.twig', [
-            'reservation' => $reservation,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_reservation_show_back', methods: ['GET'])]
-    public function show(Reservation $reservation): Response
-    {
-        return $this->render('backoffice/reservation/show.html.twig', [
-            'reservation' => $reservation,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_reservation_edit_back', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Reservation $reservation, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ReservationType::class, $reservation);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('backoffice/reservation/edit.html.twig', [
-            'reservation' => $reservation,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_reservation_delete_back', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_reservation_deleteback', methods: ['POST'])]
     public function delete(Request $request, Reservation $reservation, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$reservation->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $reservation->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($reservation);
             $entityManager->flush();
+            $this->addFlash('success', 'Réservation supprimée avec succès.');
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide.');
         }
 
-        return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_reservation_index_back', [], Response::HTTP_SEE_OTHER);
     }
 }

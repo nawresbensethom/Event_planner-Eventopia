@@ -1,80 +1,328 @@
-{% extends 'frontoffice/base.html.twig' %}
+{% extends '/frontoffice/base.html.twig' %}
 
+{% block title %}Détail de l'événement - {{ evenement.getNomEvenement()|length > 50 ? evenement.getNomEvenement()|slice(0, 50) ~ '...' : evenement.getNomEvenement() }} - Eventopia{% endblock %}
 
-{% block title %}Détails de l'Événement - {{ evenement.nom }}{% endblock %}
+{% block hero %}
+<section class="hero module-evenement">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="animate-on-scroll">{{ evenement.getNomEvenement()|length > 50 ? evenement.getNomEvenement()|slice(0, 50) ~ '...' : evenement.getNomEvenement() }}</h1>
+                <p class="animate-on-scroll">Découvrez les détails de cet événement</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
 
 {% block body %}
 <div class="container py-5">
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h2 class="h4 mb-0">{{ evenement.nom }}</h2>
-                        <span class="badge bg-{{ evenement.statut == 'annule' ? 'danger' : (evenement.statut == 'termine' ? 'secondary' : 'success') }}">
-                            {{ evenement.statut|capitalize }}
-                        </span>
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                {% set imageSrc = evenement.image ? '/Uploads/evenements/' ~ evenement.image : '/images/event-detail.jpg' %}
+                <img src="{{ asset(imageSrc) }}" class="card-img-top" alt="{{ evenement.getNomEvenement()|default('Événement sans nom') }}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary">{{ evenement.category|capitalize|default('Non spécifiée') }}</span>
+                        <div class="d-flex gap-2">
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Partager"><i class="fas fa-share-alt"></i></a>
+                            <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Favori"><i class="fas fa-heart"></i></a>
+                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#qrModal" data-bs-toggle="tooltip" data-bs-placement="top" title="Voir l'invitation"><i class="fas fa-qrcode"></i></button>
+                        </div>
+                    </div>
+                    <h1 class="card-title mb-3">{{ evenement.getNomEvenement()|default('Événement sans nom') }}</h1>
+                    <div class="d-flex flex-wrap gap-4 mb-4">
+                        <div>
+                            <p class="text-muted mb-1"><i class="fas fa-calendar-alt me-2"></i> Date</p>
+                            <p class="fw-bold">{{ evenement.dateEvenement ? evenement.dateEvenement|date('d/m/Y') : 'Date non spécifiée' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-1"><i class="fas fa-map-marker-alt me-2"></i> Lieu</p>
+                            <p class="fw-bold">
+                                {% if evenement.rue or evenement.getCodePostal() or evenement.ville %}
+                                    {{ evenement.rue ? evenement.rue ~ ', ' : '' }}
+                                    {{ evenement.getCodePostal() ? evenement.getCodePostal() ~ ' ' : '' }}
+                                    {{ evenement.ville ? evenement.ville : '' }}
+                                {% else %}
+                                    Non spécifié
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-1"><i class="fas fa-users me-2"></i> Participants</p>
+                            <p class="fw-bold">{{ evenement.listeInvites ? evenement.listeInvites|length ~ ' participants' : 'Inscriptions non disponibles' }}</p>
+                        </div>
+                    </div>
+
+                    <h4 class="mb-3">Description</h4>
+                    <p>{{ evenement.description|default('Aucune description disponible') }}</p>
+
+                    <h4 class="mb-3 mt-4">Détails supplémentaires</h4>
+                    <div class="mb-4">
+                        <p><strong>Durée :</strong> {{ evenement.duree ? evenement.duree ~ ' minutes' : 'Non spécifiée' }}</p>
+                        <p><strong>Statut de réservation :</strong> {{ evenement.statut|replace({'reserve': 'Réservé', 'non reserve': 'Non réservé'})|default('Non spécifié') }}</p>
+                        <p><strong>Statut de l'événement :</strong> {{ evenement.statut2|replace({'en cours': 'En cours', 'terminé': 'Terminé', 'en preparation': 'En préparation'})|default('Non spécifié') }}</p>
+                        <p><strong>Visibilité :</strong> {{ evenement.statut3|capitalize|default('Non spécifiée') }}</p>
+                        <p><strong>Invités :</strong> {{ evenement.listeInvites ? evenement.listeInvites|join(', ') : 'Aucun' }}</p>
+                    </div>
+
+                    <h4 class="mb-3 mt-4">Programme</h4>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-item-date">09:00</div>
+                            <div class="timeline-item-content">
+                                <h5>Accueil des participants</h5>
+                                <p>Café et viennoiseries offerts</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-date">10:00</div>
+                            <div class="timeline-item-content">
+                                <h5>Conférence d'ouverture</h5>
+                                <p>Présentation des intervenants et du programme</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-date">12:30</div>
+                            <div class="timeline-item-content">
+                                <h5>Déjeuner</h5>
+                                <p>Buffet gastronomique</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-date">14:00</div>
+                            <div class="timeline-item-content">
+                                <h5>Ateliers thématiques</h5>
+                                <p>Sessions en petits groupes</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-date">17:00</div>
+                            <div class="timeline-item-content">
+                                <h5>Cocktail de clôture</h5>
+                                <p>Networking et échanges informels</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Services inclus</h4>
+                </div>
                 <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h3 class="h5">Informations de base</h3>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <strong>Date:</strong> {{ evenement.date|date('d/m/Y H:i') }}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Lieu:</strong> {{ evenement.lieu }}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Type:</strong> {{ evenement.typePublic|capitalize }}
-                                </li>
-                            </ul>
+                    <div class="row" id="services-list">
+                        <!-- User-added services will be displayed here -->
+                    </div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-outline-primary" id="add-service-btn">
+                            <i class="fas fa-plus me-2"></i> Ajouter un service
+                        </button>
+                        <div class="mt-2" id="service-dropdown" style="display: none;">
+                            <select multiple class="form-select" id="service-select" name="services[]">
+                                {% for service in services %}
+                                    <option value="{{ service.getIdService() }}" data-tarif="{{ service.getTarif() }}">{{ service.getNom() }} (€{{ service.getTarif() }})</option>
+                                {% endfor %}
+                            </select>
+                            <button type="button" class="btn btn-primary mt-2" id="confirm-services">Ajouter</button>
                         </div>
-                        <div class="col-md-6">
-                            <h3 class="h5">Localisation</h3>
-                            <div class="ratio ratio-16x9 mb-3">
-                                <!-- Intégration Google Maps -->
-                                <iframe src="https://maps.google.com/maps?q={{ evenement.latitude }},{{ evenement.longitude }}&z=15&output=embed" 
-                                        frameborder="0" style="border:0" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Commentaires (3)</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-flex mb-3">
+                            <img src="{{ asset('images/avatar1.jpg') }}" alt="Sophie Martin" class="rounded-circle me-3" width="50" height="50">
+                            <div>
+                                <h5 class="mb-0">Sophie Martin</h5>
+                                <div class="text-warning mb-1">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <p class="text-muted small">Il y a 2 jours</p>
                             </div>
                         </div>
+                        <p>J'ai participé à cet événement l'année dernière et c'était fantastique ! L'organisation était impeccable et les intervenants de grande qualité. Je recommande vivement !</p>
                     </div>
-
-                    <h3 class="h5">Description</h3>
-                    <div class="p-3 bg-light rounded mb-4">
-                        {{ evenement.description }}
-                    </div>
-
-                    {% if evenement.organisateur %}
-                    <div class="d-flex align-items-center mt-4">
-                        <div class="flex-shrink-0">
-                            <div class="bg-secondary rounded-circle p-3 text-white">
-                                <i class="fas fa-user fa-2x"></i>
+                    <div class="mb-4">
+                        <div class="d-flex mb-3">
+                            <img src="{{ asset('images/avatar2.jpg') }}" alt="Thomas Dubois" class="rounded-circle me-3" width="50" height="50">
+                            <div>
+                                <h5 class="mb-0">Thomas Dubois</h5>
+                                <div class="text-warning mb-1">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <p class="text-muted small">Il y a 5 jours</p>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h4 class="h6 mb-1">Organisateur</h4>
-                            <p class="mb-0">{{ evenement.organisateur.nom }}</p>
+                        <p>Très bon événement, j'ai beaucoup appris et fait de belles rencontres. Le seul bémol était le parking un peu limité, mais sinon tout était parfait !</p>
+                    </div>
+                    <div class="mb-4">
+                        <div class="d-flex mb-3">
+                            <img src="{{ asset('images/avatar3.jpg') }}" alt="Camille Leroy" class="rounded-circle me-3" width="50" height="50">
+                            <div>
+                                <h5 class="mb-0">Camille Leroy</h5>
+                                <div class="text-warning mb-1">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <p class="text-muted small">Il y a 1 semaine</p>
+                            </div>
+                        </div>
+                        <p>Un événement très enrichissant avec des intervenants de qualité. Le buffet était délicieux et l'ambiance très conviviale. J'ai hâte de participer à la prochaine édition !</p>
+                    </div>
+                    <a href="#" class="btn btn-outline-primary">Voir tous les commentaires</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4 sticky-top" style="top: 100px;">
+                <div class="card-header">
+                    <h4 class="mb-0">Réserver</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="promoCode" class="form-label">Code promo</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="promoCode" placeholder="Entrez votre code">
+                            <button class="btn btn-outline-primary" type="button" id="apply-promo-btn">Appliquer</button>
                         </div>
                     </div>
+                    <input type="hidden" id="hidden-services">
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-bold">Total:</span>
+                        <span class="fw-bold" id="total-amount">0.00 €</span>
+                    </div>
+                    {% if app.user %}
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-primary btn-lg" id="auto-reserve-btn">
+                                <i class="fas fa-ticket-alt me-2"></i> Réserver
+                            </button>
+                            <button type="button" class="btn btn-outline-primary">
+                                <i class="fas fa-calendar-plus me-2"></i> Ajouter au calendrier
+                            </button>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Connectez-vous pour réserver cet événement.</p>
                     {% endif %}
                 </div>
+            </div>
 
-                <div class="card-footer bg-light d-flex justify-content-between">
-                    <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
-                    </a>
-                    <div>
-                        <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" 
-                           class="btn btn-primary me-2">
-                            <i class="fas fa-edit me-2"></i>Modifier
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Organisateur</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ asset('images/organizer.jpg') }}" alt="Organisateur" class="rounded-circle me-3" width="60" height="60">
+                        <div>
+                            <h5 class="mb-0">{{ evenement.idOrganisateur ? evenement.idOrganisateur.nom : 'Organisateur inconnu' }}</h5>
+                            <p class="text-muted mb-0">Organisateur d'événements</p>
+                        </div>
+                    </div>
+                    <p>Aucun détail supplémentaire disponible.</p>
+                    {% if evenement.idOrganisateur %}
+                        <a href="{{ path('app_utilisateur_show', {'id': evenement.idOrganisateur.id}) }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-user me-2"></i> Voir le profil
                         </a>
-                        {{ include('backoffice/evenement/_delete_form.html.twig') }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Localisation</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="ratio ratio-16x9">
+                            <div id="map" style="height: 100%;"></div>
+                        </div>
+                    </div>
+                    <p>
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        {% if evenement.rue or evenement.getCodePostal() or evenement.ville %}
+                            {{ evenement.rue ? evenement.rue ~ ', ' : '' }}
+                            {{ evenement.getCodePostal() ? evenement.getCodePostal() ~ ' ' : '' }}
+                            {{ evenement.ville ? evenement.ville : '' }}
+                        {% else %}
+                            Non spécifié
+                        {% endif %}
+                    </p>
+                    <div class="d-grid">
+                        <a href="https://www.google.com/maps/search/{{ (evenement.rue ~ ' ' ~ evenement.getCodePostal() ~ ' ' ~ evenement.ville)|url_encode }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-directions me-2"></i> Itinéraire
+                        </a>
                     </div>
                 </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Partager</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fab fa-facebook-f me-2"></i> Facebook
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fab fa-twitter me-2"></i> Twitter
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fab fa-linkedin-in me-2"></i> LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour le QR Code -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrModalLabel">Voir l'invitation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Scannez ce QR Code pour voir l'invitation personnalisée :</p>
+                <div class="ratio ratio-1x1" style="max-width: 200px; margin: 0 auto;">
+                    <div id="qrcode" style="height: 100%;"></div>
+                </div>
+                <button type="button" class="btn btn-primary mt-3" id="downloadQrBtn">Télécharger le QR Code</button>
             </div>
         </div>
     </div>
@@ -101,106 +349,192 @@
             background-color: var(--light);
             line-height: 1.6;
         }
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        a {
-            color: var(--dark);
-            text-decoration: none;
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
             transition: all 0.3s ease;
         }
-        a:hover {
-            color: #555;
-        }
-        .card {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 1.5rem;
-            border: none;
-        }
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
-        .card-body {
-            padding: 1.5rem;
+        .modal-content {
+            border-radius: 15px;
         }
-        .btn-primary {
-            background-color: var(--soft-pink);
-            border-color: var(--soft-pink);
+        #qrcode {
+            width: 100%;
+            height: 100%;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+        }
+        .timeline-item-date {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 50px;
+            text-align: center;
+            background: var(--soft-pink);
             color: var(--dark);
+            padding: 5px;
+            border-radius: 5px;
         }
-        .btn-primary:hover {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: var(--dark);
-        }
-        .btn-outline-primary {
-            border-color: var(--soft-pink);
-            color: var(--dark);
-        }
-        .btn-outline-primary:hover {
-            background-color: var(--soft-pink);
-            border-color: var(--soft-pink);
-            color: var(--dark);
+        .timeline-item-content {
+            padding: 10px;
+            background: var(--light);
+            border-left: 2px solid var(--primary);
         }
     </style>
 {% endblock %}
 
 {% block javascripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
+<!-- Include Leaflet.js and QRCode.js -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
-            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-                return new bootstrap.Popover(popoverTriggerEl)
-            });
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Leaflet map
+    const map = L.map('map').setView([48.8566, 2.3522], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
 
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
+    {% if evenement.latitude and evenement.longitude %}
+        map.setView([{{ evenement.latitude }}, {{ evenement.longitude }}], 15);
+        L.marker([{{ evenement.latitude }}, {{ evenement.longitude }}]).addTo(map);
+    {% endif %}
 
-            const animateOnScroll = function() {
-                const elements = document.querySelectorAll('.animate-on-scroll');
-                elements.forEach(element => {
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const windowHeight = window.innerHeight;
-                    if (elementPosition < windowHeight - 50) {
-                        element.classList.add('fade-in');
-                    }
-                });
-            };
+    // Service selection logic
+    const addServiceBtn = document.getElementById('add-service-btn');
+    const serviceDropdown = document.getElementById('service-dropdown');
+    const serviceSelect = document.getElementById('service-select');
+    const confirmServicesBtn = document.getElementById('confirm-services');
+    const servicesList = document.getElementById('services-list');
+    const totalAmount = document.getElementById('total-amount');
+    const hiddenServices = document.getElementById('hidden-services');
+    let selectedServices = [];
 
-            animateOnScroll();
-            window.addEventListener('scroll', animateOnScroll);
+    addServiceBtn.addEventListener('click', () => {
+        serviceDropdown.style.display = serviceDropdown.style.display === 'none' ? 'block' : 'none';
+    });
 
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
+    confirmServicesBtn.addEventListener('click', () => {
+        selectedServices = Array.from(serviceSelect.selectedOptions).map(option => ({
+            id: option.value,
+            nom: option.textContent.split(' (€')[0],
+            tarif: parseFloat(option.dataset.tarif) || 0
+        }));
+
+        servicesList.innerHTML = '';
+        selectedServices.forEach(service => {
+            const div = document.createElement('div');
+            div.className = 'col-md-6 mb-3';
+            div.dataset.serviceId = service.id;
+            div.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-star fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">${service.nom}</h5>
+                        <p class="mb-0 text-muted">€${service.tarif.toFixed(2)}</p>
+                    </div>
+                </div>
+            `;
+            servicesList.appendChild(div);
         });
-    </script>
+
+        const total = selectedServices.reduce((sum, s) => sum + s.tarif, 0).toFixed(2);
+        totalAmount.textContent = `${total} €`;
+        hiddenServices.value = selectedServices.map(s => s.id).join(',');
+
+        serviceDropdown.style.display = 'none';
+    });
+
+    document.getElementById('apply-promo-btn').addEventListener('click', function() {
+        const promoCode = document.getElementById('promoCode').value;
+        if (!promoCode) {
+            alert('Veuillez entrer un code promo.');
+        } else {
+            alert('Code promo "' + promoCode + '" enregistré. Cliquez sur "Réserver" pour l’appliquer.');
+        }
+    });
+
+    document.getElementById('auto-reserve-btn').addEventListener('click', function() {
+        const services = document.getElementById('hidden-services').value;
+        const promoCode = document.getElementById('promoCode').value;
+        let totalAmount = document.getElementById('total-amount').textContent.replace(' €', '');
+
+        if (!services) {
+            alert('Veuillez sélectionner au moins un service.');
+            return;
+        }
+
+        const requestData = {
+            evenement_id: {{ evenement.id }},
+            services: services,
+            promoCode: promoCode,
+            totalAmount: totalAmount
+        };
+
+        console.log('Sending request:', requestData);
+
+        fetch('{{ path('app_reservation_create') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token('reservation') }}'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.text())
+        .then(text => {
+            console.log('Response text:', text);
+            try {
+                const data = JSON.parse(text);
+                if (data.success) {
+                    alert('Réservation créée avec succès !');
+                    window.location.href = '{{ path('app_reservation_index') }}';
+                } else {
+                    alert('Erreur : ' + data.error);
+                }
+            } catch (e) {
+                alert('Erreur lors de la création de la réservation : Réponse non JSON');
+                console.error('Parse error:', e, 'Response:', text);
+            }
+        })
+        .catch(error => {
+            alert('Erreur lors de la création de la réservation : ' + error.message);
+            console.error('Error:', error);
+        });
+    });
+
+    // QR Code generation
+    const qrCodeDiv = document.getElementById('qrcode');
+    const downloadQrBtn = document.getElementById('downloadQrBtn');
+    const invitationUrl = '{{ path('app_evenement_invitation', {'id': evenement.id}) }}';
+
+    new QRCode(qrCodeDiv, {
+        text: invitationUrl,
+        width: 200,
+        height: 200,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    downloadQrBtn.addEventListener('click', function() {
+        const canvas = qrCodeDiv.getElementsByTagName('canvas')[0];
+        const link = document.createElement('a');
+        link.download = 'invitation_qr_{{ evenement.id }}.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+});
+</script>
 {% endblock %}

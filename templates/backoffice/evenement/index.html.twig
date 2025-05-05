@@ -1,39 +1,44 @@
 {% extends 'backoffice/base.html.twig' %}
 
-{% block title %}Evenement index{% endblock %}
+{% block title %}Gestion des événements{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1>Evenement index</h1>
+<style>
+    .sort-icon {
+        cursor: pointer;
+        margin-left: 5px;
+        vertical-align: middle;
+    }
 
-        <style>
-            .table {
-                border-collapse: separate;
-                border-spacing: 0 15px;
-            }
-            .table th {
-                background-color: #343a40;
-                color: white;
-                text-align: center;
-            }
-            .table td {
-                background-color: #f8f9fa;
-                text-align: center;
-                vertical-align: middle;
-            }
-            .btn {
-                margin: 0 5px;
-            }
-            .container {
-                padding: 20px;
-                background-color: #ffffff;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-            h1 {
-                color: #343a40;
-                margin-bottom: 20px;
-            }
-        </style>
+    .sort-icon.active {
+        color: #007bff; /* Couleur pour indiquer que le tri est actif */
+    }
+</style>
+
+<div id="evenement-list">
+    <div class="container mt-4">
+        <h1>Gestion des événements</h1>
+
+        <form method="get" class="mb-4 row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="Rechercher par nom..." value="{{ search }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Rechercher
+                </button>
+            </div>
+         
+            <div class="col-md-5 text-end">
+                {% set categories = ['concert', 'conférence', 'atelier', 'exposition', 'autre'] %}
+                {% for cat in categories %}
+                    <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all | merge({'categorie': cat})) }}" class="btn btn-outline-primary {% if categorie == cat %}active{% endif %} category-filter" data-category="{{ cat }}">
+                        {{ cat|capitalize }}
+                    </a>
+                {% endfor %}
+                <a href="{{ path(app.request.attributes.get('_route')) }}" class="btn btn-secondary">Réinitialiser</a>
+            </div>
+        </form>
 
         <table class="table table-striped">
             <thead class="thead-dark">
@@ -41,36 +46,222 @@
                     <th>Id</th>
                     <th>Nom</th>
                     <th>Description</th>
-                    <th>Date</th>
+                    <th>
+                        Date
+                        <i class="bi bi-sort-{{ direction == 'asc' ? 'down' : 'up' }} sort-icon {% if sort == 'date_evenement' %}active{% endif %}" data-column="date_evenement" data-order="{{ direction == 'asc' ? 'desc' : 'asc' }}"></i>
+                    </th>
+                    <th>Durée</th>
+                    <th>Catégorie</th>
                     <th>Lieu</th>
-                    <th>Type public</th>
-                    <th>Statut</th>
+                    <th>Visibilité</th>
+                    <th>Statut Réservation</th>
+                    <th>Statut Événement</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for evenement in evenements %}
-                    <tr>
-                        <td>{{ evenement.id }}</td>
-                        <td>{{ evenement.nom }}</td>
-                        <td>{{ evenement.description|slice(0, 50) }}...</td>
-                        <td>{{ evenement.date ? evenement.date|date('Y-m-d H:i') : '' }}</td>
-                        <td>{{ evenement.lieu }}</td>
-                        <td>{{ evenement.typePublic }}</td>
-                        <td>{{ evenement.statut }}</td>
-                        <td>
-                            <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-info btn-sm">Voir</a>
-                            <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="8" class="text-center">Aucun enregistrement trouvé</td>
-                    </tr>
-                {% endfor %}
+            {% for evenement in evenements %}
+                <tr>
+                    <td>{{ evenement.id }}</td>
+                    <td>{{ evenement.nomEvenement }}</td>
+                    <td>{{ evenement.description ? evenement.description|slice(0, 50) ~ '...' : 'Aucune description' }}</td>
+                    <td>{{ evenement.dateEvenement ? evenement.dateEvenement|date('Y-m-d H:i') : 'Non spécifiée' }}</td>
+                    <td>{{ evenement.duree }} h</td>
+                    <td>{{ evenement.category|capitalize }}</td>
+                    <td>
+                        {% if evenement.rue or evenement.codePostal or evenement.ville %}
+                            {{ evenement.rue ? evenement.rue ~ ', ' : '' }}
+                            {{ evenement.codePostal ? evenement.codePostal ~ ' ' : '' }}
+                            {{ evenement.ville ? evenement.ville : '' }}
+                        {% else %}
+                            Non spécifié
+                        {% endif %}
+                    </td>
+                    <td>{{ evenement.statut3 ? evenement.statut3|capitalize : 'Non spécifiée' }}</td>
+                    <td>
+                        <select class="form-select form-select-sm statut-select" data-id="{{ evenement.id }}">
+                            <option value="reserve" {{ evenement.statut == 'reserve' ? 'selected' }}>Réservé</option>
+                            <option value="non reserve" {{ evenement.statut == 'non reserve' ? 'selected' }}>Non réservé</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select form-select-sm statut2-select" data-id="{{ evenement.id }}">
+                            <option value="en preparation" {{ evenement.statut2 == 'en preparation' ? 'selected' }}>En préparation</option>
+                            <option value="en cours" {{ evenement.statut2 == 'en cours' ? 'selected' }}>En cours</option>
+                            <option value="terminé" {{ evenement.statut2 == 'terminé' ? 'selected' }}>Terminé</option>
+                        </select>
+                    </td>
+                    <td>
+                        <a href="{{ path('app_evenement_showback', {'id': evenement.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="11" class="text-center">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
 
-        
+        <div class="pagination justify-content-center">
+            {{ knp_pagination_render(evenements) }}
+        </div>
     </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search');
+        const categoryButtons = document.querySelectorAll('.category-filter');
+        const sortIcons = document.querySelectorAll('.sort-icon');
+        let timeout = null;
+
+        function fetchData() {
+            const search = searchInput ? searchInput.value : '';
+            const activeCategory = document.querySelector('.category-filter.active');
+            const categorie = activeCategory ? activeCategory.dataset.category : '';
+            const sort = document.querySelector('.sort-icon.active')?.dataset.column || 'date_evenement';
+            const direction = document.querySelector('.sort-icon.active')?.dataset.order || 'asc';
+
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            if (categorie) params.append('categorie', categorie);
+            params.append('sort', sort);
+            params.append('direction', direction);
+
+            console.log('Fetching data with params:', params.toString());
+
+            fetch('{{ path('app_evenement_index_back') }}?' + params.toString(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.getElementById('evenement-list').innerHTML = html;
+                attachEventListeners();
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(fetchData, 300);
+            });
+        }
+
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                fetchData();
+            });
+        });
+
+        sortIcons.forEach(icon => {
+            icon.addEventListener('click', function () {
+                // Réinitialiser les autres icônes
+                sortIcons.forEach(i => {
+                    i.classList.remove('active', 'bi-sort-up', 'bi-sort-down');
+                    i.classList.add('bi-sort-down');
+                    i.dataset.order = 'asc';
+                });
+
+                // Activer l'icône cliquée
+                this.classList.add('active');
+                if (this.dataset.order === 'asc') {
+                    this.dataset.order = 'desc';
+                    this.classList.remove('bi-sort-down');
+                    this.classList.add('bi-sort-up');
+                } else {
+                    this.dataset.order = 'asc';
+                    this.classList.remove('bi-sort-up');
+                    this.classList.add('bi-sort-down');
+                }
+
+                fetchData();
+            });
+        });
+
+        function attachEventListeners() {
+            document.querySelectorAll('.statut-select').forEach(select => {
+                select.addEventListener('change', function () {
+                    const id = this.dataset.id;
+                    const value = this.value;
+
+                    fetch(`/backoffice/evenement/${id}/update-statut`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({ statut: value })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Error updating statut:', response.statusText);
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.statut2-select').forEach(select => {
+                select.addEventListener('change', function () {
+                    const id = this.dataset.id;
+                    const value = this.value;
+
+                    fetch(`/backoffice/evenement/${id}/update-statut2`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({ statut2: value })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Error updating statut2:', response.statusText);
+                        }
+                    });
+                });
+            });
+
+            // Ré-attacher les écouteurs pour les icônes de tri après le rechargement
+            document.querySelectorAll('.sort-icon').forEach(icon => {
+                icon.addEventListener('click', function () {
+                    sortIcons.forEach(i => {
+                        i.classList.remove('active', 'bi-sort-up', 'bi-sort-down');
+                        i.classList.add('bi-sort-down');
+                        i.dataset.order = 'asc';
+                    });
+
+                    this.classList.add('active');
+                    if (this.dataset.order === 'asc') {
+                        this.dataset.order = 'desc';
+                        this.classList.remove('bi-sort-down');
+                        this.classList.add('bi-sort-up');
+                    } else {
+                        this.dataset.order = 'asc';
+                        this.classList.remove('bi-sort-up');
+                        this.classList.add('bi-sort-down');
+                    }
+
+                    fetchData();
+                });
+            });
+        }
+
+        // Charger les données initiales avec tri par défaut
+        fetchData();
+    });
+</script>
 {% endblock %}

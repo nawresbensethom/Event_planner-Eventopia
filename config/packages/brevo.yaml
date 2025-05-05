@@ -1,0 +1,4 @@
+parameters:
+    brevo_api_key: '%env(BREVO_API_KEY)%'
+    brevo_sender_email: '%env(BREVO_SENDER_EMAIL)%'
+    brevo_sender_name: '%env(BREVO_SENDER_NAME)%' 

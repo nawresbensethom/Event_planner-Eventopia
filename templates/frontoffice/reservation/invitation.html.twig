@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation - {{ evenement.getNomEvenement() }}</title>
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            background: url('https://www.transparenttextures.com/patterns/rice-paper.png');
+            color: #2c3e50;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .invitation {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 40px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .invitation::before {
+            content: '';
+            position: absolute;
+            top: -50px; left: -50px;
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.2) 0%, transparent 70%);
+            z-index: 0;
+        }
+        .invitation-content {
+            position: relative;
+            z-index: 1;
+        }
+        .invitation-title {
+            font-size: 2.5em;
+            color: #4caf50;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .invitation-subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        .invitation-details {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #34495e;
+            margin-bottom: 30px;
+        }
+        .invitation-details p {
+            margin: 10px 0;
+        }
+        .invitation-footer {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            border-top: 1px dashed #bdc3c7;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        .decorative-line {
+            width: 50px;
+            height: 3px;
+            background: #4caf50;
+            margin: 20px auto;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="invitation">
+        <div class="invitation-content">
+            <h1 class="invitation-title">Vous êtes invité(e) !</h1>
+            <div class="decorative-line"></div>
+            <h2 class="invitation-subtitle">À l'événement exclusif</h2>
+            <div class="invitation-details">
+                <p><strong>Événement :</strong> {{ evenement.getNomEvenement()|default('Événement sans nom') }}</p>
+                <p><strong>Date :</strong> {{ evenement.dateEvenement ? evenement.dateEvenement|date('d F Y') : 'Date non spécifiée' }}</p>
+                <p><strong>Lieu :</strong>
+                    {% if evenement.rue or evenement.getCodePostal() or evenement.ville %}
+                        {{ evenement.rue ? evenement.rue ~ ', ' : '' }}
+                        {{ evenement.getCodePostal() ? evenement.getCodePostal() ~ ' ' : '' }}
+                        {{ evenement.ville ? evenement.ville : '' }}
+                    {% else %}
+                        Lieu non spécifié
+                    {% endif %}
+                </p>
+                <p><strong>Organisateur :</strong> {{ evenement.idOrganisateur ? evenement.idOrganisateur.nom : 'Organisateur inconnu' }}</p>
+                <p>Rejoignez-nous pour une expérience mémorable remplie d'inspiration et de découverte. Nous serons ravis de vous accueillir !</p>
+            </div>
+            <div class="decorative-line"></div>
+            <div class="invitation-footer">
+                Avec les compliments d'Eventopia - Créateurs d'expériences uniques<br>
+                <small>Scanné le {{ 'now'|date('d/m/Y H:i') }}</small>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

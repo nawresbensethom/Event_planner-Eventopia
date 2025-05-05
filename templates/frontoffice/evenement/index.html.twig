@@ -1,22 +1,14 @@
-{% extends 'frontoffice/base.html.twig' %}
+{% extends '/frontoffice/base.html.twig' %}
 
-{% block title %}Evenement index{% endblock %}
+{% block title %}Événements - Eventopia{% endblock %}
 
 {% block hero %}
 <section class="hero module-evenement">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <h1 class="animate-on-scroll">Gestion des Événements</h1>
-                <p class="animate-on-scroll">Créez, organisez et gérez vos événements en toute simplicité</p>
-                <div class="d-flex justify-content-center gap-3 mt-4">
-                    <a href="{{ path('app_evenement_new') }}" class="btn btn-primary btn-lg animate-on-scroll">
-                        <i class="fas fa-plus-circle me-2"></i> Créer un événement
-                    </a>
-                    <a href="#" class="btn btn-outline-primary btn-lg animate-on-scroll">
-                        <i class="fas fa-calendar-alt me-2"></i> Voir le calendrier
-                    </a>
-                </div>
+                <h1 class="animate-on-scroll">Découvrez nos événements</h1>
+                <p class="animate-on-scroll">Participez à des expériences uniques et inoubliables</p>
             </div>
         </div>
     </div>
@@ -24,251 +16,205 @@
 {% endblock %}
 
 {% block body %}
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h2>Événements à venir</h2>
-    </div>
-    <div class="col-md-4">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Rechercher un événement..." id="searchEvent">
-            <button class="btn btn-outline-primary" type="button">
-                <i class="fas fa-search"></i>
-            </button>
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" id="searchEvent" class="form-control" placeholder="Rechercher un événement...">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <select id="categoryFilter" class="form-select">
+                <option value="all">Toutes les catégories</option>
+                {% for category in categories %}
+                    <option value="{{ category }}" {{ selectedCategory == category ? 'selected' : '' }}>{{ category|capitalize }}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
-</div>
 
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="btn-group filter-buttons" role="group" aria-label="Filtrer les événements">
-            <button type="button" class="btn btn-outline-primary filter-button active" data-filter="all">Tous</button>
-            <button type="button" class="btn btn-outline-primary filter-button" data-filter="conference">Conférences</button>
-            <button type="button" class="btn btn-outline-primary filter-button" data-filter="festival">Festivals</button>
-            <button type="button" class="btn btn-outline-primary filter-button" data-filter="gala">Galas</button>
-            <button type="button" class="btn btn-outline-primary filter-button" data-filter="mariage">Mariages</button>
-            <button type="button" class="btn btn-outline-primary filter-button" data-filter="corporate">Événements d'entreprise</button>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    {% for evenement in evenements %}
-    <div class="col-md-4 mb-4 filterable-item {{ evenement.typePublic|lower }}">
-        <div class="card h-100">
-            <img src="{{ asset('images/event' ~ evenement.id ~ '.jpg') }}" class="card-img-top" alt="{{ evenement.nom }}">
-            <div class="card-body">
-                <span class="badge badge-primary mb-2">{{ evenement.typePublic }}</span>
-                <h3 class="card-title">{{ evenement.nom }}</h3>
-                <p class="card-text">{{ evenement.description|slice(0, 50) }}...</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted"><i class="fas fa-calendar-alt me-1"></i> {{ evenement.date ? evenement.date|date('Y-m-d H:i') : '' }}</small>
-                    <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ evenement.lieu }}</small>
+    <div id="evenementsList" class="row">
+        {% for evenement in pagination %}
+            <div class="col-md-4 mb-4 filterable-item {{ evenement.category }}">
+                <div class="card h-100">
+                    {% set imageSrc = evenement.image ? '/Uploads/evenements/' ~ evenement.image : '/images/default-event.jpg' %}
+                    <img src="{{ asset(imageSrc) }}" class="card-img-top" alt="{{ evenement.getNomEvenement() }}">
+                    <div class="card-body">
+                        <span class="badge bg-primary mb-2">{{ evenement.category|capitalize }}</span>
+                        <h3 class="card-title">{{ evenement.getNomEvenement()|length > 50 ? evenement.getNomEvenement()|slice(0, 50) ~ '...' : evenement.getNomEvenement() }}</h3>
+                        <p class="card-text">{{ evenement.getDescription()|length > 100 ? evenement.getDescription()|slice(0, 100) ~ '...' : evenement.getDescription() }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                {{ evenement.dateEvenement ? evenement.dateEvenement|date('d/m/Y') : 'Date non spécifiée' }}
+                            </small>
+                            <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ evenement.ville ?: 'Non spécifié' }}</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                        <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i> Détails
+                        </a>
+                        {% if app.user and evenement.getIdOrganisateur() %}
+                            {% if app.user == evenement.getIdOrganisateur() %}
+                                <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-primary">
+                                    <i class="fas fa-edit me-1"></i> Modifier
+                                </a>
+                            {% else %}
+                                <a href="{{ '#' }}" class="btn btn-primary">
+                                    <i class="fas fa-ticket-alt me-1"></i> Réserver
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-            <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-outline-primary">
-                    <i class="fas fa-eye me-1"></i> Détails
-                </a>
-                <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-warning">
-                    <i class="fas fa-edit me-1"></i> Modifier
-                </a>
+        {% else %}
+            <div class="col-12">
+                <p class="text-center text-muted">Aucun événement trouvé.</p>
             </div>
-        </div>
+        {% endfor %}
     </div>
-    {% else %}
-    <div class="col-12 text-center">
-        <p>Aucun enregistrement trouvé</p>
-    </div>
-    {% endfor %}
-</div>
 
-<div class="row mt-4">
-    <div class="col-12">
-        <nav aria-label="Pagination des événements">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Précédent</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Suivant</a>
-                </li>
-            </ul>
-        </nav>
+    <div class="d-flex justify-content-center mt-4">
+        {{ knp_pagination_render(pagination) }}
     </div>
 </div>
-
-<a href="{{ path('app_evenement_new') }}" class="btn btn-primary">Créer nouveau</a>
-{% endblock %}
-
-{% block stylesheets %}
-    <style>
-        /* Include the provided CSS styles here */
-        :root {
-            --primary: #f5e6e8;
-            --secondary: #e8f5e9;
-            --accent: #e3f2fd;
-            --highlight: #fff8e1;
-            --soft-pink: #fce4ec;
-            --soft-purple: #e8eaf6;
-            --dark: #333333;
-            --light: #ffffff;
-            --gray: #f5f5f5;
-            --border: #e0e0e0;
-        }
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--dark);
-            background-color: var(--light);
-            line-height: 1.6;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        a {
-            color: var(--dark);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        a:hover {
-            color: #555;
-        }
-        .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--soft-pink) 100%);
-            padding: 5rem 0;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-        }
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 800px;
-            margin: 0 auto 2rem;
-        }
-        .card {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 1.5rem;
-            border: none;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        .card-img-top {
-            height: 200px;
-            object-fit: cover;
-        }
-        .card-body {
-            padding: 1.5rem;
-        }
-        .card-title {
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-        .card-text {
-            color: #666;
-        }
-        .btn-primary {
-            background-color: var(--soft-pink);
-            border-color: var(--soft-pink);
-            color: var(--dark);
-        }
-        .btn-primary:hover {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: var(--dark);
-        }
-        .btn-outline-primary {
-            border-color: var(--soft-pink);
-            color: var(--dark);
-        }
-        .btn-outline-primary:hover {
-            background-color: var(--soft-pink);
-            border-color: var(--soft-pink);
-            color: var(--dark);
-        }
-    </style>
 {% endblock %}
 
 {% block javascripts %}
-    <script>
-        // Include the provided JavaScript here
-        document.addEventListener('DOMContentLoaded', function() {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-                return new bootstrap.Popover(popoverTriggerEl)
-            });
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchEvent');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const evenementsList = document.getElementById('evenementsList');
+    const isAuthenticated = {{ app.user ? 'true' : 'false' }};
+    const userId = {{ app.user ? app.user.id : 'null' }};
+    const defaultImage = '{{ asset('/images/default-event.jpg') }}';
+    const showPath = '{{ path('app_evenement_show', {'id': 'PLACEHOLDER'}) }}';
+    const editPath = '{{ path('app_evenement_edit', {'id': 'PLACEHOLDER'}) }}';
 
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
+    function searchEvenements(page = 1) {
+        const searchTerm = searchInput.value;
+        const category = categoryFilter.value === 'all' ? '' : categoryFilter.value;
 
-            const animateOnScroll = function() {
-                const elements = document.querySelectorAll('.animate-on-scroll');
-                elements.forEach(element => {
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const windowHeight = window.innerHeight;
-                    if (elementPosition < windowHeight - 50) {
-                        element.classList.add('fade-in');
-                    }
-                });
-            };
+        evenementsList.innerHTML = '<div class="col-12 text-center"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
 
-            animateOnScroll();
-            window.addEventListener('scroll', animateOnScroll);
+        $.ajax({
+            url: '{{ path('app_evenement_search') }}',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                search: searchTerm,
+                category: category,
+                page: page
+            }),
+            success: function(response) {
+                evenementsList.innerHTML = '';
+                if (response.results.length === 0) {
+                    evenementsList.innerHTML = '<div class="col-12"><p class="text-center text-muted">Aucun événement trouvé.</p></div>';
+                    return;
+                }
 
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-
-            const filterButtons = document.querySelectorAll('.filter-button');
-            filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const filterValue = this.getAttribute('data-filter');
-                    const items = document.querySelectorAll('.filterable-item');
-                    document.querySelector('.filter-button.active')?.classList.remove('active');
-                    this.classList.add('active');
-                    items.forEach(item => {
-                        if (filterValue === 'all' || item.classList.contains(filterValue)) {
-                            item.style.display = 'block';
+                response.results.forEach(function(evenement) {
+                    const imageSrc = evenement.image ? '/Uploads/evenements/' + evenement.image : defaultImage;
+                    let buttons = `
+                        <a href="${showPath.replace('PLACEHOLDER', evenement.id)}" class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i> Détails
+                        </a>
+                    `;
+                    if (isAuthenticated && evenement.id_organisateur) {
+                        if (userId === evenement.id_organisateur) {
+                            buttons += `
+                                <a href="${editPath.replace('PLACEHOLDER', evenement.id)}" class="btn btn-primary">
+                                    <i class="fas fa-edit me-1"></i> Modifier
+                                </a>
+                            `;
                         } else {
-                            item.style.display = 'none';
+                            buttons += `
+                                <a href="${reservationPath.replace('PLACEHOLDER', evenement.id)}" class="btn btn-primary">
+                                    <i class="fas fa-ticket-alt me-1"></i> Réserver
+                                </a>
+                            `;
                         }
-                    });
+                    }
+
+                    evenementsList.innerHTML += `
+                        <div class="col-md-4 mb-4 filterable-item ${evenement.category}">
+                            <div class="card h-100">
+                                <img src="${imageSrc}" class="card-img-top" alt="${evenement.nom_evenement}">
+                                <div class="card-body">
+                                    <span class="badge bg-primary mb-2">${evenement.category.charAt(0).toUpperCase() + evenement.category.slice(1)}</span>
+                                    <h3 class="card-title">${evenement.nom_evenement.substring(0, 50)}${evenement.nom_evenement.length > 50 ? '...' : ''}</h3>
+                                    <p class="card-text">${evenement.description.substring(0, 100)}${evenement.description.length > 100 ? '...' : ''}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted"><i class="fas fa-calendar-alt me-1"></i> ${evenement.date || 'Date non spécifiée'}</small>
+                                        <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> ${evenement.lieu || 'Non spécifié'}</small>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                                    ${buttons}
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 });
-            });
+
+                const paginationHtml = generatePagination(response);
+                const existingPagination = document.querySelector('.d-flex.justify-content-center.mt-4');
+                if (existingPagination) {
+                    existingPagination.innerHTML = paginationHtml;
+                } else {
+                    const paginationContainer = document.createElement('div');
+                    paginationContainer.className = 'd-flex justify-content-center mt-4';
+                    paginationContainer.innerHTML = paginationHtml;
+                    evenementsList.parentNode.appendChild(paginationContainer);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', status, error, xhr.responseText);
+                evenementsList.innerHTML = '<div class="col-12"><p class="text-center text-danger">Erreur lors de la recherche des événements. Veuillez réessayer.</p></div>';
+            }
         });
-    </script>
+    }
+
+    function generatePagination(response) {
+        let html = '<nav aria-label="Page navigation"><ul class="pagination">';
+        const totalPages = Math.ceil(response.totalItems / response.itemsPerPage);
+        const currentPage = response.currentPage;
+
+        if (currentPage > 1) {
+            html += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage - 1}">Précédent</a></li>`;
+        }
+
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+        }
+
+        if (currentPage < totalPages) {
+            html += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage + 1}">Suivant</a></li>`;
+        }
+
+        html += '</ul></nav>';
+        return html;
+    }
+
+    searchInput.addEventListener('input', () => searchEvenements());
+    categoryFilter.addEventListener('change', () => searchEvenements());
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('.page-link')) {
+            e.preventDefault();
+            const page = parseInt(e.target.getAttribute('data-page'));
+            searchEvenements(page);
+        }
+    });
+
+    // Delay initial search to reduce flicker
+    setTimeout(() => searchEvenements(), 100);
+});
+</script>
 {% endblock %}

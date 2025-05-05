@@ -1,39 +1,53 @@
 {% extends 'frontoffice/base.html.twig' %}
-    
-{% block title %}Reservation index{% endblock %}
+
+{% block title %}Réservations{% endblock %}
 
 {% block body %}
-    <h1>Reservation index</h1>
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Mes Réservations</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Montant_total</th>
-                <th>Statut</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for reservation in reservations %}
-            <tr>
-                <td>{{ reservation.id }}</td>
-                <td>{{ reservation.montantTotal }}</td>
-                <td>{{ reservation.statut }}</td>
-                <td>
-                    <a href="{{ path('app_reservation_show', {'id': reservation.id}) }}">show</a>
-                    <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">edit</a>
-                </td>
-            </tr>
+        {% if reservations|length > 0 %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for reservation in reservations %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Réservation - Événement : {{ reservation.evenement.nomEvenement|default('Non spécifié') }}</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>Services :</strong>
+                                        <ul>
+                                            {% for service in reservation.services %}
+                                                <li>{{ service.nom|default('Service non nommé') }}</li>
+                                            {% else %}
+                                                <li>Aucun service ajouté</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Montant total :</strong> {{ reservation.montantTotal|default('0.00') }} €
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Code promo :</strong> {{ reservation.codePromos ? reservation.codePromos.code|default('Aucun') : 'Aucun' }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Statut :</strong> {{ reservation.statut|default('Non défini') }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-footer text-muted text-center">
+                                <small>Détails non modifiables par le client</small>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_reservation_new') }}">Create new</a>
+            <div class="alert alert-info text-center" role="alert">
+                Aucune réservation trouvée.
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block stylesheets %}
@@ -60,44 +74,33 @@
             font-weight: 600;
             margin-bottom: 1rem;
         }
-        a {
-            color: var(--dark);
-            text-decoration: none;
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
             transition: all 0.3s ease;
         }
-        a:hover {
-            color: #555;
+        .card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
-        .table {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1.5rem;
-        }
-        .table thead {
-            background-color: var(--primary);
-        }
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(245, 230, 232, 0.1);
-        }
-        .btn-primary {
-            background-color: var(--soft-pink);
-            border-color: var(--soft-pink);
+        .card-title {
             color: var(--dark);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
         }
-        .btn-primary:hover {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: var(--dark);
+        .list-group-item {
+            background-color: transparent;
+            border: none;
+            padding: 0.5rem 0;
         }
-        .btn-outline-primary {
-            border-color: var(--soft-pink);
-            color: var(--dark);
+        .card-footer {
+            background-color: var(--gray);
+            border-top: 1px solid var(--border);
         }
-        .btn-outline-primary:hover {
-            background-color: var(--soft-pink);
-            border-color: var(--soft-pink);
+        .alert-info {
+            background-color: var(--accent);
             color: var(--dark);
+            border: 1px solid var(--border);
         }
     </style>
 {% endblock %}
@@ -105,30 +108,6 @@
 {% block javascripts %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
-
-            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-                return new bootstrap.Popover(popoverTriggerEl)
-            });
-
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-
             const animateOnScroll = function() {
                 const elements = document.querySelectorAll('.animate-on-scroll');
                 elements.forEach(element => {
@@ -142,17 +121,6 @@
 
             animateOnScroll();
             window.addEventListener('scroll', animateOnScroll);
-
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
         });
     </script>
 {% endblock %}

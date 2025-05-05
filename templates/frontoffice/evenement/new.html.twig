@@ -1,153 +1,409 @@
-{% extends 'frontoffice/base.html.twig' %}
+{% extends '/frontoffice/base.html.twig' %}
 
-{% block title %}Créer un nouvel événement{% endblock %}
+{% block title %}Créer un événement - Eventopia{% endblock %}
 
-{% block body %}
-    <div class="container py-5">
-        <h1 class="mb-4">Créer un nouvel événement</h1>
-
-        <div class="card shadow">
-            <div class="card-body">
-                {{ form_start(form) }}
-                    {{ form_row(form.nom, {'label': 'Nom de l\'événement'}) }}
-                    {{ form_row(form.description, {'label': 'Description'}) }}
-                    {{ form_row(form.date, {'label': 'Date et heure'}) }}
-                    {{ form_row(form.lieu, {'label': 'Lieu'}) }}
-                    {{ form_row(form.latitude, {'label': 'Latitude'}) }}
-                    {{ form_row(form.longitude, {'label': 'Longitude'}) }}
-                    {{ form_row(form.typePublic, {'label': 'Type de public'}) }}
-                    {{ form_row(form.statut, {'label': 'Statut'}) }}
-                    {{ form_row(form.organisateur, {'label': 'Organisateur'}) }}
-
-                    <button class="btn btn-primary mt-3">Créer</button>
-                {{ form_end(form) }}
-
-                <a href="{{ path('app_evenement_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+{% block hero %}
+<section class="hero module-evenement">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="animate-on-scroll">Créer un nouvel événement</h1>
+                <p class="animate-on-scroll">Organisez une expérience unique</p>
             </div>
         </div>
     </div>
+</section>
 {% endblock %}
 
-{% block stylesheets %}
-    <style>
-        :root {
-            --primary: #f5e6e8;
-            --secondary: #e8f5e9;
-            --accent: #e3f2fd;
-            --highlight: #fff8e1;
-            --soft-pink: #fce4ec;
-            --soft-purple: #e8eaf6;
-            --dark: #333333;
-            --light: #ffffff;
-            --gray: #f5f5f5;
-            --border: #e0e0e0;
-        }
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--dark);
-            background-color: var(--light);
-            line-height: 1.6;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        a {
-            color: var(--dark);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        a:hover {
-            color: #555;
-        }
-        .card {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 1.5rem;
-            border: none;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        .card-body {
-            padding: 1.5rem;
-        }
-        .btn-primary {
-            background-color: var(--soft-pink);
-            border-color: var(--soft-pink);
-            color: var(--dark);
-        }
-        .btn-primary:hover {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: var(--dark);
-        }
-        .btn-outline-primary {
-            border-color: var(--soft-pink);
-            color: var(--dark);
-        }
-        .btn-outline-primary:hover {
-            background-color: var(--soft-pink);
-            border-color: var(--soft-pink);
-            color: var(--dark);
-        }
-    </style>
+{% block body %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Créer un nouvel événement</h2>
+                </div>
+                <div class="card-body">
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    {{ form_start(form, {'attr': {'id': 'createEventForm', 'enctype': 'multipart/form-data', 'class': 'needs-validation', 'novalidate': ''}}) }}
+                    
+                    <div class="mb-4">
+                        <h4>Informations générales</h4>
+                        <hr>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.nom_evenement, "Nom de l'événement *", {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.nom_evenement, {'attr': {'class': 'form-control', 'id': 'nom_evenement', 'required': 'required', 'placeholder': 'Entrez le nom de l\'événement'}}) }}
+                            <div class="form-text">Un nom court et accrocheur (3 à 255 caractères).</div>
+                            {{ form_errors(form.nom_evenement) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.description, "Description de l'événement *", {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'id': 'description', 'required': 'required'}}) }}
+                            <div class="form-text">Décrivez votre événement en détail (programme, intervenants, etc.)</div>
+                            {{ form_errors(form.description) }}
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form_label(form.category, "Catégorie *", {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.category, {'attr': {'class': 'form-select', 'id': 'categorie', 'required': 'required'}}) }}
+                                {{ form_errors(form.category) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(form.statut3, "Visibilité *", {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.statut3, {'attr': {'class': 'form-select', 'id': 'private_event', 'required': 'required'}}) }}
+                                {{ form_errors(form.statut3) }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.imageFile, "Image principale", {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.imageFile, {'attr': {'class': 'form-control', 'id': 'image_evenement'}}) }}
+                            <div class="form-text">Format recommandé : JPG ou PNG, 1200x600px minimum</div>
+                            {{ form_errors(form.imageFile) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.liste_invites, "Liste des invités (emails séparés par des virgules)", {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.liste_invites, {'attr': {'class': 'form-control', 'id': 'liste_invites', 'placeholder': 'email1@example.com,email2@example.com'}}) }}
+                            <div class="form-text">Entrez les emails des invités, séparés par des virgules.</div>
+                            {{ form_errors(form.liste_invites) }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4>Date et lieu</h4>
+                        <hr>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form_label(form.date_evenement, "Date de l'événement *", {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.date_evenement, {'attr': {'class': 'form-control', 'id': 'date_debut', 'required': 'required'}}) }}
+                                {{ form_errors(form.date_evenement) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(form.duree, "Durée (minutes) *", {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.duree, {'attr': {'class': 'form-control', 'id': 'duree', 'required': 'required'}}) }}
+                                {{ form_errors(form.duree) }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                {{ form_label(form.rue, "Adresse", {'label_attr': {'class': 'form-label'}}) }}
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#mapModal">
+                                    <i class="fas fa-map-marker-alt"></i> Choisir sur la carte
+                                </button>
+                            </div>
+                            {{ form_widget(form.rue, {'attr': {'class': 'form-control', 'id': 'adresse'}}) }}
+                            {{ form_errors(form.rue) }}
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form_label(form.ville, "Ville", {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.ville, {'attr': {'class': 'form-control', 'id': 'ville'}}) }}
+                                {{ form_errors(form.ville) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(form.code_postal, "Code postal", {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.code_postal, {'attr': {'class': 'form-control', 'id': 'code_postal'}}) }}
+                                {{ form_errors(form.code_postal) }}
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden fields for latitude, longitude, statut, and statut2 -->
+                        {{ form_widget(form.latitude, {'attr': {'id': 'latitude'}}) }}
+                        {{ form_widget(form.longitude, {'attr': {'id': 'longitude'}}) }}
+                        {{ form_widget(form.statut, {'attr': {'id': 'statut'}}) }}
+                        {{ form_widget(form.statut2, {'attr': {'id': 'statut2'}}) }}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save me-2"></i> Créer l'événement
+                        </button>
+                        <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i> Annuler
+                        </a>
+                    </div>
+                    
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale pour la carte -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">Choisir une localisation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="height: 400px; width: 100%;"></div>
+                <p class="mt-2 text-muted">Cliquez sur la carte pour sélectionner une localisation.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="confirmLocation">Confirmer</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
+<!-- Include Leaflet.js CSS and JS from CDN -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-                return new bootstrap.Popover(popoverTriggerEl)
-            });
+<script>
+let map, marker;
 
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
+function initMap() {
+    // Initialize Leaflet map centered on Paris (default)
+    map = L.map('map').setView([48.8566, 2.3522], 12);
 
-            const animateOnScroll = function() {
-                const elements = document.querySelectorAll('.animate-on-scroll');
-                elements.forEach(element => {
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const windowHeight = window.innerHeight;
-                    if (elementPosition < windowHeight - 50) {
-                        element.classList.add('fade-in');
-                    }
-                });
-            };
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
 
-            animateOnScroll();
-            window.addEventListener('scroll', animateOnScroll);
+    // Click event to place marker and fetch address
+    map.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
 
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
+        // Remove existing marker if any
+        if (marker) {
+            map.removeLayer(marker);
+        }
+
+        // Add new marker
+        marker = L.marker([lat, lng]).addTo(map);
+
+        // Store coordinates in confirm button
+        document.getElementById('confirmLocation').dataset.lat = lat;
+        document.getElementById('confirmLocation').dataset.lng = lng;
+
+        // Reverse geocoding with Nominatim
+        fetchAddress(lat, lng, 0);
+    });
+}
+
+// Function to fetch address with retry logic
+function fetchAddress(lat, lng, retryCount) {
+    const maxRetries = 1;
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&addressdetails=1`, {
+        headers: {
+            'User-Agent': 'Eventopia/1.0 (contact: ziedmahjoub2001@gmail.com)' // Replace with your email
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 429 && retryCount < maxRetries) {
+                    console.warn('Nominatim rate limit exceeded, retrying...');
+                    setTimeout(() => fetchAddress(lat, lng, retryCount + 1), 1000);
+                    return;
+                } else if (response.status === 429) {
+                    throw new Error('Nominatim rate limit exceeded. Please try again later.');
+                } else if (response.status === 400) {
+                    throw new Error('Bad request to Nominatim API. Please check coordinates.');
+                } else {
+                    throw new Error(`Nominatim API error: ${response.statusText}`);
+                }
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Nominatim response:', data); // Debug API response
+            let rue = '';
+            let codePostal = '';
+            let ville = '';
+
+            if (data.address) {
+                rue = data.address.road || data.address.street || data.address.neighbourhood || '';
+                codePostal = data.address.postcode || '';
+                ville = data.address.city || data.address.town || data.address.village || data.address.hamlet || '';
+            } else {
+                console.warn('No address data returned by Nominatim');
+            }
+
+            // Store address details in confirm button
+            document.getElementById('confirmLocation').dataset.rue = rue;
+            document.getElementById('confirmLocation').dataset.codePostal = codePostal;
+            document.getElementById('confirmLocation').dataset.ville = ville;
+
+            console.log('Stored address:', { rue, codePostal, ville }); // Debug stored data
+        })
+        .catch(error => {
+            console.error('Error with Nominatim reverse geocoding:', error);
+            alert(`Erreur lors de la récupération de l'adresse : ${error.message}`);
         });
-    </script>
+}
+
+// Initialize map when modal is shown
+document.getElementById('mapModal').addEventListener('shown.bs.modal', function () {
+    if (!map) {
+        initMap();
+    } else {
+        map.invalidateSize(); // Fix map size after modal display
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('createEventForm');
+
+    form.addEventListener('submit', function(event) {
+        const nomEvenement = document.getElementById('nom_evenement').value;
+        if (nomEvenement.length < 3 || nomEvenement.length > 255) {
+            event.preventDefault();
+            alert('Le nom de l\'événement doit contenir entre 3 et 255 caractères.');
+            return;
+        }
+
+        const dateDebut = new Date(document.getElementById('date_debut').value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (dateDebut < today) {
+            event.preventDefault();
+            alert('La date de l\'événement doit être dans le futur.');
+            return;
+        }
+
+        const duree = parseInt(document.getElementById('duree').value);
+        if (isNaN(duree) || duree <= 0) {
+            event.preventDefault();
+            alert('La durée doit être un nombre positif de minutes.');
+            return;
+        }
+
+        const listeInvites = document.getElementById('liste_invites').value;
+        if (listeInvites) {
+            const emails = listeInvites.split(',')
+                .map(email => email.trim())
+                .filter(email => email.length > 0);
+            for (const email of emails) {
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    event.preventDefault();
+                    alert(`L'email ${email} n'est pas valide.`);
+                    return;
+                }
+            }
+        }
+
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    const imageInput = document.getElementById('image_evenement');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.createElement('img');
+                    preview.src = e.target.result;
+                    preview.className = 'img-thumbnail mt-2';
+                    preview.style.maxWidth = '200px';
+                    const existingPreview = document.querySelector('.img-thumbnail.mt-2');
+                    if (existingPreview) {
+                        existingPreview.replaceWith(preview);
+                    } else {
+                        imageInput.parentNode.appendChild(preview);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Confirm location event listener
+    document.getElementById('confirmLocation').addEventListener('click', function() {
+        const lat = this.dataset.lat;
+        const lng = this.dataset.lng;
+        const rue = this.dataset.rue || '';
+        const codePostal = this.dataset.codePostal || '';
+        const ville = this.dataset.ville || '';
+
+        console.log('Confirm clicked with data:', { lat, lng, rue, codePostal, ville }); // Debug data on confirm
+
+        if (lat && lng) {
+            // Use querySelector with name attributes to find form fields
+            const adresseField = document.querySelector('input[name="evenement[rue]"]');
+            const codePostalField = document.querySelector('input[name="evenement[code_postal]"]');
+            const villeField = document.querySelector('input[name="evenement[ville]"]');
+            const latitudeField = document.querySelector('input[name="evenement[latitude]"]');
+            const longitudeField = document.querySelector('input[name="evenement[longitude]"]');
+
+            // Debug which fields are found
+            console.log('Field check:', {
+                adresseField: !!adresseField,
+                codePostalField: !!codePostalField,
+                villeField: !!villeField,
+                latitudeField: !!latitudeField,
+                longitudeField: !!longitudeField
+            });
+
+            if (adresseField && codePostalField && villeField && latitudeField && longitudeField) {
+                adresseField.value = rue;
+                codePostalField.value = codePostal;
+                villeField.value = ville;
+                latitudeField.value = lat;
+                longitudeField.value = lng;
+
+                console.log('Fields populated:', {
+                    adresse: adresseField.value,
+                    codePostal: codePostalField.value,
+                    ville: villeField.value,
+                    latitude: latitudeField.value,
+                    longitude: longitudeField.value
+                }); // Debug populated fields
+
+                // Close the modal after a slight delay to ensure field updates are visible
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('mapModal'));
+                    if (modal) {
+                        modal.hide();
+                    } else {
+                        console.error('Bootstrap modal instance not found');
+                        alert('Erreur lors de la fermeture de la carte. Veuillez réessayer.');
+                    }
+                }, 200);
+            } else {
+                console.error('One or more form fields not found', {
+                    adresseField: !!adresseField,
+                    codePostalField: !!codePostalField,
+                    villeField: !!villeField,
+                    latitudeField: !!latitudeField,
+                    longitudeField: !!longitudeField
+                });
+                alert('Erreur : Impossible de trouver les champs de formulaire.');
+            }
+        } else {
+            alert('Veuillez sélectionner une localisation sur la carte avant de confirmer.');
+        }
+    });
+});
+</script>
 {% endblock %}
