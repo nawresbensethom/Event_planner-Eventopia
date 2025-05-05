@@ -8,176 +8,87 @@
         .blog-header {
             background: linear-gradient(135deg, rgba(194, 130, 130, 0.9) 0%, rgba(246, 214, 130, 0.9) 100%),
                         url('{{ asset('images/blog-header-bg.jpg') }}') center/cover no-repeat;
-            padding: 6rem 0;
-            margin-bottom: 4rem;
+            padding: 5rem 0;
+            margin-bottom: 2rem;
             position: relative;
-            overflow: hidden;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
         }
 
-        .blog-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI2NDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIGQ9Ik0wIDBoMTQ0MHY2NDBIMHoiLz48cGF0aCBkPSJNMCA0NDBsMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUgMTIwLTQyLjUgMTIwIDg1IDEyMC00Mi41IDEyMCA4NSAxMjAtNDIuNSAxMjAgODUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==');
-            opacity: 0.1;
+        .blog-header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .blog-title {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 800;
             color: white;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            animation: fadeInDown 1s ease-out;
+            animation: fadeInDown 0.8s ease-out;
         }
 
         .blog-subtitle {
             font-size: 1.4rem;
-            color: rgba(255, 255, 255, 0.9);
-            max-width: 600px;
-            margin: 0 auto 2rem auto;
-            animation: fadeInUp 1s ease-out 0.3s;
-            animation-fill-mode: both;
-        }
-
-        .posts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 0 1rem;
-        }
-
-        .post-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            top: 0;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .post-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .post-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-bottom: 4px solid #f6d682;
-        }
-
-        .post-content {
-            padding: 1.5rem;
-        }
-
-        .post-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 0.5rem;
-            line-height: 1.3;
-        }
-
-        .post-excerpt {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.95);
             line-height: 1.6;
-        }
-
-        .post-meta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 1rem;
-            border-top: 1px solid #eee;
-        }
-
-        .post-date {
-            color: #888;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .post-status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .status-published {
-            background-color: #e6f6e6;
-            color: #38a169;
+            max-width: 600px;
+            margin: 0 auto;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.8s ease-out 0.2s;
+            animation-fill-mode: both;
         }
 
         .create-post-btn {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
+            margin-top: 2rem;
+            padding: 0.8rem 1.5rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color);
+            border-radius: 25px;
             font-weight: 600;
-            border: 2px solid rgba(255, 255, 255, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.3s ease;
             text-decoration: none;
-            margin-top: 1rem;
-            backdrop-filter: blur(5px);
-            animation: fadeInUp 1s ease-out 0.6s;
-            animation-fill-mode: both;
+            border: 2px solid rgba(255, 255, 255, 0.9);
         }
 
         .create-post-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
+            background-color: var(--primary-color);
             color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .chatbot-btn {
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color);
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
             text-decoration: none;
-            border-color: rgba(255, 255, 255, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.9);
         }
 
-        .create-post-btn i {
-            margin-right: 0.5rem;
-        }
-
-        .no-posts {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .no-posts-icon {
-            font-size: 4rem;
-            color: #c28282;
-            margin-bottom: 1rem;
-        }
-
-        .no-posts-text {
-            font-size: 1.2rem;
-            color: #666;
-            margin-bottom: 2rem;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .chatbot-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
         }
 
         @keyframes fadeInDown {
@@ -202,77 +113,1223 @@
             }
         }
 
+        /* Mode Liste */
+        .post-list {
+            display: block;
+        }
+
+        .post-list-item {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            animation: slideIn 0.5s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .post-list-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .post-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .post-content-wrapper {
+            padding: 1rem;
+            position: relative;
+        }
+
+        .post-title-list {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .post-excerpt-list {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .post-meta-list {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .post-date-list {
+            color: #888;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .post-status-list {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-action {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
-            .blog-title {
-                font-size: 2.5rem;
+            .post-list-item {
+                flex-direction: column;
             }
 
-            .blog-subtitle {
-                font-size: 1.2rem;
+            .post-thumbnail {
+                width: 100%;
+                height: 200px;
             }
 
-            .posts-grid {
-                grid-template-columns: 1fr;
-                padding: 0 1rem;
+            .post-actions {
+                flex-wrap: wrap;
+                gap: 0.5rem;
             }
 
-            .create-post-btn {
-                bottom: 1.5rem;
-                right: 1.5rem;
-                padding: 0.8rem 1.5rem;
+            .btn-action {
+                flex: 1;
+                justify-content: center;
+                min-width: 120px;
+            }
+
+            .comment-form .btn {
+                position: static;
+                width: 100%;
+                opacity: 1;
+                transform: none;
+                margin-top: 0.5rem;
+            }
+        }
+
+        /* Section Commentaires */
+        .comments-section {
+            position: relative;
+            z-index: 2;
+            padding-top: 0.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .comments-section h4 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .comments-section h4 i {
+            color: var(--primary-color);
+        }
+
+        .comment-form {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 0.8rem;
+            padding-right: 3rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            resize: none;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+            min-height: 45px;
+        }
+
+        .comment-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(194, 130, 130, 0.1);
+        }
+
+        .comment-form .send-icon {
+            position: absolute;
+            right: 0.8rem;
+            bottom: 0.8rem;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            padding: 0;
+        }
+
+        .comment-form .send-icon:hover {
+            transform: translateX(3px);
+        }
+
+        .comments-list {
+            margin-top: 0.5rem;
+        }
+
+        .comment-item {
+            background: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
+        }
+
+        .comment-author {
+            font-weight: 500;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .comment-author i {
+            color: var(--primary-color);
+        }
+
+        .comment-date {
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .comment-action-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 0.2rem;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .comment-action-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .comment-action-btn.delete:hover {
+            color: #dc3545;
+        }
+
+        .comment-action-btn.edit:hover {
+            color: #28a745;
+        }
+
+        .comment-content {
+            color: #555;
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-edit-form {
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .comment-edit-form.active {
+            display: block;
+        }
+
+        .comment-edit-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            resize: none;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .comment-edit-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(194, 130, 130, 0.1);
+        }
+
+        .comment-edit-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .comment-edit-btn {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .comment-edit-save {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .comment-edit-cancel {
+            background-color: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .comment-edit-btn:hover {
+            opacity: 0.9;
+        }
+
+        .text-muted {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .text-muted i {
+            margin-right: 0.5rem;
+            opacity: 0.7;
+        }
+
+        .report-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 2;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .report-button:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .post-link {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .click-protected {
+            position: relative;
+            z-index: 2;
+        }
+
+        .no-comments-message {
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+
+        .post-reactions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-right: 1rem;
+        }
+
+        .reaction-btn {
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #666;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+
+        .reaction-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .reaction-btn.liked {
+            color: #2196F3;
+        }
+
+        .reaction-btn.disliked {
+            color: #F44336;
+        }
+
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        @keyframes fadeIn {
+            from { opacity:  Extensions: .twig, .html.twig
+0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .pagination {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            gap: 0.5rem;
+        }
+
+        .page-item {
+            display: inline-block;
+        }
+
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            min-width: 40px;
+        }
+
+        .page-link:hover {
+            background-color: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #ddd;
+        }
+
+        .pagination-info {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Nouveaux styles pour la recherche et le tri */
+        .search-filter-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: -2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-filter-section .form-control,
+        .search-filter-section .form-select {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-filter-section .form-control:focus,
+        .search-filter-section .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(194, 130, 130, 0.1);
+        }
+
+        .search-filter-section .btn-primary {
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .search-filter-section .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(194, 130, 130, 0.2);
+        }
+
+        .search-filter-section .input-group {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .search-filter-section .input-group .form-control {
+            border-right: none;
+        }
+
+        .search-filter-section .input-group .btn {
+            border-left: none;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .search-filter-section .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            padding-right: 2.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-filter-section {
+                margin-top: 0;
+            }
+
+            .search-filter-section .col-md-6,
+            .search-filter-section .col-md-3 {
+                margin-bottom: 1rem;
             }
         }
     </style>
 {% endblock %}
 
 {% block body %}
-    <section class="blog-header">
-        <div class="container">
-            <h1 class="blog-title">Our Blog</h1>
-            <p class="blog-subtitle">Discover the latest news, tips, and stories from our community</p>
+    <div class="blog-header">
+        <div class="blog-header-content">
+            <h1 class="blog-title">Blog</h1>
+            <p class="blog-subtitle">Découvrez les dernières actualités et histoires de notre communauté</p>
             <a href="{{ path('app_client_post_new') }}" class="create-post-btn">
-                <i class="fas fa-plus-circle"></i> Create New Post
+                <i class="bi bi-plus-circle"></i> Créer un nouveau post
             </a>
+            <a href="{{ path('post_generate_idea') }}" class="chatbot-btn">
+    <i class="bi bi-robot"></i> Accéder au Chatbot IA
+</a>
         </div>
-    </section>
+    </div>
 
     <div class="container">
+        <!-- Section de recherche et tri -->
+        <div class="search-filter-section mb-4">
+            <form action="{{ path('app_client_post_index') }}" method="get" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" 
+                               name="search" 
+                               class="form-control" 
+                               placeholder="Rechercher un post..." 
+                               value="{{ app.request.query.get('search') }}"
+                               aria-label="Rechercher">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i> Rechercher
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="sort" class="form-select" onchange="this.form.submit()">
+                        <option value="newest" {{ app.request.query.get('sort') == 'newest' ? 'selected' : '' }}>
+                            Plus récent
+                        </option>
+                        <option value="oldest" {{ app.request.query.get('sort') == 'oldest' ? 'selected' : '' }}>
+                            Plus ancien
+                        </option>
+                        <option value="most_liked" {{ app.request.query.get('sort') == 'most_liked' ? 'selected' : '' }}>
+                            Plus aimés
+                        </option>
+                        <option value="most_commented" {{ app.request.query.get('sort') == 'most_commented' ? 'selected' : '' }}>
+                            Plus commentés
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="filter" class="form-select" onchange="this.form.submit()">
+                        <option value="all" {{ app.request.query.get('filter') == 'all' ? 'selected' : '' }}>
+                            Tous les posts
+                        </option>
+                        <option value="my_posts" {{ app.request.query.get('filter') == 'my_posts' ? 'selected' : '' }}>
+                            Mes posts
+                        </option>
+                        <option value="liked" {{ app.request.query.get('filter') == 'liked' ? 'selected' : '' }}>
+                            Posts aimés
+                        </option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
         {% if posts|length > 0 %}
-            <div class="posts-grid">
+            <div class="post-list">
                 {% for post in posts %}
-                    <article class="post-card" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                    <article class="post-list-item">
+                        <a href="{{ path('app_client_post_show', {'id_post': post.idPost}) }}" class="post-link"></a>
+                        <a href="{{ path('app_client_signalement_post_new', {'id_post': post.idPost}) }}" class="report-button" title="Signaler ce post">
+                            <i class="bi bi-flag"></i>
+                        </a>
                         {% if post.photos %}
-                            <img src="{{ asset('uploads/images/' ~ post.photos|json_decode|first) }}" alt="{{ post.titre }}" class="post-image">
+                            <img src="{{ asset('Uploads/images/' ~ post.photos|json_decode|first) }}" alt="{{ post.titre }}" class="post-thumbnail">
                         {% else %}
-                            <img src="{{ asset('images/default-post.jpg') }}" alt="Default post image" class="post-image">
+                            <img src="{{ asset('images/default-post.jpg') }}" alt="Default post image" class="post-thumbnail">
                         {% endif %}
                         
-                        <div class="post-content">
-                            <h2 class="post-title">{{ post.titre }}</h2>
-                            <p class="post-excerpt">{{ post.contenu|striptags|slice(0, 150) }}{% if post.contenu|length > 150 %}...{% endif %}</p>
+                        <div class="post-content-wrapper">
+                            <h2 class="post-title-list">{{ post.titre }}</h2>
+                            <p class="post-excerpt-list">{{ post.contenu|striptags|slice(0, 150) }}{% if post.contenu|length > 150 %}...{% endif %}</p>
                             
-                            <div class="post-meta">
-                                <div class="post-date">
+                            <div class="post-meta-list">
+                                <div class="post-date-list">
                                     <i class="bi bi-calendar3"></i>
-                                    {{ post.datePublication|date('M d, Y') }}
+                                    {{ post.datePublication|date('d M Y') }}
                                 </div>
-                                <span class="post-status status-{{ post.statut|lower }}">
-                                    {{ post.statut }}
-                                </span>
+                            </div>
+
+                            <div class="comments-section click-protected">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="post-reactions">
+                                        <button class="reaction-btn like-btn" data-post-id="{{ post.idPost }}">
+                                            👍 <span class="like-count">{{ post.likeCount }}</span>
+                                        </button>
+                                        <button class="reaction-btn dislike-btn" data-post-id="{{ post.idPost }}">
+                                            👎 <span class="dislike-count">{{ post.dislikeCount }}</span>
+                                        </button>
+                                    </div>
+                                    <h4>
+                                        <i class="bi bi-chat-dots"></i>
+                                        Commentaires ({{ post.commentaires|length }})
+                                    </h4>
+                                </div>
+                                <form class="comment-form" action="{{ path('app_client_commentaire_new', {'id_post': post.idPost}) }}" method="post">
+                                    <textarea class="comment-input" name="contenu" placeholder="Partagez votre avis..."></textarea>
+                                    <button type="submit" class="send-icon">
+                                        <i class="bi bi-send-fill"></i>
+                                    </button>
+                                </form>
+
+                                <div class="comments-list">
+                                    {% for commentaire in post.commentaires %}
+                                        <div class="comment-item" data-comment-id="{{ commentaire.idCommentaire }}">
+                                            <div class="comment-header">
+                                                <span class="comment-author">
+                                                    <i class="bi bi-person-circle"></i>
+                                                    {{ commentaire.idUtilisateur.nom }}
+                                                </span>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="comment-date me-2">
+                                                        {{ commentaire.dateCommentaire|date('d M Y H:i') }}
+                                                    </span>
+                                                    {% if app.user and (app.user == commentaire.idUtilisateur or is_granted('ROLE_ADMIN')) %}
+                                                        <div class="comment-actions">
+                                                            <button class="comment-action-btn edit" title="Modifier le commentaire">
+                                                                <i class="bi bi-pencil"></i>
+                                                            </button>
+                                                            <button class="comment-action-btn delete" 
+                                                                    data-comment-id="{{ commentaire.idCommentaire }}"
+                                                                    data-csrf-token="{{ csrf_token('delete' ~ commentaire.idCommentaire) }}"
+                                                                    title="Supprimer le commentaire">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="comment-content">
+                                                {{ commentaire.contenu }}
+                                            </div>
+                                            <form class="comment-edit-form" action="{{ path('app_client_commentaire_edit', {'id_commentaire': commentaire.idCommentaire}) }}" method="post">
+                                                <textarea class="comment-edit-input" name="contenu">{{ commentaire.contenu }}</textarea>
+                                                <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ commentaire.idCommentaire) }}">
+                                                <div class="comment-edit-actions">
+                                                    <button type="button" class="comment-edit-btn comment-edit-cancel">Annuler</button>
+                                                    <button type="submit" class="comment-edit-btn comment-edit-save">Enregistrer</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    {% else %}
+                                        <p class="no-comments-message">
+                                            Aucun commentaire pour le moment. Soyez le premier à commenter !
+                                        </p>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
-                        
-                        <a href="{{ path('app_client_post_show', {'id_post': post.idPost}) }}" class="stretched-link"></a>
                     </article>
                 {% endfor %}
+            </div>
+
+            <div class="pagination-container">
+                <nav aria-label="Pagination">
+                    <ul class="pagination">
+                        {% if currentPage > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_client_post_index', {
+                                    'page': currentPage - 1,
+                                    'search': search,
+                                    'sort': sort,
+                                    'filter': filter
+                                }) }}" aria-label="Previous">
+                                    <span aria-hidden="true">«</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">«</span>
+                            </li>
+                        {% endif %}
+
+                        {% for page in 1..totalPages %}
+                            <li class="page-item {{ page == currentPage ? 'active' : '' }}">
+                                <a class="page-link" href="{{ path('app_client_post_index', {
+                                    'page': page,
+                                    'search': search,
+                                    'sort': sort,
+                                    'filter': filter
+                                }) }}">{{ page }}</a>
+                            </li>
+                        {% endfor %}
+
+                        {% if currentPage < totalPages %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_client_post_index', {
+                                    'page': currentPage + 1,
+                                    'search': search,
+                                    'sort': sort,
+                                    'filter': filter
+                                }) }}" aria-label="Next">
+                                    <span aria-hidden="true">»</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">»</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="pagination-info">
+                Affichage des posts {{ (currentPage - 1) * postsPerPage + 1 }} à {{ min(currentPage * postsPerPage, totalPosts) }} sur {{ totalPosts }}
             </div>
         {% else %}
             <div class="no-posts">
                 <i class="bi bi-journal-text no-posts-icon"></i>
-                <p class="no-posts-text">No posts found. Be the first to share your story!</p>
-                <a href="{{ path('app_client_post_new') }}" class="btn btn-primary btn-lg">Create Your First Post</a>
+                <p class="no-posts-text">Aucun post trouvé. Soyez le premier à partager votre histoire !</p>
+                <a href="{{ path('app_client_post_new') }}" class="btn btn-primary btn-lg">Créer votre premier post</a>
             </div>
         {% endif %}
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de la recherche en temps réel
+            const searchInput = document.querySelector('input[name="search"]');
+            const searchForm = document.querySelector('.search-filter-section form');
+            let searchTimeout;
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchForm.submit();
+                }, 500);
+            });
+
+            // Gestion des filtres
+            const filterSelect = document.querySelector('select[name="filter"]');
+            filterSelect.addEventListener('change', function() {
+                // Afficher un indicateur de chargement
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.className = 'loading-indicator';
+                loadingIndicator.innerHTML = '<i class="bi bi-arrow-repeat"></i> Chargement...';
+                document.querySelector('.post-list').prepend(loadingIndicator);
+            });
+
+            // Gestion du tri
+            const sortSelect = document.querySelector('select[name="sort"]');
+            sortSelect.addEventListener('change', function() {
+                // Afficher un indicateur de chargement
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.className = 'loading-indicator';
+                loadingIndicator.innerHTML = '<i class="bi bi-arrow-repeat"></i> Tri en cours...';
+                document.querySelector('.post-list').prepend(loadingIndicator);
+            });
+
+            // Ajouter des styles pour l'indicateur de chargement
+            const style = document.createElement('style');
+            style.textContent = `
+                .loading-indicator {
+                    text-align: center;
+                    padding: 1rem;
+                    color: var(--primary-color);
+                    font-size: 0.9rem;
+                    animation: spin 1s linear infinite;
+                }
+                .loading-indicator i {
+                    margin-right: 0.5rem;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Gestion des réactions (likes/dislikes)
+            function handleReaction(button, url, countElement) {
+                console.log('Sending request to:', url);
+                fetch(url, { 
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received data:', data);
+                    if (data.success) {
+                        // Mettre à jour les deux compteurs
+                        const postItem = button.closest('.post-list-item');
+                        const likeCount = postItem.querySelector('.like-count');
+                        const dislikeCount = postItem.querySelector('.dislike-count');
+                        
+                        likeCount.textContent = data.likes;
+                        dislikeCount.textContent = data.dislikes;
+                        
+                        // Mettre à jour les classes des boutons
+                        const likeBtn = postItem.querySelector('.like-btn');
+                        const dislikeBtn = postItem.querySelector('.dislike-btn');
+                        
+                        if (data.likes > 0) {
+                            likeBtn.classList.add('liked');
+                            dislikeBtn.classList.remove('disliked');
+                        } else if (data.dislikes > 0) {
+                            likeBtn.classList.remove('liked');
+                            dislikeBtn.classList.add('disliked');
+                        } else {
+                            likeBtn.classList.remove('liked');
+                            dislikeBtn.classList.remove('disliked');
+                        }
+                    } else {
+                        console.error('Server reported error:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    console.error('Failed to process reaction');
+                });
+            }
+
+            // Gestion des commentaires
+            document.querySelectorAll('.comment-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const textarea = this.querySelector('textarea');
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    const commentsList = this.closest('.comments-section').querySelector('.comments-list');
+                    
+                    if (!textarea.value.trim()) {
+                        const errorMessage = document.createElement('div');
+                        errorMessage.className = 'alert alert-error';
+                        errorMessage.textContent = 'Le commentaire ne peut pas être vide.';
+                        form.parentNode.insertBefore(errorMessage, form);
+                        setTimeout(() => errorMessage.remove(), 3000);
+                        return;
+                    }
+                    
+                    // Désactiver le bouton pendant l'envoi
+                    submitButton.disabled = true;
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => Promise.reject(data));
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            const errorMessage = document.createElement('div');
+                            errorMessage.className = 'alert alert-error';
+                            errorMessage.textContent = data.error;
+                            form.parentNode.insertBefore(errorMessage, form);
+                            setTimeout(() => errorMessage.remove(), 3000);
+                        } else if (data.success) {
+                            // Créer le nouveau commentaire
+                            const newComment = document.createElement('div');
+                            newComment.className = 'comment-item';
+                            
+                            // Générer un ID temporaire pour le nouveau commentaire
+                            const tempCommentId = Date.now();
+                            newComment.dataset.commentId = tempCommentId;
+
+                            const currentDate = new Date().toLocaleDateString('fr-FR', { 
+                                day: 'numeric', 
+                                month: 'short', 
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+
+                            // Récupérer le nom d'utilisateur depuis app.user
+                            const userName = '{{ app.user ? app.user.nom : "Utilisateur" }}';
+
+                            newComment.innerHTML = `
+                                <div class="comment-header">
+                                    <span class="comment-author">
+                                        <i class="bi bi-person-circle"></i>
+                                        ${userName}
+                                    </span>
+                                    <div class="d-flex align-items-center">
+                                        <span class="comment-date me-2">
+                                            ${currentDate}
+                                        </span>
+                                        <div class="comment-actions">
+                                            <button class="comment-action-btn edit" title="Modifier le commentaire">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="comment-action-btn delete" 
+                                                    data-comment-id="${tempCommentId}"
+                                                    data-csrf-token="{{ csrf_token('delete' ~ 'temp') }}"
+                                                    title="Supprimer le commentaire">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="comment-content">
+                                    ${textarea.value}
+                                </div>
+                                <form class="comment-edit-form" action="/frontoffice/commentaire/${tempCommentId}/edit" method="post">
+                                    <textarea class="comment-edit-input" name="contenu">${textarea.value}</textarea>
+                                    <div class="comment-edit-actions">
+                                        <button type="button" class="comment-edit-btn comment-edit-cancel">Annuler</button>
+                                        <button type="submit" class="comment-edit-btn comment-edit-save">Enregistrer</button>
+                                    </div>
+                                </form>
+                            `;
+                            
+                            // Supprimer le message "Aucun commentaire" s'il existe
+                            const noCommentsMessage = commentsList.querySelector('.no-comments-message');
+                            if (noCommentsMessage) {
+                                noCommentsMessage.remove();
+                            }
+                            
+                            // Ajouter le nouveau commentaire en haut de la liste avec animation
+                            newComment.style.opacity = '0';
+                            newComment.style.transform = 'translateY(-10px)';
+                            commentsList.insertBefore(newComment, commentsList.firstChild);
+                            
+                            // Déclencher l'animation
+                            setTimeout(() => {
+                                newComment.style.transition = 'all 0.3s ease';
+                                newComment.style.opacity = '1';
+                                newComment.style.transform = 'translateY(0)';
+                            }, 10);
+                            
+                            // Réinitialiser le formulaire
+                            textarea.value = '';
+                            
+                            // Afficher un message de succès
+                            const successMessage = document.createElement('div');
+                            successMessage.className = 'alert alert-success';
+                            successMessage.textContent = data.message || 'Commentaire ajouté avec succès.';
+                            form.parentNode.insertBefore(successMessage, form);
+                            
+                            // Supprimer le message après 3 secondes avec animation
+                            setTimeout(() => {
+                                successMessage.style.opacity = '0';
+                                successMessage.style.transform = 'translateY(-10px)';
+                                setTimeout(() => successMessage.remove(), 300);
+                            }, 3000);
+
+                            // Ajouter les événements aux nouveaux boutons
+                            initializeCommentButtons(newComment);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        const errorMessage = document.createElement('div');
+                        errorMessage.className = 'alert alert-error';
+                        errorMessage.textContent = error.error || 'Une erreur est survenue lors de l\'envoi du commentaire.';
+                        form.parentNode.insertBefore(errorMessage, form);
+                        setTimeout(() => errorMessage.remove(), 3000);
+                    })
+                    .finally(() => {
+                        // Réactiver le bouton
+                        submitButton.disabled = false;
+                    });
+                });
+            });
+
+            // Fonction pour initialiser les boutons d'un commentaire
+            function initializeCommentButtons(commentElement) {
+                // Initialiser le bouton de modification
+                const editButton = commentElement.querySelector('.comment-action-btn.edit');
+                if (editButton) {
+                    editButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const commentItem = this.closest('.comment-item');
+                        const commentContent = commentItem.querySelector('.comment-content');
+                        const editForm = commentItem.querySelector('.comment-edit-form');
+                        
+                        commentContent.style.display = 'none';
+                        editForm.classList.add('active');
+                        
+                        // Focus sur le textarea
+                        const textarea = editForm.querySelector('.comment-edit-input');
+                        textarea.focus();
+                        
+                        // Gérer l'annulation
+                        const cancelButton = editForm.querySelector('.comment-edit-cancel');
+                        cancelButton.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            commentContent.style.display = 'block';
+                            editForm.classList.remove('active');
+                        }, { once: true });
+                        
+                        // Gérer la soumission
+                        editForm.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            
+                            const formData = new FormData(this);
+                            
+                            fetch(this.action, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(data => Promise.reject(data));
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    commentContent.textContent = formData.get('contenu');
+                                    commentContent.style.display = 'block';
+                                    editForm.classList.remove('active');
+                                    
+                                    const successMessage = document.createElement('div');
+                                    successMessage.className = 'alert alert-success';
+                                    successMessage.textContent = data.message || 'Commentaire modifié avec succès';
+                                    commentItem.insertBefore(successMessage, commentContent);
+                                    
+                                    setTimeout(() => {
+                                        successMessage.style.opacity = '0';
+                                        successMessage.style.transform = 'translateY(-10px)';
+                                        setTimeout(() => successMessage.remove(), 300);
+                                    }, 3000);
+                                }
+                            })
+                            .catch(error => {
+                                const errorMessage = document.createElement('div');
+                                errorMessage.className = 'alert alert-error';
+                                errorMessage.textContent = error.error || 'Une erreur est survenue lors de la modification.';
+                                commentItem.insertBefore(errorMessage, commentContent);
+                                setTimeout(() => errorMessage.remove(), 3000);
+                                
+                                // Remettre l'affichage comme avant en cas d'erreur
+                                commentContent.style.display = 'block';
+                                editForm.classList.remove('active');
+                            });
+                        }, { once: true });
+                    });
+                }
+
+                // Initialiser le bouton de suppression
+                const deleteButton = commentElement.querySelector('.comment-action-btn.delete');
+                if (deleteButton) {
+                    deleteButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const commentId = this.dataset.commentId;
+                        const csrfToken = this.dataset.csrfToken;
+                        const commentItem = this.closest('.comment-item');
+                        const commentsList = commentItem.closest('.comments-list');
+                        
+                        if (confirm('Voulez-vous vraiment supprimer ce commentaire ?')) {
+                            const formData = new FormData();
+                            formData.append('_token', csrfToken);
+                            
+                            fetch(`/frontoffice/commentaire/${commentId}/delete`, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(data => Promise.reject(data));
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    // Animation de suppression
+                                    commentItem.style.opacity = '0';
+                                    commentItem.style.transform = 'translateY(-10px)';
+                                    commentItem.style.transition = 'all 0.3s ease';
+                                    
+                                    setTimeout(() => {
+                                        commentItem.remove();
+                                        
+                                        // Vérifier s'il reste des commentaires
+                                        if (commentsList.children.length === 0) {
+                                            const noCommentsMessage = document.createElement('p');
+                                            noCommentsMessage.className = 'no-comments-message';
+                                            noCommentsMessage.textContent = 'Aucun commentaire pour le moment. Soyez le premier à commenter !';
+                                            commentsList.appendChild(noCommentsMessage);
+                                        }
+                                        
+                                        // Afficher le message de succès
+                                        const successMessage = document.createElement('div');
+                                        successMessage.className = 'alert alert-success';
+                                        successMessage.textContent = data.message || 'Commentaire supprimé avec succès';
+                                        commentsList.parentNode.insertBefore(successMessage, commentsList);
+                                        
+                                        setTimeout(() => {
+                                            successMessage.style.opacity = '0';
+                                            successMessage.style.transform = 'translateY(-10px)';
+                                            setTimeout(() => successMessage.remove(), 300);
+                                        }, 3000);
+                                    }, 300);
+                                }
+                            })
+                            .catch(error => {
+                                const errorMessage = document.createElement('div');
+                                errorMessage.className = 'alert alert-error';
+                                errorMessage.textContent = error.error || 'Une erreur est survenue lors de la suppression.';
+                                commentsList.parentNode.insertBefore(errorMessage, commentsList);
+                                setTimeout(() => errorMessage.remove(), 3000);
+                            });
+                        }
+                    });
+                }
+            }
+
+            // Initialiser les boutons pour les commentaires existants
+            document.querySelectorAll('.comment-item').forEach(commentItem => {
+                initializeCommentButtons(commentItem);
+            });
+
+            document.querySelectorAll('.like-btn, .dislike-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const postId = this.dataset.postId;
+                    const countElement = this.querySelector('.like-count, .dislike-count');
+                    const isLike = this.classList.contains('like-btn');
+                    const url = isLike 
+                        ? `/frontoffice/post/${postId}/like` 
+                        : `/frontoffice/post/${postId}/dislike`;
+                    
+                    console.log('Button clicked:', isLike ? 'like' : 'dislike', 'for post:', postId);
+                    handleReaction(this, url, countElement);
+                });
+            });
+        });
+    </script>
 {% endblock %}

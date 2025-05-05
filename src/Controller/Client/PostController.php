@@ -15,6 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Psr\Log\LoggerInterface;
+use App\Repository\PostRepository;
+use App\Service\GeminiApiService;
 
 #[Route('/frontoffice/post')]
 final class PostController extends AbstractController
@@ -27,20 +29,98 @@ final class PostController extends AbstractController
     }
 
     #[Route('/', name: 'app_client_post_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $posts = $entityManager
-            ->getRepository(Post::class)
-            ->findBy([], ['date_publication' => 'DESC']);
+        $postsPerPage = 6;
+        $currentPage = $request->query->getInt('page', 1);
+        $search = $request->query->get('search', '');
+        $sort = $request->query->get('sort', 'newest');
+        $filter = $request->query->get('filter', 'all');
+        
+        $postRepository = $entityManager->getRepository(Post::class);
+        
+        // Requête pour compter le nombre total de posts
+        $countQb = $postRepository->createQueryBuilder('p');
+        if ($search) {
+            $countQb->andWhere('p.titre LIKE :search OR p.contenu LIKE :search')
+                   ->setParameter('search', '%' . $search . '%');
+        }
+        $user = $this->getUser();
+        if ($filter === 'my_posts' && $user) {
+            $countQb->andWhere('p.id_utilisateur = :user')
+                   ->setParameter('user', $user);
+        } elseif ($filter === 'liked' && $user) {
+            $countQb->andWhere('p.likeCount > 0');
+        }
+        $totalPosts = $countQb->select('COUNT(p.id_post)')
+                             ->getQuery()
+                             ->getSingleScalarResult();
+
+        $totalPages = ceil($totalPosts / $postsPerPage);
+
+        // Requête pour récupérer les posts paginés
+        $qb = $postRepository->createQueryBuilder('p');
+        
+        // Appliquer le filtre de recherche
+        if ($search) {
+            $qb->andWhere('p.titre LIKE :search OR p.contenu LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Appliquer les filtres
+        if ($filter === 'my_posts' && $user) {
+            $qb->andWhere('p.id_utilisateur = :user')
+               ->setParameter('user', $user);
+        } elseif ($filter === 'liked' && $user) {
+            $qb->andWhere('p.likeCount > 0');
+        }
+
+        // Appliquer le tri
+        switch ($sort) {
+            case 'oldest':
+                $qb->orderBy('p.date_publication', 'ASC');
+                break;
+            case 'most_liked':
+                $qb->orderBy('p.likeCount', 'DESC');
+                break;
+            case 'most_commented':
+                $qb->leftJoin('p.commentaires', 'c2')
+                   ->groupBy('p.id_post')
+                   ->orderBy('COUNT(c2.id_commentaire)', 'DESC');
+                break;
+            default: // 'newest'
+                $qb->orderBy('p.date_publication', 'DESC');
+                break;
+        }
+
+        // Récupérer les posts paginés
+        $posts = $qb->select('p')
+                   ->setFirstResult(($currentPage - 1) * $postsPerPage)
+                   ->setMaxResults($postsPerPage)
+                   ->getQuery()
+                   ->getResult();
 
         return $this->render('frontoffice/post/index.html.twig', [
             'posts' => $posts,
+            'currentPage' => $currentPage,
+            'totalPages' => $totalPages,
+            'postsPerPage' => $postsPerPage,
+            'totalPosts' => $totalPosts,
+            'search' => $search,
+            'sort' => $sort,
+            'filter' => $filter,
         ]);
     }
 
     #[Route('/new', name: 'app_client_post_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
+        // Check if user is logged in
+        $user = $this->getUser();
+        if (!$user) {
+            throw new AccessDeniedException('You need to be logged in to create a post.');
+        }
+
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
@@ -52,21 +132,9 @@ final class PostController extends AbstractController
                 }
                 $this->logger->error('Form validation errors: ' . json_encode($form->getErrors(true)));
             } else {
-                // Check if user exists
-                $userId = $form->get('id_utilisateur')->getData();
-                $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($userId);
-                
-                if (!$utilisateur) {
-                    $this->addFlash('error', 'User ID ' . $userId . ' does not exist.');
-                    return $this->render('frontoffice/post/new.html.twig', [
-                        'post' => $post,
-                        'form' => $form->createView(),
-                    ]);
-                }
-
                 // Set post metadata
                 $post->setDatePublication(new DateTime());
-                $post->setIdUtilisateur($utilisateur);
+                $post->setIdUtilisateur($user);
                 $post->setStatut('Published');
 
                 // Handle photo uploads
@@ -116,13 +184,11 @@ final class PostController extends AbstractController
                     $jsonPhotos = json_encode($photoFilenames);
                     $this->logger->info('Storing photos in database: ' . $jsonPhotos);
                     $post->setPhotos($jsonPhotos);
-                } else {
-                    $post->setPhotos(null);
                 }
 
                 try {
-            $entityManager->persist($post);
-            $entityManager->flush();
+                    $entityManager->persist($post);
+                    $entityManager->flush();
                     $this->addFlash('success', 'Your post has been created successfully!');
                     return $this->redirectToRoute('app_client_post_index', [], Response::HTTP_SEE_OTHER);
                 } catch (\Exception $e) {
@@ -145,6 +211,33 @@ final class PostController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    #[Route('/post/generate-idea', name: 'post_generate_idea', methods: ['GET', 'POST'])]
+public function generateIdea(
+    Request $request, 
+    GeminiApiService $geminiService,
+    PostRepository $postRepository
+): Response {
+    $idea = null;
+    
+    if ($request->isMethod('POST')) {
+        $theme = $request->request->get('theme');
+        $audience = $request->request->get('audience', 'générale');
+        
+        // Récupère les titres existants pour éviter les doublons
+        $existingTitles = $postRepository->findAllTitles();
+        
+        $idea = $geminiService->generatePostIdea(
+            $theme,
+            $existingTitles,
+            $audience
+        );
+    }
+    
+    return $this->render('frontoffice/post/generate_idea.html.twig', [
+        'idea' => $idea,
+        'audiences' => ['générale', 'jeunes', 'professionnels'] // Pour le select
+    ]);
+}
 
     #[Route('/{id_post}', name: 'app_client_post_show', methods: ['GET'])]
     public function show(Post $post): Response
@@ -157,24 +250,20 @@ final class PostController extends AbstractController
     #[Route('/{id_post}/edit', name: 'app_client_post_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Post $post, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
+        // Check if user is logged in and is the owner of the post
+        $user = $this->getUser();
+        if (!$user) {
+            throw new AccessDeniedException('You need to be logged in to edit a post.');
+        }
+
+        if ($post->getIdUtilisateur() !== $user) {
+            throw new AccessDeniedException('You can only edit your own posts.');
+        }
+
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Check if user exists
-            $userId = $form->get('id_utilisateur')->getData();
-            $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($userId);
-            
-            if (!$utilisateur) {
-                $this->addFlash('error', 'User ID ' . $userId . ' does not exist.');
-                return $this->render('frontoffice/post/edit.html.twig', [
-                    'post' => $post,
-                    'form' => $form->createView(),
-                ]);
-            }
-
-            $post->setIdUtilisateur($utilisateur);
-
             // Handle photo uploads
             $photos = $form->get('photos')->getData();
             $uploadDir = $this->getParameter('photos_directory');
@@ -212,9 +301,9 @@ final class PostController extends AbstractController
             }
 
             try {
-            $entityManager->flush();
+                $entityManager->flush();
                 $this->addFlash('success', 'Your post has been updated successfully!');
-            return $this->redirectToRoute('app_client_post_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_client_post_index', [], Response::HTTP_SEE_OTHER);
             } catch (\Exception $e) {
                 $this->addFlash('error', 'An error occurred while updating your post. Please try again.');
             }
@@ -241,5 +330,57 @@ final class PostController extends AbstractController
         }
 
         return $this->redirectToRoute('app_client_post_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id_post}/like', name: 'app_client_post_like', methods: ['POST'])]
+    public function like(Post $post, EntityManagerInterface $entityManager): Response
+    {
+        try {
+            if ($post->getDislikeCount() > 0) {
+                $post->switchToLike();
+            } else {
+                $post->toggleLike();
+            }
+            
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'likes' => $post->getLikeCount(),
+                'dislikes' => $post->getDislikeCount()
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Error in like action: ' . $e->getMessage());
+            return $this->json([
+                'success' => false,
+                'error' => 'Une erreur est survenue'
+            ], 500);
+        }
+    }
+
+    #[Route('/{id_post}/dislike', name: 'app_client_post_dislike', methods: ['POST'])]
+    public function dislike(Post $post, EntityManagerInterface $entityManager): Response
+    {
+        try {
+            if ($post->getLikeCount() > 0) {
+                $post->switchToDislike();
+            } else {
+                $post->toggleDislike();
+            }
+            
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'likes' => $post->getLikeCount(),
+                'dislikes' => $post->getDislikeCount()
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Error in dislike action: ' . $e->getMessage());
+            return $this->json([
+                'success' => false,
+                'error' => 'Une erreur est survenue'
+            ], 500);
+        }
     }
 }

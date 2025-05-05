@@ -11,16 +11,95 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\ExchangeRateService;
 
 #[Route('/backoffice/service')]
 class ServiceController extends AbstractController
 {
     #[Route('/', name: 'app_backoffice_service_index', methods: ['GET'])]
-    public function index(ServiceRepository $serviceRepository): Response
+    public function index(Request $request, ServiceRepository $serviceRepository, PaginatorInterface $paginator): Response
     {
+        $query = $serviceRepository->createQueryBuilder('s')
+            ->leftJoin('s.categorieService', 'c')
+            ->addSelect('c')
+            ->orderBy('s.id_service', 'DESC')
+            ->getQuery();
+
+        $services = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            3
+        );
+
         return $this->render('backoffice/service/index.html.twig', [
-            'services' => $serviceRepository->findAll(),
+            'services' => $services,
         ]);
+    }
+
+    #[Route('/search', name: 'app_backoffice_service_search', methods: ['GET'])]
+    public function search(Request $request, ServiceRepository $serviceRepository): JsonResponse
+    {
+        try {
+            $searchTerm = $request->query->get('search', '');
+            $minPrice = $request->query->get('minPrice');
+            $maxPrice = $request->query->get('maxPrice');
+            $category = $request->query->get('category');
+
+            $queryBuilder = $serviceRepository->createQueryBuilder('s')
+                ->leftJoin('s.categorieService', 'c')
+                ->addSelect('c');
+
+            if ($searchTerm) {
+                $queryBuilder->andWhere('s.nom LIKE :searchTerm OR s.description LIKE :searchTerm')
+                    ->setParameter('searchTerm', '%' . $searchTerm . '%');
+            }
+
+            if ($minPrice !== null && $minPrice !== '') {
+                $queryBuilder->andWhere('s.tarif >= :minPrice')
+                    ->setParameter('minPrice', $minPrice);
+            }
+
+            if ($maxPrice !== null && $maxPrice !== '') {
+                $queryBuilder->andWhere('s.tarif <= :maxPrice')
+                    ->setParameter('maxPrice', $maxPrice);
+            }
+
+            if ($category !== null && $category !== '') {
+                $queryBuilder->andWhere('c.id = :category')
+                    ->setParameter('category', $category);
+            }
+
+            $services = $queryBuilder->getQuery()->getResult();
+
+            $results = [];
+            foreach ($services as $service) {
+                $results[] = [
+                    'id' => $service->getIdService(),
+                    'nom' => $service->getNom(),
+                    'description' => $service->getDescription(),
+                    'tarif' => $service->getTarif(),
+                    'photos' => $service->getPhotos(),
+                    'categorie' => $service->getCategorieService()->getNomCategorie(),
+                    'token' => $this->generateToken($service),
+                ];
+            }
+
+            return new JsonResponse($results);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => true,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function generateToken(Service $service): string
+    {
+        return $this->container->get('security.csrf.token_manager')
+            ->getToken('delete' . $service->getIdService())
+            ->getValue();
     }
 
     #[Route('/new', name: 'app_backoffice_service_new', methods: ['GET', 'POST'])]
@@ -31,7 +110,6 @@ class ServiceController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion de l'upload de fichier
             $photoFile = $form->get('photos')->getData();
             if ($photoFile) {
                 $newFilename = uniqid().'.'.$photoFile->guessExtension();
@@ -73,10 +151,8 @@ class ServiceController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion de l'upload de fichier
             $photoFile = $form->get('photos')->getData();
             if ($photoFile) {
-                // Suppression de l'ancienne photo si elle existe
                 $oldFilename = $service->getPhotos();
                 if ($oldFilename) {
                     $oldFilePath = $this->getParameter('services_directory').'/'.$oldFilename;
@@ -118,4 +194,5 @@ class ServiceController extends AbstractController
 
         return $this->redirectToRoute('app_backoffice_service_index');
     }
+
 } 

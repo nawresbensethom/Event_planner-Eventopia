@@ -5,26 +5,53 @@ namespace App\Controller\Backoffice;
 use App\Entity\Code_promos;
 use App\Form\CodePromosType;
 use App\Repository\Code_promosRepository;
+use App\Service\BrevoService;
+use App\Service\PdfService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Attribute\MapEntity;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/backoffice/code-promos')]
 class CodePromosController extends AbstractController
 {
     #[Route('/', name: 'app_backoffice_code_promos_index', methods: ['GET'])]
-    public function index(Code_promosRepository $codePromosRepository): Response
+    public function index(Request $request, Code_promosRepository $codePromosRepository, PaginatorInterface $paginator, PdfService $pdfService): Response
     {
+        $query = $codePromosRepository->createQueryBuilder('c')
+            ->orderBy('c.id', 'DESC')
+            ->getQuery();
+
+        $code_promos = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            3
+        );
+
         return $this->render('backoffice/code_promos/index.html.twig', [
-            'code_promos' => $codePromosRepository->findAll(),
+            'code_promos' => $code_promos,
         ]);
     }
 
+    #[Route('/export-pdf', name: 'app_backoffice_code_promos_export_pdf', methods: ['GET'])]
+    public function exportPdf(Code_promosRepository $codePromosRepository, PdfService $pdfService): Response
+    {
+        $code_promos = $codePromosRepository->findBy([], ['id' => 'DESC']);
+        
+        $html = $this->renderView('backoffice/code_promos/pdf_export.html.twig', [
+            'code_promos' => $code_promos,
+        ]);
+        
+        $filename = 'codes_promotionnels_' . date('Y-m-d') . '.pdf';
+        
+        return $pdfService->generatePdfResponse($html, $filename);
+    }
+
     #[Route('/new', name: 'app_backoffice_code_promos_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, BrevoService $brevoService): Response
     {
         $codePromo = new Code_promos();
         $form = $this->createForm(CodePromosType::class, $codePromo);
@@ -33,6 +60,35 @@ class CodePromosController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($codePromo);
             $entityManager->flush();
+
+            // Envoi de l'email de notification
+            try {
+                $htmlContent = sprintf(
+                    '<h1>Nouveau code promo créé !</h1>
+                    <p>Un nouveau code promotionnel a été créé avec les détails suivants :</p>
+                    <ul>
+                        <li><strong>Code :</strong> %s</li>
+                        <li><strong>Réduction :</strong> %s</li>
+                        <li><strong>Date de début :</strong> %s</li>
+                        <li><strong>Date d\'expiration :</strong> %s</li>
+                        <li><strong>Description :</strong> %s</li>
+                    </ul>
+                    <p>Vous pouvez le gérer depuis votre espace d\'administration.</p>',
+                    $codePromo->getCode(),
+                    $codePromo->getReductionType(),
+                    $codePromo->getDateDebut()->format('d/m/Y'),
+                    $codePromo->getDateExpiration()->format('d/m/Y'),
+                    $codePromo->getDescription() ?? 'Aucune description'
+                );
+
+                $brevoService->sendEmail(
+                    'oumaimahouimel41@yahoo.fr', // Remplacez par l'email de l'administrateur
+                    'Nouveau code promo créé - ' . $codePromo->getCode(),
+                    $htmlContent
+                );
+            } catch (\Exception $e) {
+                $this->addFlash('warning', 'Le code promo a été créé mais l\'email de notification n\'a pas pu être envoyé : ' . $e->getMessage());
+            }
 
             $this->addFlash('success', 'Code promotionnel créé avec succès.');
             return $this->redirectToRoute('app_backoffice_code_promos_index');

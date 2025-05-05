@@ -8,8 +8,9 @@ use App\Entity\Commentaire;
 use App\Entity\SignalementPost;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\PostRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PostRepository::class)]
 #[ORM\Table(name: "post")]
 class Post
 {
@@ -42,6 +43,12 @@ class Post
 
     #[ORM\OneToMany(mappedBy: "id_post", targetEntity: SignalementPost::class)]
     private Collection $signalements;
+
+    #[ORM\Column(name: "like_count", type: "integer", options: ["default" => 0])]
+    private ?int $likeCount = 0;
+
+    #[ORM\Column(name: "dislike_count", type: "integer", options: ["default" => 0])]
+    private ?int $dislikeCount = 0;
 
     public function __construct()
     {
@@ -161,5 +168,43 @@ class Post
     {
         $this->signalements->removeElement($signalement);
         return $this;
+    }
+
+    public function getLikeCount(): ?int
+    {
+        return $this->likeCount;
+    }
+
+    public function getDislikeCount(): ?int
+    {
+        return $this->dislikeCount;
+    }
+
+    public function toggleLike(): void
+    {
+        $this->likeCount = $this->likeCount > 0 ? 0 : 1;
+        if ($this->likeCount > 0) {
+            $this->dislikeCount = 0;
+        }
+    }
+
+    public function toggleDislike(): void
+    {
+        $this->dislikeCount = $this->dislikeCount > 0 ? 0 : 1;
+        if ($this->dislikeCount > 0) {
+            $this->likeCount = 0;
+        }
+    }
+
+    public function switchToLike(): void
+    {
+        $this->likeCount = 1;
+        $this->dislikeCount = 0;
+    }
+
+    public function switchToDislike(): void
+    {
+        $this->likeCount = 0;
+        $this->dislikeCount = 1;
     }
 }

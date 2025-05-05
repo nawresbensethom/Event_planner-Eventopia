@@ -19,7 +19,7 @@
         }
 
         .card-header {
-            background-color: #007bff;
+            background-color:rgb(255, 187, 0);
             color: white;
             font-weight: bold;
         }
@@ -119,6 +119,15 @@
                     <a href="{{ path('client_offreemploi_index') }}" class="btn btn-secondary">Back to List</a>
                 </div>
             </div>
+            <div class="card">
+    <div class="card-header">
+        Postuler à cette offre
+    </div>
+    <div class="card-body">
+<a href="{{ path('client_candidature_apply', { id_offre: offreemploi.idOffre }) }}" class="btn btn-primary">
+    Postuler à cette offre
+</a>
+
         </div>
     </div>
 {% endblock %}

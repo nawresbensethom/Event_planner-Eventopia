@@ -14,8 +14,10 @@
             --success-color: #4caf50;
             --danger-color: #f44336;
             --warning-color: #ff9800;
-            --border-radius: 10px;
-            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --accent-color: #fda085;
+            --soft-pink: #fda085;
+            --border-radius: 8px;
+            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
@@ -25,44 +27,33 @@
             padding: 0;
             background: white;
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
 
         .profile-header {
-            display: flex;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, #4169E1, #1E90FF);
             color: white;
-            padding: 3rem;
-            position: relative;
-        }
-
-        .profile-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #f6d365 0%, #fda085 100%);
+            padding: 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .profile-info {
             flex: 1;
-            z-index: 1;
         }
 
         .profile-title {
-            font-weight: 700;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
+            font-weight: 600;
         }
 
         .profile-subtitle {
             font-size: 1.1rem;
             opacity: 0.9;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .profile-photo-container {
@@ -137,23 +128,18 @@
         }
 
         .section-header {
-            background: var(--primary-light);
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #eee;
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fafafa;
         }
 
         .section-title {
-            color: var(--primary-color);
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             margin: 0;
+            color: #333;
             display: flex;
             align-items: center;
-        }
-
-        .section-title i {
-            margin-right: 0.75rem;
-            font-size: 1.1rem;
+            gap: 0.75rem;
         }
 
         .section-body {
@@ -162,25 +148,30 @@
 
         .detail-item {
             display: flex;
-            margin-bottom: 1.25rem;
             align-items: flex-start;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .detail-item:last-child {
-            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .detail-item:first-child {
+            padding-top: 0;
         }
 
         .detail-icon {
             width: 40px;
             height: 40px;
-            background: var(--primary-light);
-            border-radius: 50%;
+            background: #f8f9fa;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 1rem;
-            flex-shrink: 0;
-            color: var(--primary-color);
+            color: #4169E1;
         }
 
         .detail-content {
@@ -188,16 +179,14 @@
         }
 
         .detail-label {
-            font-size: 0.85rem;
-            color: #777;
-            font-weight: 500;
+            color: #666;
+            font-size: 0.9rem;
             margin-bottom: 0.25rem;
         }
 
         .detail-value {
+            color: #333;
             font-weight: 500;
-            color: var(--dark-color);
-            line-height: 1.5;
         }
 
         .empty-value {
@@ -281,26 +270,20 @@
             }
             
             .profile-photo-container {
-                margin: 0 auto 1.5rem;
+                margin: 1.5rem auto 0;
                 width: 120px;
                 height: 120px;
             }
             
-            .profile-actions {
-                justify-content: center;
+            .profile-content {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
             }
         }
 
         @media (max-width: 576px) {
             .profile-container {
                 margin: 1rem;
-                border-radius: var(--border-radius);
-            }
-            
-            .profile-header,
-            .profile-content,
-            .profile-actions {
-                padding: 1.5rem;
             }
             
             .detail-item {
@@ -328,10 +311,10 @@
             
             <div class="profile-photo-container">
                 {% if profil.photo %}
-                    <img src="{{ asset(profil.photo) }}" 
+                    <img src="{{ asset('uploads/photos/' ~ profil.photo) }}" 
                          alt="Photo de profil de {{ profil.user.nom }}" 
                          class="profile-photo"
-                         onerror="this.onerror=null; this.src='{{ asset('assets/images/default-profile.png') }}';">
+                         onerror="this.src='{{ asset('FrontOffice/img/default-profile.png') }}'">
                 {% else %}
                     <div class="profile-photo-placeholder">
                         <i class="fas fa-user-circle"></i>

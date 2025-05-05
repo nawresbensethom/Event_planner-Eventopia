@@ -146,13 +146,10 @@
             <h1 class="form-title">Login</h1>
 
             {% if error %}
-    <div class="alert alert-danger">
-        {{ error.messageKey is defined 
-            ? error.messageKey|trans(error.messageData ?? {}, 'security') 
-            : error }}
-    </div>
-{% endif %}
-
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endif %}
 
             <form method="post" action="{{ path('app_login') }}">
                 <div class="form-group">
@@ -183,7 +180,6 @@
                 </div>
 
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                <input type="hidden" name="_target_path" value="{{ path('app_home') }}">
 
                 <button type="submit" class="btn btn-primary">Se connecter</button>
 

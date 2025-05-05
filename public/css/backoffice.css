@@ -1,0 +1,124 @@
+/* Custom styles for backoffice */
+.small-box {
+    position: relative;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.small-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.small-box .inner {
+    padding: 10px;
+}
+
+.small-box .inner h3 {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    white-space: nowrap;
+    padding: 0;
+}
+
+.small-box .inner p {
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.small-box .icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 70px;
+    opacity: 0.3;
+    transition: all 0.3s linear;
+}
+
+.small-box:hover .icon {
+    font-size: 75px;
+    opacity: 0.4;
+}
+
+.small-box .small-box-footer {
+    position: relative;
+    text-align: center;
+    padding: 3px 0;
+    color: white;
+    display: block;
+    z-index: 10;
+    background: rgba(0,0,0,0.1);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.small-box .small-box-footer:hover {
+    background: rgba(0,0,0,0.15);
+    color: white;
+}
+
+/* Custom colors */
+.bg-primary { background-color: #007bff !important; }
+.bg-secondary { background-color: #6c757d !important; }
+.bg-success { background-color: #28a745 !important; }
+.bg-info { background-color: #17a2b8 !important; }
+.bg-warning { background-color: #ffc107 !important; color: #1f2d3d !important; }
+.bg-danger { background-color: #dc3545 !important; }
+.bg-purple { background-color: #6f42c1 !important; }
+
+/* User menu styles */
+.user-image {
+    width: 35px !important;
+    height: 35px !important;
+    object-fit: cover;
+}
+
+.user-header .img-circle {
+    width: 90px !important;
+    height: 90px !important;
+    object-fit: cover;
+}
+
+/* Navbar adjustments */
+.main-header {
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Sidebar adjustments */
+.main-sidebar {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+}
+
+.sidebar-dark-primary {
+    background-color: #343a40;
+}
+
+.brand-link {
+    border-bottom: 1px solid #4b545c;
+}
+
+.brand-link .brand-image {
+    margin-left: 0.8rem;
+    margin-right: 0.5rem;
+    margin-top: -3px;
+}
+
+/* Content wrapper adjustments */
+.content-wrapper {
+    background-color: #f4f6f9;
+    min-height: calc(100vh - calc(3.5rem + 1px) - calc(3.5rem + 1px));
+}
+
+/* Footer adjustments */
+.main-footer {
+    background-color: #fff;
+    border-top: 1px solid #dee2e6;
+    color: #869099;
+    padding: 1rem;
+} 

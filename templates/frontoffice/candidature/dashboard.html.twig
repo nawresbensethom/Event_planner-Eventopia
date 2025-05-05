@@ -1,0 +1,51 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="mb-4">Tableau de bord des candidatures</h2>
+    <table class="table table-bordered table-striped">
+        <thead class="table-warning">
+            <tr>
+                <th>ID</th>
+                <th>Nom du prestataire</th>
+                <th>Offre</th>
+                <th>Statut</th>
+                <th>CV</th>
+                <th>Compétences (OCR)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for candidature in candidatures %}
+                <tr>
+                    <td>{{ candidature.getIdCandidature }}</td>
+<td>{{ candidature.getPrestataire.getNom|default('N/A') }}</td>
+                    <td>{{ candidature.getOffre().getTitrePoste() |default('N/A') }}</td>
+                    <td>{{ candidature.statut }}</td>
+                    <td>
+                        {% if candidature.cv %}
+                            <a href="{{ asset('uploads/cvs/' ~ candidature.getCv()) }}" target="_blank">Voir CV</a>
+                        {% else %}
+                            Aucun
+                        {% endif %}
+                    </td>
+                                    <td>{{ skillsByCandidature[candidature.getIdCandidature] ?? 'Aucune compétence détectée' }}</td>
+
+                    <td>
+                        <form method="post" action="{{ path('client_candidature_change_statut', {id: candidature.getIdCandidature, statut: 'acceptée'}) }}" class="d-inline">
+                            <button class="btn btn-success btn-sm">Accepter</button>
+                        </form>
+                        <form method="post" action="{{ path('client_candidature_change_statut', {id: candidature.getIdCandidature, statut: 'refusée'}) }}" class="d-inline">
+                            <button class="btn btn-danger btn-sm">Refuser</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucune candidature trouvée.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

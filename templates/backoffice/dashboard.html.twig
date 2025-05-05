@@ -2,88 +2,361 @@
 
 {% block title %}Dashboard - EvenTopia{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+        .card-chart {
+            background: linear-gradient(87deg, #fff 0, #f8f9fc 100%);
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .small-box {
+            border-radius: 0.5rem;
+            position: relative;
+            display: block;
+            margin-bottom: 20px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .small-box > .inner {
+            padding: 1.5rem;
+        }
+        .small-box h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            white-space: nowrap;
+            padding: 0;
+            color: #fff;
+        }
+        .small-box p {
+            font-size: 1rem;
+            color: #fff;
+        }
+        .small-box .icon {
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .small-box .icon svg {
+            width: 40px;
+            height: 40px;
+        }
+        .small-box-footer {
+            position: relative;
+            text-align: center;
+            padding: 0.75rem;
+            color: rgba(255,255,255,0.8);
+            display: block;
+            z-index: 10;
+            background: rgba(0,0,0,0.1);
+            text-decoration: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+        .small-box-footer:hover {
+            color: #fff;
+            background: rgba(0,0,0,0.15);
+        }
+        .bg-gradient-purple {
+            background: linear-gradient(87deg, #8965e0 0, #bc65e0 100%) !important;
+        }
+        .bg-gradient-blue {
+            background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important;
+        }
+        .bg-gradient-orange {
+            background: linear-gradient(87deg, #fb6340 0, #fbb140 100%) !important;
+        }
+        .bg-gradient-teal {
+            background: linear-gradient(87deg, #11cdef 0, #1171ef 100%) !important;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-  <div class="app-content-header">
-          <div class="container-fluid">
+    <div class="app-content-header">
+        <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Dashboard</h3></div>
-              <div class="col-sm-6">
+                <div class="col-sm-6"><h3 class="mb-0">Dashboard</h3></div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                    </ol>
+<style>
+    .small-box {
+        position: relative;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        color: white;
+    }
+    .small-box .inner {
+        padding: 10px;
+    }
+    .small-box .icon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 50px;
+        opacity: 0.3;
+    }
+    .small-box .small-box-footer {
+        position: relative;
+        text-align: center;
+        padding: 3px 0;
+        color: white;
+        display: block;
+        text-decoration: none;
+        background: rgba(0,0,0,0.1);
+    }
+    .bg-info { background-color: #17a2b8!important; }
+    .bg-success { background-color: #28a745!important; }
+    .bg-warning { background-color: #ffc107!important; }
+    .bg-danger { background-color: #dc3545!important; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="app-content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3 class="mb-0">Dashboard</h3>
+            </div>
+            <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                 </ol>
-              </div>
             </div>
-          </div>
         </div>
+    </div>
+</div>
 
-        <div class="app-content">
-          <div class="container-fluid">
-            <div class="row">
-        <!-- Posts Card -->
-              <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-primary">
-                  <div class="inner">
-              <h3>{{ posts|length }}</h3>
-              <p>Posts</p>
-                  </div>
-            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path>
-                  </svg>
-            <a href="{{ path('admin_blog_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-              Gérer les posts <i class="bi bi-link-45deg"></i>
-                  </a>
-                </div>
-              </div>
-
-        <!-- Services Card -->
-              <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-success">
-                  <div class="inner">
-              <h3>{{ services|length }}</h3>
-              <p>Services</p>
-                  </div>
-            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
-                  </svg>
-            <a href="{{ path('app_backoffice_service_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-              Gérer les services <i class="bi bi-link-45deg"></i>
-                  </a>
-                </div>
-              </div>
-
-        <!-- Signalements Card -->
-              <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-warning">
-                  <div class="inner">
-              <h3>{{ signalements|length }}</h3>
-              <p>Signalements</p>
-                  </div>
-            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"></path>
-                  </svg>
-            <a href="{{ path('app_backoffice_signalement_post_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-              Gérer les signalements <i class="bi bi-link-45deg"></i>
-                  </a>
-                </div>
-              </div>
-
-        <!-- Codes Promos Card -->
-              <div class="col-lg-3 col-6">
-          <div class="small-box text-bg-info">
-                  <div class="inner">
-              <h3>{{ code_promos|length }}</h3>
-              <p>Codes Promos</p>
-            </div>
-            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M9.375 3a1.875 1.875 0 000 3.75h1.875v4.5H3.375A1.875 1.875 0 011.5 9.375v-.75c0-1.036.84-1.875 1.875-1.875H3.75v-.75A1.875 1.875 0 015.625 3h3.75zm0 9.75h1.875v4.5H9.375a1.875 1.875 0 01-1.875-1.875v-.75c0-1.036.84-1.875 1.875-1.875h.75v-.75A1.875 1.875 0 019.375 12.75zm8.25-9.75h-3.75a1.875 1.875 0 00-1.875 1.875v.75c0 1.036.84 1.875 1.875 1.875h.75v.75A1.875 1.875 0 0014.625 12h1.875v4.5h-1.875a1.875 1.875 0 01-1.875-1.875v-.75c0-1.036.84-1.875 1.875-1.875h.75v-.75A1.875 1.875 0 0117.625 3z"></path>
-            </svg>
-            <a href="{{ path('app_backoffice_code_promos_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-              Gérer les codes promos <i class="bi bi-link-45deg"></i>
-            </a>
-                      </div>
+<div class="app-content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Users Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3>{% if users is defined %}{{ users|length }}{% else %}0{% endif %}</h3>
+                        <p>Utilisateurs</p>
                     </div>
-                  </div>
+                    <div class="icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <a href="{{ path('admin_dashboard') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
                 </div>
-              </div>
+            </div>
+
+            <!-- Events Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{% if events is defined %}{{ events|length }}{% else %}0{% endif %}</h3>
+                        <p>Événements</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <a href="{{ path('app_evenement_index_back') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Reservations Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{% if reservations is defined %}{{ reservations|length }}{% else %}0{% endif %}</h3>
+                        <p>Réservations</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-bookmark-check"></i>
+                    </div>
+                    <a href="{{ path('app_reservation_index_back') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Services Card -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{% if services is defined %}{{ services|length }}{% else %}0{% endif %}</h3>
+                        <p>Services</p>
+                    </div>
+                    <div class="icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <a href="{{ path('app_backoffice_service_index') }}" class="small-box-footer">
+                        Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Utilisateurs Connectés Card -->
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-gradient-purple">
+                        <div class="inner">
+                            <h3>{{ connected_users|length }}</h3>
+                            <p>Utilisateurs Connectés</p>
+                        </div>
+                        <div class="icon">
+                            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"></path>
+                            </svg>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Événements Card -->
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-gradient-blue">
+                        <div class="inner">
+                            <h3>{{ evenements|length }}</h3>
+                            <p>Événements</p>
+                        </div>
+                        <div class="icon">
+                            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z"></path>
+                            </svg>
+                        </div>
+                        <a href="{{ path('app_evenement_index_back') }}" class="small-box-footer">
+                            Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Signalements Card -->
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-gradient-orange">
+                        <div class="inner">
+                            <h3>{{ signalements|length }}</h3>
+                            <p>Signalements</p>
+                        </div>
+                        <div class="icon">
+                            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"></path>
+                            </svg>
+                        </div>
+                        <a href="{{ path('app_backoffice_signalement_post_index') }}" class="small-box-footer">
+                            Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Offres de Travail Card -->
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-gradient-teal">
+                        <div class="inner">
+                            <h3>{{ offres_travail|length }}</h3>
+                            <p>Offres de Travail</p>
+                        </div>
+                        <div class="icon">
+                            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"></path>
+                            </svg>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            Plus d'infos <i class="bi bi-arrow-right-circle"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques des Codes Promos -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card card-chart">
+                        <div class="card-header">
+                            <h5 class="card-title">Statut des Codes Promos</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="codePromosStatusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Données pour le graphique de statut
+            const validCodes = {{ code_promos|filter(c => c.dateExpiration > date())|length }};
+            const expiredCodes = {{ code_promos|filter(c => c.dateExpiration <= date())|length }};
+
+            // Graphique de statut (Doughnut)
+            const statusCtx = document.getElementById('codePromosStatusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Codes Valides', 'Codes Expirés'],
+                    datasets: [{
+                        data: [validCodes, expiredCodes],
+                        backgroundColor: [
+                            'rgba(45, 206, 137, 0.8)',
+                            'rgba(245, 54, 92, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(45, 206, 137, 1)',
+                            'rgba(245, 54, 92, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}
