@@ -1,123 +1,233 @@
 {% extends 'backoffice/base.html.twig' %}
 
-{% block title %}Reservation index{% endblock %}
+{% block title %}Gestion des réservations{% endblock %}
 
 {% block body %}
-    <h1>Reservation index</h1>
+<style>
+    body {
+        font-family: 'Source Sans Pro', sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
+    }
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+        border-collapse: collapse;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .table th,
+    .table td {
+        padding: 0.75rem;
+        vertical-align: middle;
+        text-align: left;
+        border-top: 1px solid #dee2e6;
+        transition: background-color 0.3s ease;
+    }
+    .table thead th {
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .table tbody + tbody {
+        border-top: 2px solid #dee2e6;
+    }
+    .table-hover tbody tr:hover {
+        color: #212529;
+        background-color: rgba(0, 0, 0, 0.075);
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #dee2e6;
+    }
+    .table-bordered thead th,
+    .table-bordered thead td {
+        border-bottom-width: 2px;
+    }
+    .search-box {
+        margin-bottom: 1rem;
+    }
+    .sort-icon {
+        cursor: pointer;
+        margin-left: 5px;
+        vertical-align: middle;
+        color: #fff;
+    }
+    .sort-icon.active {
+        color: #ffc107;
+    }
+    .th-sort {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .th-sort i {
+        margin-left: 5px;
+    }
+</style>
 
-    <style>
-        body {
-            font-family: 'Source Sans Pro', sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
-        }
-        .table {
-            width: 100%;
-            margin-bottom: 1rem;
-            color: #212529;
-            border-collapse: collapse;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .table th,
-        .table td {
-            padding: 0.75rem;
-            vertical-align: top;
-            border-top: 1px solid #dee2e6;
-            transition: background-color 0.3s ease;
-        }
-        .table thead th {
-            vertical-align: bottom;
-            border-bottom: 2px solid #dee2e6;
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
-        }
-        .table tbody + tbody {
-            border-top: 2px solid #dee2e6;
-        }
-        .table .table {
-            background-color: #f8f9fa;
-        }
-        .table-hover tbody tr:hover {
-            color: #212529;
-            background-color: rgba(0, 0, 0, 0.075);
-        }
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-        .table-bordered {
-            border: 1px solid #dee2e6;
-        }
-        .table-bordered th,
-        .table-bordered td {
-            border: 1px solid #dee2e6;
-        }
-        .table-bordered thead th,
-        .table-bordered thead td {
-            border-bottom-width: 2px;
-        }
-        .search-box {
-            margin-bottom: 1rem;
-        }
-    </style>
+<div id="reservation-list">
+    <div class="container mt-4">
+        <h1>Gestion des réservations</h1>
 
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search..." class="form-control">
+        <form method="get" class="mb-4 row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" id="search" class="form-control" placeholder="Rechercher par nom d'événement..." value="{{ search }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Rechercher
+                </button>
+            </div>
+        </form>
+
+        <table class="table table-hover table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Événement</th>
+                    <th>
+                        Montant Total
+                        <i class="bi bi-sort-down sort-icon {% if sort == 'montant_total' %}active{% endif %}" data-column="montant_total" data-order="{{ sort == 'montant_total' and direction == 'asc' ? 'desc' : 'asc' }}"></i>
+                    </th>
+                    <th>
+                        Statut
+                        <i class="bi bi-sort-down sort-icon {% if sort == 'statut' %}active{% endif %}" data-column="statut" data-order="{{ sort == 'statut' and direction == 'asc' ? 'desc' : 'asc' }}"></i>
+                    </th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for reservation in reservations %}
+                <tr>
+                    <td>{{ reservation.id }}</td>
+                    <td>{{ reservation.evenement.nomEvenement }}</td>
+                    <td>{{ reservation.montantTotal }} €</td>
+                    <td>{{ reservation.statut|capitalize }}</td>
+                    <td>
+                        <form method="post" action="{{ path('app_reservation_deleteback', {'id': reservation.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">Aucune réservation trouvée</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination justify-content-center">
+            {{ knp_pagination_render(reservations) }}
+        </div>
     </div>
+</div>
 
-    <table class="table table-hover table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Montant_total</th>
-                <th>Statut</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for reservation in reservations %}
-            <tr>
-                <td>{{ reservation.id }}</td>
-                <td>{{ reservation.montantTotal }}</td>
-                <td>{{ reservation.statut }}</td>
-                <td>
-                    <a href="{{ path('app_reservation_show', {'id': reservation.id}) }}">show</a>
-                    <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search');
+        const sortIcons = document.querySelectorAll('.sort-icon');
+        let timeout = null;
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const table = document.querySelector('.table');
-            const headers = table.querySelectorAll('th');
-            const rows = table.querySelectorAll('tbody tr');
-
-            headers.forEach((header, index) => {
-                header.addEventListener('click', () => {
-                    const sortedRows = Array.from(rows).sort((a, b) => {
-                        const aText = a.querySelectorAll('td')[index].textContent.trim();
-                        const bText = b.querySelectorAll('td')[index].textContent.trim();
-                        return aText.localeCompare(bText);
-                    });
-                    table.querySelector('tbody').append(...sortedRows);
-                });
+        function updateSortIcons(activeIcon) {
+            sortIcons.forEach(icon => {
+                icon.classList.remove('active', 'bi-sort-up', 'bi-sort-down');
+                icon.classList.add('bi-sort-down');
+                icon.dataset.order = 'asc';
             });
 
-            const searchInput = document.getElementById('searchInput');
-            searchInput.addEventListener('keyup', function() {
-                const filter = searchInput.value.toLowerCase();
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(filter) ? '' : 'none';
-                });
+            if (activeIcon) {
+                activeIcon.classList.add('active');
+                if (activeIcon.dataset.order === 'asc') {
+                    activeIcon.classList.remove('bi-sort-down');
+                    activeIcon.classList.add('bi-sort-up');
+                } else {
+                    activeIcon.classList.remove('bi-sort-up');
+                    activeIcon.classList.add('bi-sort-down');
+                }
+            }
+        }
+
+        function fetchData() {
+            const search = searchInput ? searchInput.value : '';
+            const activeIcon = document.querySelector('.sort-icon.active');
+            const sort = activeIcon ? activeIcon.dataset.column : 'id';
+            const direction = activeIcon ? activeIcon.dataset.order : 'asc';
+
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            params.append('sort', sort);
+            params.append('direction', direction);
+
+            console.log('Fetching data with params:', params.toString());
+
+            fetch('{{ path('app_reservation_index_back') }}?' + params.toString(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.getElementById('reservation-list').innerHTML = html;
+                attachEventListeners();
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(fetchData, 300);
+            });
+        }
+
+        sortIcons.forEach(icon => {
+            icon.addEventListener('click', function() {
+                const currentOrder = this.dataset.order;
+                this.dataset.order = currentOrder === 'asc' ? 'desc' : 'asc';
+                updateSortIcons(this);
+                fetchData();
             });
         });
-    </script>
+
+        function attachEventListeners() {
+            const newSortIcons = document.querySelectorAll('.sort-icon');
+            newSortIcons.forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const currentOrder = this.dataset.order;
+                    this.dataset.order = currentOrder === 'asc' ? 'desc' : 'asc';
+                    updateSortIcons(this);
+                    fetchData();
+                });
+            });
+
+            const newSearchInput = document.getElementById('search');
+            if (newSearchInput) {
+                newSearchInput.addEventListener('input', function() {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(fetchData, 300);
+                });
+            }
+        }
+
+        // Charger les données initiales avec tri par défaut
+        fetchData();
+    });
+</script>
 {% endblock %}

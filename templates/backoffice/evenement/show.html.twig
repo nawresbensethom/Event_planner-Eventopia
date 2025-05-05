@@ -1,119 +1,231 @@
 {% extends 'backoffice/base.html.twig' %}
 
-
-{% block title %}Détails de l'Événement - {{ evenement.nom }}{% endblock %}
+{% block title %}Gestion des réservations{% endblock %}
 
 {% block body %}
 <style>
-    .card {
-        border-radius: 8px;
-        overflow: hidden;
+    body {
+        font-family: 'Source Sans Pro', sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
     }
-    .card-header {
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+        border-collapse: collapse;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .table th,
+    .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+        transition: background-color 0.3s ease;
+    }
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
         background-color: #007bff;
-        color: white;
-        text-align: center;
+        color: #fff;
+        cursor: pointer;
     }
-    .card-body {
+    .table tbody + tbody {
+        border-top: 2px solid #dee2e6;
+    }
+    .table .table {
         background-color: #f8f9fa;
-        padding: 20px;
     }
-    .card-footer {
-        background-color: #e9ecef;
-        text-align: right;
+    .table-hover tbody tr:hover {
+        color: #212529;
+        background-color: rgba(0, 0, 0, 0.075);
     }
-    .btn {
-        margin: 5px;
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
     }
-    .container {
-        padding: 20px;
-        background-color: #ffffff;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    .table-bordered {
+        border: 1px solid #dee2e6;
     }
-    .badge {
-        font-size: 0.9em;
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #dee2e6;
     }
-    .list-group-item {
-        border: none;
-        padding: 10px 15px;
+    .table-bordered thead th,
+    .table-bordered thead td {
+        border-bottom-width: 2px;
     }
-    .bg-light {
-        background-color: #f8f9fa !important;
+    .search-box {
+        margin-bottom: 1rem;
+    }
+    .sort-icon {
+        margin-left: 5px;
+        vertical-align: middle;
+    }
+    .sort-icon.active {
+        color: #fff;
     }
 </style>
-<div class="container py-5">
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h2 class="h4 mb-0">{{ evenement.nom }}</h2>
-                        <span class="badge bg-{{ evenement.statut == 'annule' ? 'danger' : (evenement.statut == 'termine' ? 'secondary' : 'success') }}">
-                            {{ evenement.statut|capitalize }}
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h3 class="h5">Informations de base</h3>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <strong>Date:</strong> {{ evenement.date|date('d/m/Y H:i') }}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Lieu:</strong> {{ evenement.lieu }}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Type:</strong> {{ evenement.typePublic|capitalize }}
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <h3 class="h5">Localisation</h3>
-                            <div class="ratio ratio-16x9 mb-3">
-                                <!-- Intégration Google Maps -->
-                                <iframe src="https://maps.google.com/maps?q={{ evenement.latitude }},{{ evenement.longitude }}&z=15&output=embed" 
-                                        frameborder="0" style="border:0" allowfullscreen></iframe>
-                            </div>
-                        </div>
-                    </div>
 
-                    <h3 class="h5">Description</h3>
-                    <div class="p-3 bg-light rounded mb-4">
-                        {{ evenement.description }}
-                    </div>
+<div id="reservation-list">
+    <div class="container mt-4">
+        <h1>Gestion des réservations</h1>
 
-                    {% if evenement.organisateur %}
-                    <div class="d-flex align-items-center mt-4">
-                        <div class="flex-shrink-0">
-                            <div class="bg-secondary rounded-circle p-3 text-white">
-                                <i class="fas fa-user fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h4 class="h6 mb-1">Organisateur</h4>
-                            <p class="mb-0">{{ evenement.organisateur.nom }}</p>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Rechercher par événement ou statut..." class="form-control" value="{{ search }}">
+        </div>
 
-                <div class="card-footer bg-light d-flex justify-content-between">
-                    <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
-                    </a>
-                    <div>
-                        <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" 
-                           class="btn btn-primary me-2">
-                            <i class="fas fa-edit me-2"></i>Modifier
-                        </a>
-                        {{ include('backoffice/evenement/_delete_form.html.twig') }}
-                    </div>
-                </div>
-            </div>
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Événement <i class="bi bi-sort-down sort-icon" data-column="evenement.nom_evenement" data-order="asc"></i></th>
+                    <th>Montant Total <i class="bi bi-sort-down sort-icon" data-column="montant_total" data-order="asc"></i></th>
+                    <th>Statut <i class="bi bi-sort-down sort-icon" data-column="statut" data-order="asc"></i></th>
+                    <th>Services</th>
+                    <th>Code Promo</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for reservation in reservations %}
+                <tr>
+                    <td>{{ reservation.id }}</td>
+                    <td>{{ reservation.evenement.nomEvenement }}</td>
+                    <td>{{ reservation.montantTotal }} €</td>
+                    <td>{{ reservation.statut|capitalize }}</td>
+                    <td>
+                        {% for service in reservation.services %}
+                            {{ service.nom }}{% if not loop.last %}, {% endif %}
+                        {% else %}
+                            Aucun service
+                        {% endfor %}
+                    </td>
+                    <td>{{ reservation.codePromos ? reservation.codePromos.code : 'Aucun' }}</td>
+                    <td>
+                        <a href="{{ path('app_reservation_show', {'id': reservation.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                        <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">Aucune réservation trouvée</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination justify-content-center">
+            {{ knp_pagination_render(reservations) }}
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const sortIcons = document.querySelectorAll('.sort-icon');
+        let timeout = null;
+
+        function fetchData() {
+            const search = searchInput ? searchInput.value : '';
+            const sort = document.querySelector('.sort-icon.active')?.dataset.column || 'id';
+            const direction = document.querySelector('.sort-icon.active')?.dataset.order || 'asc';
+
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            params.append('sort', sort);
+            params.append('direction', direction);
+
+            console.log('Fetching data with params:', params.toString());
+
+            fetch('{{ path('app_reservation_index_back') }}?' + params.toString(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.getElementById('reservation-list').innerHTML = html;
+                attachEventListeners();
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(fetchData, 300);
+            });
+        }
+
+        sortIcons.forEach(icon => {
+            icon.addEventListener('click', function() {
+                // Réinitialiser les autres icônes
+                sortIcons.forEach(i => {
+                    i.classList.remove('active', 'bi-sort-up', 'bi-sort-down');
+                    i.classList.add('bi-sort-down');
+                    i.dataset.order = 'asc';
+                });
+
+                // Activer l'icône cliquée
+                this.classList.add('active');
+                if (this.dataset.order === 'asc') {
+                    this.dataset.order = 'desc';
+                    this.classList.remove('bi-sort-down');
+                    this.classList.add('bi-sort-up');
+                } else {
+                    this.dataset.order = 'asc';
+                    this.classList.remove('bi-sort-up');
+                    this.classList.add('bi-sort-down');
+                }
+
+                fetchData();
+            });
+        });
+
+        function attachEventListeners() {
+            const newSortIcons = document.querySelectorAll('.sort-icon');
+            newSortIcons.forEach(icon => {
+                icon.addEventListener('click', function() {
+                    sortIcons.forEach(i => {
+                        i.classList.remove('active', 'bi-sort-up', 'bi-sort-down');
+                        i.classList.add('bi-sort-down');
+                        i.dataset.order = 'asc';
+                    });
+
+                    this.classList.add('active');
+                    if (this.dataset.order === 'asc') {
+                        this.dataset.order = 'desc';
+                        this.classList.remove('bi-sort-down');
+                        this.classList.add('bi-sort-up');
+                    } else {
+                        this.dataset.order = 'asc';
+                        this.classList.remove('bi-sort-up');
+                        this.classList.add('bi-sort-down');
+                    }
+
+                    fetchData();
+                });
+            });
+
+            const newSearchInput = document.getElementById('searchInput');
+            if (newSearchInput) {
+                newSearchInput.addEventListener('input', function() {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(fetchData, 300);
+                });
+            }
+        }
+
+        // Charger les données initiales avec tri par défaut
+        fetchData();
+    });
+</script>
 {% endblock %}
